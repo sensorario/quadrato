@@ -78,7 +78,7 @@ function App() {
   };
 
   return (
-    <div style={{ width: '400px', margin: '0 auto' }}>
+    <div style={{ width: '600px', margin: '0 auto' }}>
       <h1>Simplanner</h1>
       <h2 style={{ marginTop: '2rem' }}>Cose da fare</h2>
       <ul style={{ listStyleType: 'none', paddingLeft: 0 }}>
@@ -114,7 +114,7 @@ function App() {
         }}>
           <div style={{
             background: 'white',
-            padding: '2rem',
+            padding: '1rem',
             borderRadius: '8px',
             boxShadow: '0 2px 8px rgba(0,0,0,0.2)',
             width: '350px',
@@ -131,7 +131,7 @@ function App() {
                   marginBottom: '1rem',
                   padding: '0.75rem 1rem',
                   border: '1px solid #d1d1d1',
-                  borderRadius: '24px',
+                  borderRadius: '8px',
                   fontSize: '1rem',
                   outline: 'none',
                   boxShadow: '0 2px 8px rgba(0,0,0,0.04)',
