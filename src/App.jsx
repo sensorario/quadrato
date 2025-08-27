@@ -43,6 +43,10 @@ function App() {
         e.preventDefault();
         setShowPopup(true);
       }
+      if (e.ctrlKey && e.key === 'x') {
+        e.preventDefault();
+        setTasks(tasks => tasks.filter(t => t.status !== 2 && t.status !== 3));
+      }
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
@@ -74,7 +78,7 @@ function App() {
   };
 
   return (
-    <div style={{ width: '300px', margin: '0 auto' }}>
+    <div style={{ width: '400px', margin: '0 auto' }}>
       <h1>Simplanner</h1>
       <h2 style={{ marginTop: '2rem' }}>Cose da fare</h2>
       <ul style={{ listStyleType: 'none', paddingLeft: 0 }}>
@@ -85,6 +89,8 @@ function App() {
               style={{
                 cursor: 'pointer',
                 transition: 'opacity 2.5s',
+                borderBottom: '#ccc 1px solid',
+                padding: '4px',
               }}
               onClick={() => handleClick(task.id)}
             >
