@@ -1,5 +1,73 @@
 :root {
-    font-family:fantasy;
+    font-family: fantasy;
+    --unit: 8px;
+}
+
+.app-container {
+    width: 600px;
+    margin: 0 auto;
+}
+
+.task-title {
+    margin-top: 2rem;
+    margin-bottom: var(--unit);
+}
+
+.task-list {
+    list-style-type: none;
+    padding-left: 0;
+}
+
+.task-item {
+    cursor: pointer;
+    transition: opacity 2.5s;
+    border-bottom: #ccc 1px solid;
+    padding: 4px;
+}
+
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0,0,0,0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+
+.modal {
+    background: white;
+    padding: 1rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+    width: 350px;
+}
+
+.modal-input-wrapper {
+    display: flex;
+    justify-content: center;
+}
+
+.modal-input {
+    width: 90%;
+    margin-bottom: 1rem;
+    padding: 0.75rem 1rem;
+    border: 1px solid #d1d1d1;
+    border-radius: 8px;
+    font-size: 1rem;
+    outline: none;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    transition: border 0.2s;
+}
+
+.modal-input.input-focus {
+    border: 1.5px solid #0a66c2;
+}
+:root {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 
     --unit: 8px;
 }

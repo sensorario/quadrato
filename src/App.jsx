@@ -2,6 +2,7 @@
 
 
 import { useState, useEffect } from 'react';
+import './App.css';
 
 const STATUS = [
   <svg width="16" height="16" style={{ verticalAlign: 'middle' }} key="square-todo"><rect x="1" y="1" width="14" height="14" fill="white" stroke="black" strokeWidth="2" /></svg>,
@@ -78,20 +79,15 @@ function App() {
   };
 
   return (
-    <div style={{ width: '600px', margin: '0 auto' }}>
+    <div className="app-container">
       <h1>Simplanner</h1>
-      <h2 style={{ marginTop: '2rem' }}>Cose da fare</h2>
-      <ul style={{ listStyleType: 'none', paddingLeft: 0 }}>
+      <h2 className="task-title">Cose da fare</h2>
+      <ul className="task-list">
         {[...tasks]
           .map(task => (
             <li
               key={task.id}
-              style={{
-                cursor: 'pointer',
-                transition: 'opacity 2.5s',
-                borderBottom: '#ccc 1px solid',
-                padding: '4px',
-              }}
+              className="task-item"
               onClick={() => handleClick(task.id)}
             >
               <strong>{STATUS[task.status]}</strong> - {task.title}
@@ -100,46 +96,19 @@ function App() {
       </ul>
 
       {showPopup && (
-        <div style={{
-          position: 'fixed',
-          top: 0,
-          left: 0,
-          width: '100vw',
-          height: '100vh',
-          background: 'rgba(0,0,0,0.3)',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          zIndex: 1000
-        }}>
-          <div style={{
-            background: 'white',
-            padding: '1rem',
-            borderRadius: '8px',
-            boxShadow: '0 2px 8px rgba(0,0,0,0.2)',
-            width: '350px',
-          }}>
+        <div className="modal-overlay">
+          <div className="modal">
             <h2>Nuovo Task</h2>
-            <div style={{ display: 'flex', justifyContent: 'center' }}>
+            <div className="modal-input-wrapper">
               <input
                 type="text"
                 value={newTaskTitle}
                 onChange={e => setNewTaskTitle(e.target.value)}
                 placeholder="Titolo del task"
-                style={{
-                  width: '90%',
-                  marginBottom: '1rem',
-                  padding: '0.75rem 1rem',
-                  border: '1px solid #d1d1d1',
-                  borderRadius: '8px',
-                  fontSize: '1rem',
-                  outline: 'none',
-                  boxShadow: '0 2px 8px rgba(0,0,0,0.04)',
-                  transition: 'border 0.2s',
-                }}
+                className="modal-input"
                 autoFocus
-                onFocus={e => e.currentTarget.style.border = '1.5px solid #0a66c2'}
-                onBlur={e => e.currentTarget.style.border = '1px solid #d1d1d1'}
+                onFocus={e => e.currentTarget.classList.add('input-focus')}
+                onBlur={e => e.currentTarget.classList.remove('input-focus')}
                 onKeyDown={e => {
                   if (e.key === 'Enter') {
                     handleAddTask();
