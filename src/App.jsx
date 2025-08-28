@@ -115,7 +115,7 @@ function App() {
   return (
     <div className="app-container">
 
-      <Header />
+      <Header setShowHelp={setShowHelp} />
       <TaskList tasks={tasks} onTaskClick={handleClick} />
 
       {showHelp && <HelpModal setShowHelp={setShowHelp} />}
