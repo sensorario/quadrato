@@ -33,6 +33,7 @@ function App() {
   });
   const [showPopup, setShowPopup] = useState(false);
   const [newTaskTitle, setNewTaskTitle] = useState('');
+  const [showHelp, setShowHelp] = useState(false);
 
   useEffect(() => {
     localStorage.setItem('simplanner-tasks', JSON.stringify(tasks));
@@ -48,10 +49,21 @@ function App() {
         e.preventDefault();
         setTasks(tasks => tasks.filter(t => t.status !== 2 && t.status !== 3));
       }
+      if (e.key === 'Escape') {
+        if (showHelp) {
+          setShowHelp(false);
+        } else if (showPopup) {
+          setShowPopup(false);
+        }
+      }
+      // Apri help con Shift + /
+      if ((e.key === '?' || (e.key === '/' && e.shiftKey))) {
+        setShowHelp(true);
+      }
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, []);
+  }, [showHelp, showPopup]);
 
 
   const handleClick = (id) => {
@@ -80,8 +92,19 @@ function App() {
 
   return (
     <div className="app-container">
-      <h1>Simplanner</h1>
-      <h2 className="task-title">Cose da fare</h2>
+      <h1 className="title-with-help">
+        Simplanner
+        <span
+          className="help-icon"
+          title="Shortcut info"
+          onClick={() => setShowHelp(true)}
+        >
+          <svg width="24" height="24" viewBox="0 0 24 24" style={{ verticalAlign: 'middle', display: 'inline-block' }}>
+            <circle cx="12" cy="12" r="11" fill="#e6f0fa" stroke="#0073b1" strokeWidth="2" />
+            <text x="12" y="16" textAnchor="middle" fontSize="14" fontFamily="Arial, Helvetica, sans-serif" fill="#0073b1">?</text>
+          </svg>
+        </span>
+      </h1>
       <ul className="task-list">
         {[...tasks]
           .map(task => (
@@ -94,6 +117,23 @@ function App() {
             </li>
           ))}
       </ul>
+
+      {showHelp && (
+        <div className="modal-overlay" onClick={() => setShowHelp(false)}>
+          <div
+            className="modal"
+            onClick={e => e.stopPropagation()}
+          >
+            <h2>Scorciatoie disponibili</h2>
+            <ul style={{ marginTop: '1rem', marginBottom: '1rem' }}>
+              <li><strong>Ctrl+N</strong>: Aggiungi un nuovo task</li>
+              <li><strong>Ctrl+X</strong>: Cancella tutti i task skippati o completati</li>
+              <li><strong>Click su task</strong>: Cambia stato del task</li>
+              <li><strong>ESC</strong>: Chiudi popup</li>
+            </ul>
+          </div>
+        </div>
+      )}
 
       {showPopup && (
         <div className="modal-overlay">
