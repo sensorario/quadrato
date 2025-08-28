@@ -1,8 +1,16 @@
-
-
-
 import { useState, useEffect } from 'react';
 import './App.css';
+import NewTaskModal from './components/NewTaskModal';
+import HelpModal from './components/HelpModal';
+import { Header } from './components/Header';
+
+
+const STATUS_ENUM = {
+  TODO: 0,
+  IN_PROGRESS: 1,
+  DONE: 2,
+  SKIPPED: 3
+};
 
 const STATUS = [
   <svg width="16" height="16" style={{ verticalAlign: 'middle' }} key="square-todo"><rect x="1" y="1" width="14" height="14" fill="white" stroke="black" strokeWidth="2" /></svg>,
@@ -19,11 +27,11 @@ const STATUS = [
 ];
 
 const initialTasks = [
-  { id: 1, title: 'Studiare React', status: 0 },
-  { id: 2, title: 'Creare una to-do list', status: 0 },
-  { id: 3, title: 'Testare Vite', status: 2 },
-  { id: 4, title: 'Scrivere documentazione', status: 0 },
-  { id: 5, title: 'Progettare interfaccia', status: 1 },
+  { id: 1, title: 'Studiare React', status: STATUS_ENUM.TODO },
+  { id: 2, title: 'Creare una to-do list', status: STATUS_ENUM.TODO },
+  { id: 3, title: 'Testare Vite', status: STATUS_ENUM.DONE },
+  { id: 4, title: 'Scrivere documentazione', status: STATUS_ENUM.TODO },
+  { id: 5, title: 'Progettare interfaccia', status: STATUS_ENUM.IN_PROGRESS },
 ];
 
 function App() {
@@ -90,77 +98,33 @@ function App() {
     setShowPopup(false);
   };
 
+  const TaskList = ({ tasks, onTaskClick }) => (
+    <ul className="task-list">
+      {tasks.map(task => (
+        <li
+          key={task.id}
+          className="task-item"
+          onClick={() => onTaskClick(task.id)}
+        >
+          <strong>{STATUS[task.status]}</strong> - {task.title}
+        </li>
+      ))}
+    </ul>
+  );
+
   return (
     <div className="app-container">
-      <h1 className="title-with-help">
-        To do list
-        <span
-          className="help-icon"
-          title="Shortcut info"
-          onClick={() => setShowHelp(true)}
-        >
-          <svg width="24" height="24" viewBox="0 0 24 24" style={{ verticalAlign: 'middle', display: 'inline-block' }}>
-            <circle cx="12" cy="12" r="11" fill="#f0f0f0" stroke="#888" strokeWidth="2" />
-            <text x="12" y="16" textAnchor="middle" fontSize="14" fontFamily="Arial, Helvetica, sans-serif" fill="#444">?</text>
-          </svg>
-        </span>
-      </h1>
-      <ul className="task-list">
-        {[...tasks]
-          .map(task => (
-            <li
-              key={task.id}
-              className="task-item"
-              onClick={() => handleClick(task.id)}
-            >
-              <strong>{STATUS[task.status]}</strong> - {task.title}
-            </li>
-          ))}
-      </ul>
 
-      {showHelp && (
-        <div className="modal-overlay" onClick={() => setShowHelp(false)}>
-          <div
-            className="modal"
-            onClick={e => e.stopPropagation()}
-          >
-            <h2>Scorciatoie disponibili</h2>
-            <ul style={{ marginTop: '1rem', marginBottom: '1rem' }}>
-              <li><strong>Ctrl+N</strong>: Aggiungi un nuovo task</li>
-              <li><strong>Ctrl+X</strong>: Cancella tutti i task skippati o completati</li>
-              <li><strong>Click su task</strong>: Cambia stato del task</li>
-              <li><strong>ESC</strong>: Chiudi popup</li>
-            </ul>
-          </div>
-        </div>
-      )}
+      <Header />
+      <TaskList tasks={tasks} onTaskClick={handleClick} />
 
-      {showPopup && (
-        <div className="modal-overlay">
-          <div className="modal">
-            <h2>Nuovo Task</h2>
-            <div className="modal-input-wrapper">
-              <input
-                type="text"
-                value={newTaskTitle}
-                onChange={e => setNewTaskTitle(e.target.value)}
-                placeholder="Titolo del task"
-                className="modal-input"
-                autoFocus
-                onFocus={e => e.currentTarget.classList.add('input-focus')}
-                onBlur={e => e.currentTarget.classList.remove('input-focus')}
-                onKeyDown={e => {
-                  if (e.key === 'Enter') {
-                    handleAddTask();
-                  } else if (e.key === 'Escape') {
-                    setShowPopup(false);
-                  }
-                }}
-              />
-            </div>
-          </div>
-        </div>
-      )}
+      {showHelp && <HelpModal setShowHelp={setShowHelp} />}
+
+      {showPopup && <NewTaskModal
+        newTaskTitle={newTaskTitle}
+        setNewTaskTitle={setNewTaskTitle}
+        handleAddTask={handleAddTask}
+        setShowPopup={setShowPopup} />}
     </div>
   );
 }
