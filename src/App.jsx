@@ -37,6 +37,10 @@ function App() {
         e.preventDefault();
         setTasks(tasks => tasks.filter(t => t.status !== 2 && t.status !== 3));
       }
+      if (e.ctrlKey && e.key === 'h') {
+        e.preventDefault();
+        setShowHelp(true);
+      }
       if (e.key === 'Escape') {
         if (showHelp) {
           setShowHelp(false);
