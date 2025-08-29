@@ -1,3 +1,22 @@
+.plus-icon {
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    width: 1.5rem;
+    height: 1.5rem;
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #444;
+    background: #f0f0f0;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: background 0.2s;
+    margin-left: 0.5rem;
+    border: 2px solid #888;
+}
+.plus-icon:hover {
+    background: #e0e0e0;
+}
 .title-with-help {
     display: flex;
     align-items: center;

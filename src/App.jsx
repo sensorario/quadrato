@@ -82,6 +82,22 @@ function App() {
     <div className="app-container">
       <Header setShowHelp={setShowHelp} />
       <TaskList tasks={tasks} onTaskClick={handleClick} />
+      {/* Plus icon in basso al centro dopo tutti i task */}
+      <div style={{ width: '100%', display: 'flex', justifyContent: 'center', margin: '2rem 0' }}>
+        <button
+          className="plus-icon"
+          aria-label="Aggiungi nuovo task"
+          onClick={() => setShowPopup(true)}
+          type="button"
+          style={{ border: 'none', background: 'none', padding: 0 }}
+        >
+          <svg width="32" height="32" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="16" cy="16" r="15" fill="#f0f0f0" stroke="#888" strokeWidth="2" />
+            <line x1="16" y1="10" x2="16" y2="22" stroke="#444" strokeWidth="2" />
+            <line x1="10" y1="16" x2="22" y2="16" stroke="#444" strokeWidth="2" />
+          </svg>
+        </button>
+      </div>
       {showHelp && <HelpModal setShowHelp={setShowHelp} />}
       {showPopup && <NewTaskModal
         newTaskTitle={newTaskTitle}
