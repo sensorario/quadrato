@@ -16,3 +16,19 @@ a.edit-on-github {
 a.task-link {
     color: #000;
 }
+
+.top-bar {
+    width: 100%;
+    background: #e0e0e0;
+    border-bottom: 1px solid #b0b0b0;
+    padding: 4px 0;
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    font-weight: 500;
+    letter-spacing: 0.5px;
+    z-index: 100;
+margin-bottom: 24px;;
+}

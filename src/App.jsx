@@ -83,7 +83,7 @@ function App() {
       <Header setShowHelp={setShowHelp} />
       <TaskList tasks={tasks} onTaskClick={handleClick} />
       {/* Plus icon in basso al centro dopo tutti i task */}
-      <div style={{ width: '100%', display: 'flex', justifyContent: 'center', margin: '2rem 0' }}>
+      <div style={{ width: '100%', display: 'flex', justifyContent: 'center', margin: '24px 0' }}>
         <button
           className="plus-icon"
           aria-label="Aggiungi nuovo task"
