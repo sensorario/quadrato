@@ -1,6 +1,7 @@
+
 const NewTaskModal = ({ newTaskTitle, setNewTaskTitle, handleAddTask, setShowPopup }) => (
-    <div className="modal-overlay">
-        <div className="modal">
+    <div className="modal-overlay" onClick={() => setShowPopup(false)}>
+        <div className="modal" onClick={e => e.stopPropagation()}>
             <h2>Nuovo Task</h2>
             <div className="modal-input-wrapper">
                 <input
