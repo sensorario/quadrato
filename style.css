@@ -1,4 +1,4 @@
-a {
+a.edit-on-github {
     position: absolute; 
     top: 0; 
     right: 0;
@@ -11,4 +11,8 @@ a {
     text-decoration: none; 
     border-bottom-left-radius: 6px; 
     box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+
+a.task-link {
+    color: #000;
 }
