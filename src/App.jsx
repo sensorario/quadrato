@@ -5,6 +5,7 @@ import HelpModal from './components/HelpModal';
 import TaskList from './components/TaskList';
 import { Header } from './components/Header';
 import { STATUS_ENUM, STATUS } from './utils';
+import LogoIcon from './components/LogoIcon';
 
 const initialTasks = [
   { id: 1, title: 'Studiare React', status: STATUS_ENUM.TODO },
@@ -79,44 +80,50 @@ function App() {
   };
 
   return (
-    <div className="app-container">
-      <Header setShowHelp={setShowHelp} />
-      <TaskList tasks={tasks} onTaskClick={handleClick} />
-      {/* Plus icon in basso al centro dopo tutti i task */}
-      <div style={{ width: '100%', display: 'flex', justifyContent: 'center', gap: '1.5rem', margin: '24px 0' }}>
-        <button
-          className="plus-icon"
-          aria-label="Aggiungi nuovo task"
-          onClick={() => setShowPopup(true)}
-          type="button"
-          style={{ border: 'none', background: 'none', padding: 0 }}
-        >
-          <svg width="32" height="32" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
-            <circle cx="16" cy="16" r="15" fill="#f0f0f0" stroke="#888" strokeWidth="2" />
-            <line x1="16" y1="10" x2="16" y2="22" stroke="#444" strokeWidth="2" />
-            <line x1="10" y1="16" x2="22" y2="16" stroke="#444" strokeWidth="2" />
-          </svg>
-        </button>
-        <button
-          className="clean-icon"
-          aria-label="Pulisci task"
-          onClick={() => setTasks(tasks => tasks.filter(t => t.status === STATUS_ENUM.TODO || t.status === STATUS_ENUM.IN_PROGRESS))}
-          type="button"
-          style={{ border: 'none', background: 'none', padding: 0 }}
-        >
-          <svg width="32" height="32" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
-            <circle cx="16" cy="16" r="15" fill="#f0f0f0" stroke="#888" strokeWidth="2" />
-            <line x1="10" y1="10" x2="22" y2="22" stroke="#444" strokeWidth="2" />
-            <line x1="22" y1="10" x2="10" y2="22" stroke="#444" strokeWidth="2" />
-          </svg>
-        </button>
+    <div className="foo">
+
+      <div className="top-bar">
+        <LogoIcon />&nbsp;Quadrato&nbsp; (<a href="https://github.com/sensorario/quadrato" target="_blank" rel="noopener">github</a>)
       </div>
-      {showHelp && <HelpModal setShowHelp={setShowHelp} />}
-      {showPopup && <NewTaskModal
-        newTaskTitle={newTaskTitle}
-        setNewTaskTitle={setNewTaskTitle}
-        handleAddTask={handleAddTask}
-        setShowPopup={setShowPopup} />}
+      <div className="app-container">
+        <Header setShowHelp={setShowHelp} />
+        <TaskList tasks={tasks} onTaskClick={handleClick} />
+        {/* Plus icon in basso al centro dopo tutti i task */}
+        <div style={{ width: '100%', display: 'flex', justifyContent: 'center', gap: '1.5rem', margin: '24px 0' }}>
+          <button
+            className="plus-icon"
+            aria-label="Aggiungi nuovo task"
+            onClick={() => setShowPopup(true)}
+            type="button"
+            style={{ border: 'none', background: 'none', padding: 0 }}
+          >
+            <svg width="32" height="32" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="16" cy="16" r="15" fill="#f0f0f0" stroke="#888" strokeWidth="2" />
+              <line x1="16" y1="10" x2="16" y2="22" stroke="#444" strokeWidth="2" />
+              <line x1="10" y1="16" x2="22" y2="16" stroke="#444" strokeWidth="2" />
+            </svg>
+          </button>
+          <button
+            className="clean-icon"
+            aria-label="Pulisci task"
+            onClick={() => setTasks(tasks => tasks.filter(t => t.status === STATUS_ENUM.TODO || t.status === STATUS_ENUM.IN_PROGRESS))}
+            type="button"
+            style={{ border: 'none', background: 'none', padding: 0 }}
+          >
+            <svg width="32" height="32" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="16" cy="16" r="15" fill="#f0f0f0" stroke="#888" strokeWidth="2" />
+              <line x1="10" y1="10" x2="22" y2="22" stroke="#444" strokeWidth="2" />
+              <line x1="22" y1="10" x2="10" y2="22" stroke="#444" strokeWidth="2" />
+            </svg>
+          </button>
+        </div>
+        {showHelp && <HelpModal setShowHelp={setShowHelp} />}
+        {showPopup && <NewTaskModal
+          newTaskTitle={newTaskTitle}
+          setNewTaskTitle={setNewTaskTitle}
+          handleAddTask={handleAddTask}
+          setShowPopup={setShowPopup} />}
+      </div>
     </div>
   );
 }
