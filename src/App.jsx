@@ -8,11 +8,11 @@ import { STATUS_ENUM, STATUS } from './utils';
 import LogoIcon from './components/LogoIcon';
 
 const initialTasks = [
-  { id: 1, title: 'Studiare React', status: STATUS_ENUM.TODO },
-  { id: 2, title: 'Creare una to-do list', status: STATUS_ENUM.TODO },
-  { id: 3, title: 'Testare Vite', status: STATUS_ENUM.DONE },
-  { id: 4, title: 'Scrivere documentazione', status: STATUS_ENUM.TODO },
-  { id: 5, title: 'Progettare interfaccia', status: STATUS_ENUM.IN_PROGRESS },
+  { id: 1, title: 'Studiare React', longDescription: '', status: STATUS_ENUM.TODO },
+  { id: 2, title: 'Creare una to-do list', longDescription: '', status: STATUS_ENUM.TODO },
+  { id: 3, title: 'Testare Vite', longDescription: '', status: STATUS_ENUM.DONE },
+  { id: 4, title: 'Scrivere documentazione', longDescription: '', status: STATUS_ENUM.TODO },
+  { id: 5, title: 'Progettare interfaccia', longDescription: '', status: STATUS_ENUM.IN_PROGRESS },
 ];
 
 function App() {
@@ -20,6 +20,13 @@ function App() {
     const saved = localStorage.getItem('simplanner-tasks');
     return saved ? JSON.parse(saved) : initialTasks;
   });
+
+  // Funzione per aggiornare la descrizione di un task
+  const updateTaskTitle = (id, value, longValue) => {
+    setTasks(tasks => tasks.map(task =>
+      task.id === id ? { ...task, title: value, longDescription: longValue } : task
+    ));
+  };
   const [showPopup, setShowPopup] = useState(false);
   const [newTaskTitle, setNewTaskTitle] = useState('');
   const [showHelp, setShowHelp] = useState(false);
@@ -72,6 +79,7 @@ function App() {
     const newTask = {
       id: Date.now(),
       title: newTaskTitle,
+      longDescription: '',
       status: 0
     };
     setTasks([...tasks, newTask]);
@@ -98,7 +106,7 @@ function App() {
       </div>
       <div className="app-container">
         <Header setShowHelp={setShowHelp} />
-        <TaskList tasks={tasks} onTaskClick={handleClick} />
+        <TaskList tasks={tasks} onTaskClick={handleClick} updateTaskTitle={updateTaskTitle} />
         {/* Plus icon in basso al centro dopo tutti i task */}
         <div style={{ width: '100%', display: 'flex', justifyContent: 'center', gap: '8px', margin: '24px 0' }}>
           <button
