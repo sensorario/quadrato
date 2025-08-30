@@ -15,7 +15,7 @@ const Toggle = ({ checked, onChange, label }) => (
                     display: "block",
                     width: "100%",
                     height: "100%",
-                    background: checked ? "#acacacff" : "#ccc",
+                    background: checked ? "#666666ff" : "#ccc",
                     borderRadius: "12px",
                     transition: "background 0.2s",
                 }}
@@ -24,22 +24,22 @@ const Toggle = ({ checked, onChange, label }) => (
                 style={{
                     position: "absolute",
                     top: "2px",
-                    left: checked ? "20px" : "2px",
+                    left: checked ? "18px" : "2px",
                     width: "20px",
                     height: "20px",
                     background: "#fff",
                     borderRadius: "50%",
                     boxShadow: "0 2px 6px rgba(0,0,0,0.12)",
-                    border: "2px solid #888",
+                    border: "none",
                     transition: "left 0.2s",
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "center",
                 }}
             >
-                {/* Icona stile grigio */}
+                {/* Icona stile grigio senza bordo */}
                 <svg width="16" height="16" viewBox="0 0 16 16">
-                    <circle cx="8" cy="8" r="7" fill="#f0f0f0" stroke="#888" strokeWidth="2" />
+                    <circle cx="8" cy="8" r="7" fill="#f0f0f0" stroke="none" />
                 </svg>
             </span>
         </span>
