@@ -16,6 +16,8 @@ const initialTasks = [
 ];
 
 function App() {
+  // Stato per filtro progetto
+  const [projectFilter, setProjectFilter] = useState(null);
   // Stato per abilitare/disabilitare la modifica del progetto
   const [projectEditable, setProjectEditableState] = useState(() => {
     const saved = localStorage.getItem('simplanner-project-editable');
@@ -134,8 +136,42 @@ function App() {
           projectEditable={projectEditable}
           setProjectEditable={setProjectEditable}
         />
+        {/* Project filter links */}
+        {projectEditable && tasks.some(t => t.project) && (
+          <div style={{ display: 'flex', gap: '1rem', marginBottom: '1rem', flexWrap: 'wrap' }}>
+            <span
+              style={{ textDecoration: projectFilter === 'ALL' ? 'underline' : 'none', cursor: 'pointer', color: '#444' }}
+              onClick={() => setProjectFilter('ALL')}
+            >
+              tutti i task
+            </span>
+            <span
+              style={{ textDecoration: projectFilter === null ? 'underline' : 'none', cursor: 'pointer', color: '#444' }}
+              onClick={() => setProjectFilter(null)}
+            >
+              nessun progetto
+            </span>
+            {[...new Set(tasks.filter(t => t.project).map(t => t.project))].map(proj => (
+              <span
+                key={proj}
+                style={{ textDecoration: projectFilter === proj ? 'underline' : 'none', cursor: 'pointer', color: '#444' }}
+                onClick={() => setProjectFilter(projectFilter === proj ? null : proj)}
+              >
+                {proj}
+              </span>
+            ))}
+          </div>
+        )}
         <TaskList
-          tasks={tasks}
+          tasks={
+            projectFilter === 'ALL'
+              ? tasks
+              : projectFilter === null
+                ? tasks.filter(t => !t.project)
+                : projectFilter
+                  ? tasks.filter(t => t.project === projectFilter)
+                  : tasks
+          }
           onTaskClick={handleClick}
           updateTaskTitle={updateTaskTitle}
           editable={editable}
