@@ -79,6 +79,13 @@ function App() {
     setShowPopup(false);
   };
 
+  const [showCleanConfirm, setShowCleanConfirm] = useState(false);
+
+  const handleCleanTasks = () => {
+    setTasks(tasks => tasks.filter(t => t.status === STATUS_ENUM.TODO || t.status === STATUS_ENUM.IN_PROGRESS));
+    setShowCleanConfirm(false);
+  };
+
   return (
     <div className="foo">
       <div className="top-bar">
@@ -111,7 +118,7 @@ function App() {
           <button
             className="clean-icon"
             aria-label="Pulisci task"
-            onClick={() => setTasks(tasks => tasks.filter(t => t.status === STATUS_ENUM.TODO || t.status === STATUS_ENUM.IN_PROGRESS))}
+            onClick={() => setShowCleanConfirm(true)}
             type="button"
             style={{ border: 'none', background: 'none', padding: 0 }}
           >
@@ -121,7 +128,7 @@ function App() {
               <line x1="22" y1="10" x2="10" y2="22" stroke="#444" strokeWidth="2" />
             </svg>
           </button>
-          <span style={{ cursor: "pointer" }} onClick={() => setTasks(tasks => tasks.filter(t => t.status === STATUS_ENUM.TODO || t.status === STATUS_ENUM.IN_PROGRESS))}>
+          <span style={{ cursor: "pointer" }} onClick={() => setShowCleanConfirm(true)}>
             pulisci
           </span>
         </div>
@@ -131,6 +138,18 @@ function App() {
           setNewTaskTitle={setNewTaskTitle}
           handleAddTask={handleAddTask}
           setShowPopup={setShowPopup} />}
+        {showCleanConfirm && (
+          <div className="modal-overlay" onClick={() => setShowCleanConfirm(false)}>
+            <div className="modal" onClick={e => e.stopPropagation()}>
+              <h2>Conferma pulizia</h2>
+              <p>Vuoi davvero eliminare tutti i task completati o skippati?</p>
+              <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center', marginTop: '1.5rem' }}>
+                <button className="modal-close-btn" onClick={() => setShowCleanConfirm(false)}>Annulla</button>
+                <button className="modal-close-btn" style={{ background: '#666666', color: '#fff' }} onClick={handleCleanTasks}>Conferma</button>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
