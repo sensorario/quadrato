@@ -8,14 +8,24 @@ import { STATUS_ENUM, STATUS } from './utils';
 import LogoIcon from './components/LogoIcon';
 
 const initialTasks = [
-  { id: 1, title: 'Studiare React', longDescription: '', status: STATUS_ENUM.TODO },
-  { id: 2, title: 'Creare una to-do list', longDescription: '', status: STATUS_ENUM.TODO },
-  { id: 3, title: 'Testare Vite', longDescription: '', status: STATUS_ENUM.DONE },
-  { id: 4, title: 'Scrivere documentazione', longDescription: '', status: STATUS_ENUM.TODO },
-  { id: 5, title: 'Progettare interfaccia', longDescription: '', status: STATUS_ENUM.IN_PROGRESS },
+  { id: 1, title: 'Studiare React', longDescription: '', project: '', status: STATUS_ENUM.TODO },
+  { id: 2, title: 'Creare una to-do list', longDescription: '', project: '', status: STATUS_ENUM.TODO },
+  { id: 3, title: 'Testare Vite', longDescription: '', project: '', status: STATUS_ENUM.DONE },
+  { id: 4, title: 'Scrivere documentazione', longDescription: '', project: '', status: STATUS_ENUM.TODO },
+  { id: 5, title: 'Progettare interfaccia', longDescription: '', project: '', status: STATUS_ENUM.IN_PROGRESS },
 ];
 
 function App() {
+  // Stato per abilitare/disabilitare la modifica del progetto
+  const [projectEditable, setProjectEditableState] = useState(() => {
+    const saved = localStorage.getItem('simplanner-project-editable');
+    return saved ? JSON.parse(saved) : false;
+  });
+
+  const setProjectEditable = (val) => {
+    setProjectEditableState(val);
+    localStorage.setItem('simplanner-project-editable', JSON.stringify(val));
+  };
   // Stato per abilitare/disabilitare la modifica dei task
   const [editable, setEditableState] = useState(() => {
     const saved = localStorage.getItem('simplanner-editable');
@@ -33,9 +43,9 @@ function App() {
   });
 
   // Funzione per aggiornare la descrizione di un task
-  const updateTaskTitle = (id, value, longValue) => {
+  const updateTaskTitle = (id, value, longValue, projectValue) => {
     setTasks(tasks => tasks.map(task =>
-      task.id === id ? { ...task, title: value, longDescription: longValue } : task
+      task.id === id ? { ...task, title: value, longDescription: longValue, project: projectValue ?? task.project } : task
     ));
   };
   const [showPopup, setShowPopup] = useState(false);
@@ -91,6 +101,7 @@ function App() {
       id: Date.now(),
       title: newTaskTitle,
       longDescription: '',
+      project: '',
       status: 0
     };
     setTasks([...tasks, newTask]);
@@ -116,8 +127,20 @@ function App() {
         </div>
       </div>
       <div className="app-container">
-        <Header setShowHelp={setShowHelp} editable={editable} setEditable={setEditable} />
-        <TaskList tasks={tasks} onTaskClick={handleClick} updateTaskTitle={updateTaskTitle} editable={editable} />
+        <Header
+          setShowHelp={setShowHelp}
+          editable={editable}
+          setEditable={setEditable}
+          projectEditable={projectEditable}
+          setProjectEditable={setProjectEditable}
+        />
+        <TaskList
+          tasks={tasks}
+          onTaskClick={handleClick}
+          updateTaskTitle={updateTaskTitle}
+          editable={editable}
+          projectEditable={projectEditable}
+        />
         {/* Plus icon in basso al centro dopo tutti i task */}
         <div style={{ width: '100%', display: 'flex', justifyContent: 'center', gap: '8px', margin: '24px 0' }}>
           <button

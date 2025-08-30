@@ -3,7 +3,7 @@ import Toggle from "./Toggle";
 import GearIcon from "./GearIcon";
 import HelpIcon from "./HelpIcon";
 
-export const Header = ({ setShowHelp, editable, setEditable }) => {
+export const Header = ({ setShowHelp, editable, setEditable, projectEditable, setProjectEditable }) => {
     const [showConfig, setShowConfig] = useState(false);
     return (
         <>
@@ -32,6 +32,11 @@ export const Header = ({ setShowHelp, editable, setEditable }) => {
                             checked={editable}
                             onChange={setEditable}
                             label={editable ? "Modifica task: attivo" : "Modifica task: disattivo"}
+                        />
+                        <Toggle
+                            checked={projectEditable}
+                            onChange={setProjectEditable}
+                            label={projectEditable ? "Modifica progetto: attivo" : "Modifica progetto: disattivo"}
                         />
                     </div>
                 </div>

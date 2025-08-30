@@ -1,7 +1,7 @@
 
 import React from "react";
 
-const EditTaskModal = ({ value, setValue, longValue, setLongValue, onClose, onSave }) => (
+const EditTaskModal = ({ value, setValue, longValue, setLongValue, projectValue, setProjectValue, onClose, onSave, projectEditable }) => (
     <div className="modal-overlay" onClick={onClose}>
         <div className="modal" onClick={e => e.stopPropagation()}>
             <h2>Modifica task</h2>
@@ -23,6 +23,18 @@ const EditTaskModal = ({ value, setValue, longValue, setLongValue, onClose, onSa
                 onChange={e => setLongValue(e.target.value)}
                 style={{ width: '90%', minHeight: '60px', marginBottom: '1rem', padding: '0.75rem 1rem', borderRadius: '8px', fontSize: '1rem', border: '1px solid #d1d1d1', resize: 'vertical' }}
             />
+            {projectEditable && (
+                <>
+                    <label style={{ fontWeight: 500, marginBottom: 4, display: 'block' }}>Progetto</label>
+                    <input
+                        type="text"
+                        value={projectValue}
+                        onChange={e => setProjectValue(e.target.value)}
+                        style={{ width: '90%', marginBottom: '1rem', padding: '0.75rem 1rem', borderRadius: '8px', fontSize: '1rem', border: '1px solid #d1d1d1' }}
+                        placeholder="Modifica progetto..."
+                    />
+                </>
+            )}
             <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center' }}>
                 <button className="modal-close-btn" onClick={onClose}>Annulla</button>
                 <button className="modal-close-btn" style={{ background: '#666', color: '#fff' }} onClick={onSave}>Salva</button>
