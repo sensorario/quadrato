@@ -17,7 +17,16 @@ const initialTasks = [
 
 function App() {
   // Stato per abilitare/disabilitare la modifica dei task
-  const [editable, setEditable] = useState(true);
+  const [editable, setEditableState] = useState(() => {
+    const saved = localStorage.getItem('simplanner-editable');
+    return saved ? JSON.parse(saved) : true;
+  });
+
+  // Wrapper per aggiornare stato e localStorage
+  const setEditable = (val) => {
+    setEditableState(val);
+    localStorage.setItem('simplanner-editable', JSON.stringify(val));
+  };
   const [tasks, setTasks] = useState(() => {
     const saved = localStorage.getItem('simplanner-tasks');
     return saved ? JSON.parse(saved) : initialTasks;
@@ -107,8 +116,8 @@ function App() {
         </div>
       </div>
       <div className="app-container">
-  <Header setShowHelp={setShowHelp} editable={editable} setEditable={setEditable} />
-  <TaskList tasks={tasks} onTaskClick={handleClick} updateTaskTitle={updateTaskTitle} editable={editable} />
+        <Header setShowHelp={setShowHelp} editable={editable} setEditable={setEditable} />
+        <TaskList tasks={tasks} onTaskClick={handleClick} updateTaskTitle={updateTaskTitle} editable={editable} />
         {/* Plus icon in basso al centro dopo tutti i task */}
         <div style={{ width: '100%', display: 'flex', justifyContent: 'center', gap: '8px', margin: '24px 0' }}>
           <button

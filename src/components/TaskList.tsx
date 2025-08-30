@@ -58,16 +58,16 @@ export const TaskList = ({ tasks, onTaskClick, updateTaskTitle, editable }) => {
             <ul className="task-list">
                 {tasks.map(handler)}
             </ul>
-                {editable && editId !== null && (
-                    <EditTaskModal
-                        value={editValue}
-                        setValue={setEditValue}
-                        longValue={editLongValue}
-                        setLongValue={setEditLongValue}
-                        onClose={() => setEditId(null)}
-                        onSave={handleEditSave}
-                    />
-                )}
+            {editable && editId !== null && (
+                <EditTaskModal
+                    value={editValue}
+                    setValue={setEditValue}
+                    longValue={editLongValue}
+                    setLongValue={setEditLongValue}
+                    onClose={() => setEditId(null)}
+                    onSave={handleEditSave}
+                />
+            )}
         </>
     );
 }
