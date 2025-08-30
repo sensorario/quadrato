@@ -105,7 +105,9 @@ function App() {
               <line x1="10" y1="16" x2="22" y2="16" stroke="#444" strokeWidth="2" />
             </svg>
           </button>
-          aggiungi
+          <span style={{ cursor: "pointer" }} onClick={() => setShowPopup(true)}>
+            aggiungi
+          </span>
           <button
             className="clean-icon"
             aria-label="Pulisci task"
@@ -119,7 +121,9 @@ function App() {
               <line x1="22" y1="10" x2="10" y2="22" stroke="#444" strokeWidth="2" />
             </svg>
           </button>
-          pulisci
+          <span style={{ cursor: "pointer" }} onClick={() => setTasks(tasks => tasks.filter(t => t.status === STATUS_ENUM.TODO || t.status === STATUS_ENUM.IN_PROGRESS))}>
+            pulisci
+          </span>
         </div>
         {showHelp && <HelpModal setShowHelp={setShowHelp} />}
         {showPopup && <NewTaskModal
