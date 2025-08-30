@@ -11,15 +11,17 @@ export const Header = ({ setShowHelp }) => {
             <div className="header-bar">
                 <h1 className="header-title">To do list</h1>
                 <div className="header-icons">
-                    <span
-                        className="help-icon"
-                        title="Shortcut info"
-                        onClick={() => setShowHelp(true)}
-                    >
+                    <span className="help-icon" title="Shortcut info" onClick={() => setShowHelp(true)}>
                         <HelpIcon />
+                    </span>
+                    <span onClick={() => setShowHelp(true)} style={{ cursor: "pointer" }}>
+                        help
                     </span>
                     <span onClick={() => setShowConfig(true)} style={{ cursor: "pointer" }}>
                         <GearIcon />
+                    </span>
+                    <span onClick={() => setShowConfig(true)} style={{ cursor: "pointer" }}>
+                        config
                     </span>
                 </div>
             </div>

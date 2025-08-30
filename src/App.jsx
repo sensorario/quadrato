@@ -81,7 +81,6 @@ function App() {
 
   return (
     <div className="foo">
-
       <div className="top-bar">
         <LogoIcon />
         <a href="https://github.com/sensorario/quadrato" target="_blank" rel="noopener">
@@ -92,7 +91,7 @@ function App() {
         <Header setShowHelp={setShowHelp} />
         <TaskList tasks={tasks} onTaskClick={handleClick} />
         {/* Plus icon in basso al centro dopo tutti i task */}
-        <div style={{ width: '100%', display: 'flex', justifyContent: 'center', gap: '1.5rem', margin: '24px 0' }}>
+        <div style={{ width: '100%', display: 'flex', justifyContent: 'center', gap: '8px', margin: '24px 0' }}>
           <button
             className="plus-icon"
             aria-label="Aggiungi nuovo task"
@@ -106,6 +105,7 @@ function App() {
               <line x1="10" y1="16" x2="22" y2="16" stroke="#444" strokeWidth="2" />
             </svg>
           </button>
+          aggiungi
           <button
             className="clean-icon"
             aria-label="Pulisci task"
@@ -119,6 +119,7 @@ function App() {
               <line x1="22" y1="10" x2="10" y2="22" stroke="#444" strokeWidth="2" />
             </svg>
           </button>
+          pulisci
         </div>
         {showHelp && <HelpModal setShowHelp={setShowHelp} />}
         {showPopup && <NewTaskModal
