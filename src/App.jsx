@@ -83,7 +83,10 @@ function App() {
     <div className="foo">
 
       <div className="top-bar">
-        <LogoIcon />&nbsp;Quadrato&nbsp; (<a href="https://github.com/sensorario/quadrato" target="_blank" rel="noopener">github</a>)
+        <LogoIcon />
+        <a href="https://github.com/sensorario/quadrato" target="_blank" rel="noopener">
+          &nbsp;Quadrato
+        </a>
       </div>
       <div className="app-container">
         <Header setShowHelp={setShowHelp} />
