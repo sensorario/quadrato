@@ -88,11 +88,13 @@ function App() {
 
   return (
     <div className="foo">
-      <div className="top-bar">
-        <LogoIcon />
-        <a href="https://github.com/sensorario/quadrato" target="_blank" rel="noopener">
-          &nbsp;Quadrato
-        </a>
+      <div className="top-bar" style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+        {/* Status icons before logo and title */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+          {STATUS.map((icon, idx) => (
+            <span key={idx}>{icon}</span>
+          ))}
+        </div>
       </div>
       <div className="app-container">
         <Header setShowHelp={setShowHelp} />
