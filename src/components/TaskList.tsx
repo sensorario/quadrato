@@ -3,7 +3,7 @@ import { STATUS } from "../utils";
 import EditIcon from "./EditIcon";
 import EditTaskModal from "./EditTaskModal";
 
-export const TaskList = ({ tasks, onTaskClick, updateTaskTitle }) => {
+export const TaskList = ({ tasks, onTaskClick, updateTaskTitle, editable }) => {
 
     const [hoveredId, setHoveredId] = useState(null);
     const [editId, setEditId] = useState(null);
@@ -44,7 +44,7 @@ export const TaskList = ({ tasks, onTaskClick, updateTaskTitle }) => {
                     onClick={() => onTaskClick(task.id)}>
                     <strong>{STATUS[task.status]}</strong> - <span dangerouslySetInnerHTML={{ __html: title }} />
                 </span>
-                {hoveredId === task.id && (
+                {editable && hoveredId === task.id && (
                     <span style={{ marginLeft: '1rem', cursor: 'pointer' }} title="Modifica" onClick={e => { e.stopPropagation(); handleEditClick(task); }}>
                         <EditIcon />
                     </span>
@@ -58,16 +58,16 @@ export const TaskList = ({ tasks, onTaskClick, updateTaskTitle }) => {
             <ul className="task-list">
                 {tasks.map(handler)}
             </ul>
-            {editId !== null && (
-                <EditTaskModal
-                    value={editValue}
-                    setValue={setEditValue}
-                    longValue={editLongValue}
-                    setLongValue={setEditLongValue}
-                    onClose={() => setEditId(null)}
-                    onSave={handleEditSave}
-                />
-            )}
+                {editable && editId !== null && (
+                    <EditTaskModal
+                        value={editValue}
+                        setValue={setEditValue}
+                        longValue={editLongValue}
+                        setLongValue={setEditLongValue}
+                        onClose={() => setEditId(null)}
+                        onSave={handleEditSave}
+                    />
+                )}
         </>
     );
 }
