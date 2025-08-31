@@ -62,7 +62,14 @@ function App() {
   });
 
   // Stato per lo slider dei giorni
-  const [daysRange, setDaysRange] = useState(7);
+  const [daysRange, setDaysRange] = useState(() => {
+    const saved = localStorage.getItem('simplanner-days-range');
+    return saved ? JSON.parse(saved) : 7;
+  });
+
+  useEffect(() => {
+    localStorage.setItem('simplanner-days-range', JSON.stringify(daysRange));
+  }, [daysRange]);
 
   // Funzione per aggiornare la descrizione di un task
   const updateTaskTitle = (id, value, longValue, projectValue, dateTimeValue) => {
