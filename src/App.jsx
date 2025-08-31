@@ -28,6 +28,10 @@ function App() {
     return saved ? JSON.parse(saved) : false;
   });
 
+  useEffect(() => {
+    localStorage.setItem('simplanner-show-expired', JSON.stringify(showExpired));
+  }, [showExpired]);
+
   const setDateTimeEnabled = (val) => {
     setDateTimeEnabledState(val);
     localStorage.setItem('simplanner-dateTime-enabled', JSON.stringify(val));
