@@ -27,7 +27,14 @@ function App() {
     localStorage.setItem('simplanner-dateTime-enabled', JSON.stringify(val));
   };
   // Stato per filtro progetto
-  const [projectFilter, setProjectFilter] = useState(null);
+  const [projectFilter, setProjectFilterState] = useState(() => {
+    const saved = localStorage.getItem('simplanner-project-filter');
+    return saved ? JSON.parse(saved) : null;
+  });
+  const setProjectFilter = (val) => {
+    setProjectFilterState(val);
+    localStorage.setItem('simplanner-project-filter', JSON.stringify(val));
+  };
   // Stato per abilitare/disabilitare la modifica del progetto
   const [projectEditable, setProjectEditableState] = useState(() => {
     const saved = localStorage.getItem('simplanner-project-editable');
@@ -73,8 +80,8 @@ function App() {
   const [showHelp, setShowHelp] = useState(false);
 
   useEffect(() => {
-    localStorage.setItem('simplanner-tasks', JSON.stringify(tasks));
-  }, [tasks]);
+    localStorage.setItem('simplanner-project-filter', JSON.stringify(projectFilter));
+  }, [projectFilter]);
 
   useEffect(() => {
     const handleKeyDown = (e) => {
