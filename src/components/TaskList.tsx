@@ -47,6 +47,7 @@ export const TaskList = ({ tasks, onTaskClick, updateTaskTitle, editable, projec
                 hour12: false
             }).replace(/\//g, '-');
         };
+        const isMobile = /iPhone/i.test(navigator.userAgent);
         return (
             <li
                 key={task.id}
@@ -74,7 +75,7 @@ export const TaskList = ({ tasks, onTaskClick, updateTaskTitle, editable, projec
                     )}
                     {' '}<span dangerouslySetInnerHTML={{ __html: title }} />
                 </span>
-                {editable && hoveredId === task.id && (
+                {editable && (isMobile || hoveredId === task.id) && (
                     <span style={{ marginLeft: '1rem', cursor: 'pointer' }} title="Modifica" onClick={e => { e.stopPropagation(); handleEditClick(task); }}>
                         <EditIcon />
                     </span>
