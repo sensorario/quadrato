@@ -44,7 +44,13 @@ export const TaskList = ({ tasks, onTaskClick, updateTaskTitle, editable, projec
                 style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}
             >
                 <span
-                    style={{ flex: 1 }}
+                    style={{
+                        flex: 1,
+                        whiteSpace: 'nowrap',
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis',
+                        minWidth: 0
+                    }}
                     onClick={() => onTaskClick(task.id)}>
                     <strong>{STATUS[task.status]}</strong>
                     {projectEditable && task.project && (
