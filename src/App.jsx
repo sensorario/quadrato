@@ -61,19 +61,26 @@ function App() {
     return saved ? JSON.parse(saved) : initialTasks;
   });
 
+  // Stato per lo slider dei giorni
+  const [daysRange, setDaysRange] = useState(7);
+
   // Funzione per aggiornare la descrizione di un task
   const updateTaskTitle = (id, value, longValue, projectValue, dateTimeValue) => {
-    setTasks(tasks => tasks.map(task =>
-      task.id === id
-        ? {
-          ...task,
-          title: value,
-          longDescription: longValue,
-          project: projectValue ?? task.project,
-          dateTime: dateTimeValue ?? task.dateTime
-        }
-        : task
-    ));
+    setTasks(tasks => {
+      const updated = tasks.map(task =>
+        task.id === id
+          ? {
+            ...task,
+            title: value,
+            longDescription: longValue,
+            project: projectValue ?? task.project,
+            dateTime: dateTimeValue ?? task.dateTime
+          }
+          : task
+      );
+      localStorage.setItem('simplanner-tasks', JSON.stringify(updated));
+      return updated;
+    });
   };
   const [showPopup, setShowPopup] = useState(false);
   const [newTaskTitle, setNewTaskTitle] = useState('');
@@ -157,6 +164,19 @@ function App() {
         </div>
       </div>
       <div className="app-container">
+        {/* Slider per selezionare il range di giorni */}
+        <div style={{ margin: '16px 0', width: '100%', display: 'flex', alignItems: 'center' }}>
+          <input
+            type="range"
+            id="daysRange"
+            min={0}
+            max={365}
+            value={daysRange}
+            onChange={e => setDaysRange(Number(e.target.value))}
+            style={{ marginLeft: '12px', verticalAlign: 'middle', width: '100%' }}
+          />
+          <span style={{ marginLeft: '8px', fontWeight: 500 }}>{daysRange}</span>
+        </div>
         <Header
           setShowHelp={setShowHelp}
           editable={editable}
@@ -192,16 +212,28 @@ function App() {
             ))}
           </div>
         )}
+        {/* Filtro task per range di giorni e progetto */}
         <TaskList
-          tasks={
-            projectFilter === 'ALL'
-              ? tasks
-              : projectFilter === null
-                ? tasks.filter(t => !t.project)
-                : projectFilter
-                  ? tasks.filter(t => t.project === projectFilter)
-                  : tasks
-          }
+          tasks={(() => {
+            // Filtra per progetto
+            let filtered =
+              projectFilter === 'ALL'
+                ? tasks
+                : projectFilter === null
+                  ? tasks.filter(t => !t.project)
+                  : projectFilter
+                    ? tasks.filter(t => t.project === projectFilter)
+                    : tasks;
+            // Filtra per range di giorni
+            const now = new Date();
+            const end = new Date(now);
+            end.setDate(now.getDate() + daysRange);
+            return filtered.filter(t => {
+              if (!t.dateTime) return true; // task senza scadenza
+              const dt = new Date(t.dateTime);
+              return dt >= now && dt <= end;
+            });
+          })()}
           onTaskClick={handleClick}
           updateTaskTitle={updateTaskTitle}
           editable={editable}
