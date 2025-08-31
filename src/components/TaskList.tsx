@@ -35,6 +35,7 @@ export const TaskList = ({ tasks, onTaskClick, updateTaskTitle, editable, projec
                 return `<a href="${url}" class="task-link" target="_blank" rel="noopener noreferrer">${url}</a>`;
             });
         }
+        const isExpired = dateTimeEnabled && task.dateTime && new Date(task.dateTime) < new Date();
         return (
             <li
                 key={task.id}
@@ -49,17 +50,18 @@ export const TaskList = ({ tasks, onTaskClick, updateTaskTitle, editable, projec
                         whiteSpace: 'nowrap',
                         overflow: 'hidden',
                         textOverflow: 'ellipsis',
-                        minWidth: 0
+                        minWidth: 0,
+                        color: isExpired ? 'red' : undefined
                     }}
                     onClick={() => onTaskClick(task.id)}>
                     <strong>{STATUS[task.status]}</strong>
-                    {projectEditable && task.project && (
-                        <span style={{ margin: '0 4px', color: '#666' }}>({task.project})</span>
-                    )}
                     {dateTimeEnabled && task.dateTime && (
                         <span style={{ margin: '0 4px', color: '#666' }}>[{new Date(task.dateTime).toLocaleString()}]</span>
                     )}
-                    {' - '}<span dangerouslySetInnerHTML={{ __html: title }} />
+                    {projectEditable && task.project && (
+                        <span style={{ margin: '0 4px', color: '#666' }}>({task.project})</span>
+                    )}
+                    {' '}<span dangerouslySetInnerHTML={{ __html: title }} />
                 </span>
                 {editable && hoveredId === task.id && (
                     <span style={{ marginLeft: '1rem', cursor: 'pointer' }} title="Modifica" onClick={e => { e.stopPropagation(); handleEditClick(task); }}>
