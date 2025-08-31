@@ -7,6 +7,11 @@ export const HelpModal = ({ setShowHelp }) => ((
             onClick={e => e.stopPropagation()}
         >
             <h2><HelpIcon /> Help</h2>
+            <h3 style={{ marginTop: '2rem', marginBottom: '0.5rem' }}>Colori:</h3>
+            <ul style={{ marginTop: '1rem', marginBottom: '1rem' }}>
+                <li><strong>nero</strong>: I task normali</li>
+                <li><strong style={{ color: 'red' }}>rosso</strong>: I task scaduti</li>
+            </ul>
             <h3 style={{ marginTop: '2rem', marginBottom: '0.5rem' }}>Scorciatorie:</h3>
             <ul style={{ marginTop: '1rem', marginBottom: '1rem' }}>
                 <li><strong>Ctrl+H</strong>: Mostra questa finestra</li>
