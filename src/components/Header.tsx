@@ -3,7 +3,7 @@ import Toggle from "./Toggle";
 import GearIcon from "./GearIcon";
 import HelpIcon from "./HelpIcon";
 
-export const Header = ({ setShowHelp, editable, setEditable, projectEditable, setProjectEditable }) => {
+export const Header = ({ setShowHelp, editable, setEditable, projectEditable, setProjectEditable, dateTimeEnabled, setDateTimeEnabled }) => {
     const [showConfig, setShowConfig] = useState(false);
     return (
         <>
@@ -31,12 +31,17 @@ export const Header = ({ setShowHelp, editable, setEditable, projectEditable, se
                         <Toggle
                             checked={editable}
                             onChange={setEditable}
-                            label={editable ? "Modifica task: attivo" : "Modifica task: disattivo"}
+                            label={editable ? "Modifica task attivata" : "Modifica task non attiva"}
                         />
                         <Toggle
                             checked={projectEditable}
                             onChange={setProjectEditable}
-                            label={projectEditable ? "Modifica progetto: attivo" : "Modifica progetto: disattivo"}
+                            label={projectEditable ? "Modifica progetto attivata" : "Modifica progetto non attiva"}
+                        />
+                        <Toggle
+                            checked={dateTimeEnabled}
+                            onChange={setDateTimeEnabled}
+                            label={dateTimeEnabled ? "Modifica data-ora attivata" : "Modifica data-ora non attivata"}
                         />
                     </div>
                 </div>

@@ -8,14 +8,24 @@ import { STATUS_ENUM, STATUS } from './utils';
 import LogoIcon from './components/LogoIcon';
 
 const initialTasks = [
-  { id: 1, title: 'Studiare React', longDescription: '', project: '', status: STATUS_ENUM.TODO },
-  { id: 2, title: 'Creare una to-do list', longDescription: '', project: '', status: STATUS_ENUM.TODO },
-  { id: 3, title: 'Testare Vite', longDescription: '', project: '', status: STATUS_ENUM.DONE },
-  { id: 4, title: 'Scrivere documentazione', longDescription: '', project: '', status: STATUS_ENUM.TODO },
-  { id: 5, title: 'Progettare interfaccia', longDescription: '', project: '', status: STATUS_ENUM.IN_PROGRESS },
+  { id: 1, title: 'Studiare React', longDescription: '', project: '', dateTime: '', status: STATUS_ENUM.TODO },
+  { id: 2, title: 'Creare una to-do list', longDescription: '', project: '', dateTime: '', status: STATUS_ENUM.TODO },
+  { id: 3, title: 'Testare Vite', longDescription: '', project: '', dateTime: '', status: STATUS_ENUM.DONE },
+  { id: 4, title: 'Scrivere documentazione', longDescription: '', project: '', dateTime: '', status: STATUS_ENUM.TODO },
+  { id: 5, title: 'Progettare interfaccia', longDescription: '', project: '', dateTime: '', status: STATUS_ENUM.IN_PROGRESS },
 ];
 
 function App() {
+  // Stato per abilitare/disabilitare il campo data-ora nei task
+  const [dateTimeEnabled, setDateTimeEnabledState] = useState(() => {
+    const saved = localStorage.getItem('simplanner-dateTime-enabled');
+    return saved ? JSON.parse(saved) : false;
+  });
+
+  const setDateTimeEnabled = (val) => {
+    setDateTimeEnabledState(val);
+    localStorage.setItem('simplanner-dateTime-enabled', JSON.stringify(val));
+  };
   // Stato per filtro progetto
   const [projectFilter, setProjectFilter] = useState(null);
   // Stato per abilitare/disabilitare la modifica del progetto
@@ -45,9 +55,17 @@ function App() {
   });
 
   // Funzione per aggiornare la descrizione di un task
-  const updateTaskTitle = (id, value, longValue, projectValue) => {
+  const updateTaskTitle = (id, value, longValue, projectValue, dateTimeValue) => {
     setTasks(tasks => tasks.map(task =>
-      task.id === id ? { ...task, title: value, longDescription: longValue, project: projectValue ?? task.project } : task
+      task.id === id
+        ? {
+          ...task,
+          title: value,
+          longDescription: longValue,
+          project: projectValue ?? task.project,
+          dateTime: dateTimeValue ?? task.dateTime
+        }
+        : task
     ));
   };
   const [showPopup, setShowPopup] = useState(false);
@@ -104,6 +122,7 @@ function App() {
       title: newTaskTitle,
       longDescription: '',
       project: '',
+      dateTime: '',
       status: 0
     };
     setTasks([...tasks, newTask]);
@@ -135,6 +154,8 @@ function App() {
           setEditable={setEditable}
           projectEditable={projectEditable}
           setProjectEditable={setProjectEditable}
+          dateTimeEnabled={dateTimeEnabled}
+          setDateTimeEnabled={setDateTimeEnabled}
         />
         {/* Project filter links */}
         {projectEditable && tasks.some(t => t.project) && (
@@ -176,6 +197,7 @@ function App() {
           updateTaskTitle={updateTaskTitle}
           editable={editable}
           projectEditable={projectEditable}
+          dateTimeEnabled={dateTimeEnabled}
         />
         {/* Plus icon in basso al centro dopo tutti i task */}
         <div style={{ width: '100%', display: 'flex', justifyContent: 'center', gap: '8px', margin: '24px 0' }}>

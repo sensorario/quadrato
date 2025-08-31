@@ -1,7 +1,7 @@
 
 import React from "react";
 
-const EditTaskModal = ({ value, setValue, longValue, setLongValue, projectValue, setProjectValue, onClose, onSave, projectEditable }) => (
+const EditTaskModal = ({ value, setValue, longValue, setLongValue, projectValue, setProjectValue, dateTimeValue, setDateTimeValue, onClose, onSave, projectEditable, dateTimeEnabled }) => (
     <div className="modal-overlay" onClick={onClose}>
         <div className="modal" onClick={e => e.stopPropagation()}>
             <h2>Modifica task</h2>
@@ -32,6 +32,17 @@ const EditTaskModal = ({ value, setValue, longValue, setLongValue, projectValue,
                         onChange={e => setProjectValue(e.target.value)}
                         style={{ width: '90%', marginBottom: '1rem', padding: '0.75rem 1rem', borderRadius: '8px', fontSize: '1rem', border: '1px solid #d1d1d1' }}
                         placeholder="Modifica progetto..."
+                    />
+                </>
+            )}
+            {dateTimeEnabled && (
+                <>
+                    <label style={{ fontWeight: 500, marginBottom: 4, display: 'block' }}>Scadenza</label>
+                    <input
+                        type="datetime-local"
+                        value={dateTimeValue}
+                        onChange={e => setDateTimeValue(e.target.value)}
+                        style={{ width: '90%', marginBottom: '1rem', padding: '0.75rem 1rem', borderRadius: '8px', fontSize: '1rem', border: '1px solid #d1d1d1' }}
                     />
                 </>
             )}
