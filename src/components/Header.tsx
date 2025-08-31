@@ -31,17 +31,17 @@ export const Header = ({ setShowHelp, editable, setEditable, projectEditable, se
                         <Toggle
                             checked={editable}
                             onChange={setEditable}
-                            label={editable ? "Modifica task attivata" : "Modifica task non attiva"}
+                            label={"Modifica"}
                         />
                         <Toggle
                             checked={projectEditable}
                             onChange={setProjectEditable}
-                            label={projectEditable ? "Modifica progetto attivata" : "Modifica progetto non attiva"}
+                            label={"Raggruppa"}
                         />
                         <Toggle
                             checked={dateTimeEnabled}
                             onChange={setDateTimeEnabled}
-                            label={dateTimeEnabled ? "Modifica data-ora attivata" : "Modifica data-ora non attivata"}
+                            label={"Con scadenza"}
                         />
                     </div>
                 </div>
