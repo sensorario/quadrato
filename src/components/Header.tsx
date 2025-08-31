@@ -3,7 +3,7 @@ import Toggle from "./Toggle";
 import GearIcon from "./GearIcon";
 import HelpIcon from "./HelpIcon";
 
-export const Header = ({ setShowHelp, editable, setEditable, projectEditable, setProjectEditable, dateTimeEnabled, setDateTimeEnabled, showExpired, setShowExpired }) => {
+export const Header = ({ setShowHelp, editable, setEditable, projectEditable, setProjectEditable, dateTimeEnabled, setDateTimeEnabled, showExpired, setShowExpired, daysRange, setDaysRange }) => {
     const [showConfig, setShowConfig] = useState(false);
     return (
         <>
@@ -49,6 +49,18 @@ export const Header = ({ setShowHelp, editable, setEditable, projectEditable, se
                             onChange={setShowExpired}
                             label={"Mostra scaduti"}
                         />
+                        <div style={{ margin: '16px 0', width: '100%', display: 'flex', alignItems: 'center' }}>
+                            <input
+                                type="range"
+                                id="daysRange"
+                                min={0}
+                                max={365}
+                                value={daysRange}
+                                onChange={e => setDaysRange(Number(e.target.value))}
+                                style={{ marginLeft: '12px', verticalAlign: 'middle', width: '100%' }}
+                            />
+                            <span style={{ marginLeft: '8px', fontWeight: 500 }}>{daysRange} giorni</span>
+                        </div>
                     </div>
                 </div>
             )}

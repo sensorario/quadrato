@@ -181,19 +181,6 @@ function App() {
         </div>
       </div>
       <div className="app-container">
-        {/* Slider per selezionare il range di giorni */}
-        <div style={{ margin: '16px 0', width: '100%', display: 'flex', alignItems: 'center' }}>
-          <input
-            type="range"
-            id="daysRange"
-            min={0}
-            max={365}
-            value={daysRange}
-            onChange={e => setDaysRange(Number(e.target.value))}
-            style={{ marginLeft: '12px', verticalAlign: 'middle', width: '100%' }}
-          />
-          <span style={{ marginLeft: '8px', fontWeight: 500 }}>{daysRange}</span>
-        </div>
         <Header
           setShowHelp={setShowHelp}
           editable={editable}
@@ -204,6 +191,8 @@ function App() {
           setDateTimeEnabled={setDateTimeEnabled}
           showExpired={showExpired}
           setShowExpired={setShowExpired}
+          daysRange={daysRange}
+          setDaysRange={setDaysRange}
         />
         {/* Project filter links */}
         {projectEditable && tasks.some(t => t.project) && (
