@@ -140,7 +140,9 @@ function App() {
   const [showCleanConfirm, setShowCleanConfirm] = useState(false);
 
   const handleCleanTasks = () => {
-    setTasks(tasks => tasks.filter(t => t.status === STATUS_ENUM.TODO || t.status === STATUS_ENUM.IN_PROGRESS));
+    const updatedTasks = tasks.filter(t => t.status === STATUS_ENUM.TODO || t.status === STATUS_ENUM.IN_PROGRESS);
+    setTasks(updatedTasks);
+    localStorage.setItem('simplanner-tasks', JSON.stringify(updatedTasks));
     setShowCleanConfirm(false);
   };
 
