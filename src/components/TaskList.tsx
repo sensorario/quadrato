@@ -36,6 +36,17 @@ export const TaskList = ({ tasks, onTaskClick, updateTaskTitle, editable, projec
             });
         }
         const isExpired = dateTimeEnabled && task.dateTime && new Date(task.dateTime) < new Date();
+        const formatDate = (dateStr) => {
+            if (!dateStr) return '';
+            const d = new Date(dateStr);
+            return d.toLocaleString('it-IT', {
+                month: '2-digit',
+                day: '2-digit',
+                hour: '2-digit',
+                minute: '2-digit',
+                hour12: false
+            }).replace(/\//g, '-');
+        };
         return (
             <li
                 key={task.id}
@@ -56,7 +67,7 @@ export const TaskList = ({ tasks, onTaskClick, updateTaskTitle, editable, projec
                     onClick={() => onTaskClick(task.id)}>
                     <strong>{STATUS[task.status]}</strong>
                     {dateTimeEnabled && task.dateTime && (
-                        <span style={{ margin: '0 4px', color: '#666' }}>[{new Date(task.dateTime).toLocaleString()}]</span>
+                        <span style={{ margin: '0 4px', color: '#666' }}>[{formatDate(task.dateTime)}]</span>
                     )}
                     {projectEditable && task.project && (
                         <span style={{ margin: '0 4px', color: '#666' }}>({task.project})</span>
