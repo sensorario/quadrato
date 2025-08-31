@@ -3,7 +3,7 @@ import Toggle from "./Toggle";
 import GearIcon from "./GearIcon";
 import HelpIcon from "./HelpIcon";
 
-export const Header = ({ setShowHelp, editable, setEditable, projectEditable, setProjectEditable, dateTimeEnabled, setDateTimeEnabled }) => {
+export const Header = ({ setShowHelp, editable, setEditable, projectEditable, setProjectEditable, dateTimeEnabled, setDateTimeEnabled, showExpired, setShowExpired }) => {
     const [showConfig, setShowConfig] = useState(false);
     return (
         <>
@@ -24,6 +24,7 @@ export const Header = ({ setShowHelp, editable, setEditable, projectEditable, se
                     </span>
                 </div>
             </div>
+            {/** estrarre un componente modal da questo */}
             {showConfig && (
                 <div className="modal-overlay" onClick={() => setShowConfig(false)}>
                     <div className="modal" onClick={e => e.stopPropagation()}>
@@ -42,6 +43,11 @@ export const Header = ({ setShowHelp, editable, setEditable, projectEditable, se
                             checked={dateTimeEnabled}
                             onChange={setDateTimeEnabled}
                             label={"Con scadenza"}
+                        />
+                        <Toggle
+                            checked={showExpired}
+                            onChange={setShowExpired}
+                            label={"Mostra scaduti"}
                         />
                     </div>
                 </div>

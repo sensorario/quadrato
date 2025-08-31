@@ -6,6 +6,7 @@ import TaskList from './components/TaskList';
 import { Header } from './components/Header';
 import { STATUS_ENUM, STATUS } from './utils';
 import LogoIcon from './components/LogoIcon';
+import Toggle from './components/Toggle';
 
 const initialTasks = [
   { id: 1, title: 'Studiare React', longDescription: '', project: '', dateTime: '', status: STATUS_ENUM.TODO },
@@ -19,6 +20,11 @@ function App() {
   // Stato per abilitare/disabilitare il campo data-ora nei task
   const [dateTimeEnabled, setDateTimeEnabledState] = useState(() => {
     const saved = localStorage.getItem('simplanner-dateTime-enabled');
+    return saved ? JSON.parse(saved) : false;
+  });
+
+  const [showExpired, setShowExpired] = useState(() => {
+    const saved = localStorage.getItem('simplanner-show-expired');
     return saved ? JSON.parse(saved) : false;
   });
 
@@ -192,6 +198,8 @@ function App() {
           setProjectEditable={setProjectEditable}
           dateTimeEnabled={dateTimeEnabled}
           setDateTimeEnabled={setDateTimeEnabled}
+          showExpired={showExpired}
+          setShowExpired={setShowExpired}
         />
         {/* Project filter links */}
         {projectEditable && tasks.some(t => t.project) && (
@@ -238,6 +246,7 @@ function App() {
             return filtered.filter(t => {
               if (!t.dateTime) return true; // task senza scadenza
               const dt = new Date(t.dateTime);
+              if (showExpired && dt < now) return true; // mostra scaduti se abilitato
               return dt >= now && dt <= end;
             });
           })()}
