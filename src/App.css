@@ -8,6 +8,7 @@
     font-size: 2rem;
     font-weight: 700;
     margin: 0;
+    visibility: hidden;
 }
 .header-icons {
     display: flex;
@@ -189,6 +190,13 @@ input, textarea {
     max-width: 350px;
     box-sizing: border-box;
 }
+
+@media (min-width: 470px) {
+    .header-title {
+        visibility: visible;
+    }
+}
+
 /* Responsive styles */
 @media (max-width: 600px) {
     .app-container {

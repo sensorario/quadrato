@@ -208,17 +208,14 @@ function App() {
     />
 
   if (zenMode) {
-    return <>
-      <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', padding: '0 24px' }}>
-
-        <Toggle
-          checked={zenMode}
-          onChange={setZenMode}
-          label={zenMode ? "zen mode" : "normal  mode"}
-        />
-      </div>
+    return <div className="app-container">
+      <Toggle
+        checked={zenMode}
+        onChange={setZenMode}
+        label={zenMode ? "normal mode" : "zen mode"}
+      />
       {tasksWithDate}
-    </>;
+    </div>
   }
 
   return (
