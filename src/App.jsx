@@ -170,12 +170,24 @@ function App() {
 
   const [showCleanConfirm, setShowCleanConfirm] = useState(false);
 
+  const archiveCompletedAndSkippedTasks = ({ tasks }) => {
+    return tasks.map(t => {
+      if (t.status === STATUS_ENUM.SKIPPED || t.status === STATUS_ENUM.DONE) {
+        return { ...t, archived: true };
+      }
+      return t;
+    });
+  };
+
   const handleCleanTasks = () => {
-    const updatedTasks = tasks.filter(t => t.status === STATUS_ENUM.TODO || t.status === STATUS_ENUM.IN_PROGRESS);
+    // const updatedTasks = tasks.filter(t => t.status === STATUS_ENUM.TODO || t.status === STATUS_ENUM.IN_PROGRESS);
+    const updatedTasks = archiveCompletedAndSkippedTasks({ tasks });
     setTasks(updatedTasks);
     localStorage.setItem('simplanner-tasks', JSON.stringify(updatedTasks));
     setShowCleanConfirm(false);
   };
+
+  const unarchivedTasks = tasks.filter(t => !t.archived);
 
   const tasksWithDate =
     <TaskList
@@ -183,12 +195,12 @@ function App() {
         // Filtra per progetto
         let filtered =
           projectFilter === 'ALL'
-            ? tasks
+            ? unarchivedTasks
             : projectFilter === null
-              ? tasks.filter(t => !t.project)
+              ? unarchivedTasks.filter(t => !t.project)
               : projectFilter
-                ? tasks.filter(t => t.project === projectFilter)
-                : tasks;
+                ? unarchivedTasks.filter(t => t.project === projectFilter)
+                : unarchivedTasks;
         // Filtra per range di giorni
         const now = new Date();
         const end = new Date(now);
@@ -304,7 +316,7 @@ function App() {
             </svg>
           </button>
           <span style={{ cursor: "pointer" }} onClick={() => setShowCleanConfirm(true)}>
-            pulisci
+            archivia
           </span>
         </div>
         {showHelp && <HelpModal setShowHelp={setShowHelp} />}
@@ -319,7 +331,7 @@ function App() {
           <div className="modal-overlay" onClick={() => setShowCleanConfirm(false)}>
             <div className="modal" onClick={e => e.stopPropagation()}>
               <h2>Conferma pulizia</h2>
-              <p>Vuoi davvero eliminare tutti i task completati o skippati?</p>
+              <p>Vuoi davvero archiviare tutti i task completati o skippati?</p>
               <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center', marginTop: '1.5rem' }}>
                 <button className="modal-close-btn" onClick={() => setShowCleanConfirm(false)}>Annulla</button>
                 <button className="modal-close-btn" style={{ background: '#666666', color: '#fff' }} onClick={handleCleanTasks}>Conferma</button>
