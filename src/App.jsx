@@ -156,9 +156,10 @@ function App() {
       dateTime: '',
       status: 0
     };
-    setTasks([...tasks, newTask]);
+    const updatedTasks = [...tasks, newTask];
+    setTasks(updatedTasks);
+    localStorage.setItem('simplanner-tasks', JSON.stringify(updatedTasks));
     setNewTaskTitle('');
-    setNewTaskProject('');
     setShowPopup(false);
   };
 
