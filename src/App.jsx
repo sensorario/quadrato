@@ -5,8 +5,6 @@ import HelpModal from './components/HelpModal';
 import TaskList from './components/TaskList';
 import { Header } from './components/Header';
 import { STATUS_ENUM, STATUS } from './utils';
-import LogoIcon from './components/LogoIcon';
-import Toggle from './components/Toggle';
 
 const initialTasks = [
   { id: 1, title: 'Studiare React', longDescription: '', project: '', dateTime: '', status: STATUS_ENUM.TODO },
@@ -101,10 +99,12 @@ function App() {
   };
   const [showPopup, setShowPopup] = useState(false);
   const [newTaskTitle, setNewTaskTitle] = useState('');
+  const [newTaskProject, setNewTaskProject] = useState();
   const [showHelp, setShowHelp] = useState(false);
 
   useEffect(() => {
     localStorage.setItem('simplanner-project-filter', JSON.stringify(projectFilter));
+    setNewTaskProject(projectFilter === 'ALL' ? '' : projectFilter);
   }, [projectFilter]);
 
   useEffect(() => {
@@ -152,12 +152,13 @@ function App() {
       id: Date.now(),
       title: newTaskTitle,
       longDescription: '',
-      project: '',
+      project: newTaskProject,
       dateTime: '',
       status: 0
     };
     setTasks([...tasks, newTask]);
     setNewTaskTitle('');
+    setNewTaskProject('');
     setShowPopup(false);
   };
 
@@ -288,6 +289,8 @@ function App() {
         {showPopup && <NewTaskModal
           newTaskTitle={newTaskTitle}
           setNewTaskTitle={setNewTaskTitle}
+          newTaskProject={newTaskProject}
+          setNewTaskProject={setNewTaskProject}
           handleAddTask={handleAddTask}
           setShowPopup={setShowPopup} />}
         {showCleanConfirm && (

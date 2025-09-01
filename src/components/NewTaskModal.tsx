@@ -1,5 +1,6 @@
 
-const NewTaskModal = ({ newTaskTitle, setNewTaskTitle, handleAddTask, setShowPopup }) => (
+
+const NewTaskModal = ({ newTaskTitle, setNewTaskTitle, newTaskProject, setNewTaskProject, handleAddTask, setShowPopup }) => (
     <div className="modal-overlay" onClick={() => setShowPopup(false)}>
         <div className="modal" onClick={e => e.stopPropagation()}>
             <h2>Nuovo Task</h2>
@@ -18,6 +19,20 @@ const NewTaskModal = ({ newTaskTitle, setNewTaskTitle, handleAddTask, setShowPop
                             handleAddTask();
                         } else if (e.key === 'Escape') {
                             setShowPopup(false);
+                        }
+                    }}
+                />
+            </div>
+            <div className="modal-input-wrapper">
+                <input
+                    type="text"
+                    value={newTaskProject}
+                    onChange={e => setNewTaskProject(e.target.value)}
+                    placeholder="Progetto (opzionale)"
+                    className="modal-input"
+                    onKeyDown={e => {
+                        if (e.key === 'Enter') {
+                            handleAddTask();
                         }
                     }}
                 />
