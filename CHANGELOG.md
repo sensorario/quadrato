@@ -5,6 +5,8 @@
 
 
 ### Features
+- feat(tasks): archive skipped and completed (31c8e8d, 2025-09-02)
+- feat(changelog): add missing changelog file (8493ba5, 2025-09-01)
 - feat(zen-mode): activate or deactivate zen mode (5413b2e, 2025-09-01)
 - feat(new-task): auto select project on creation whenever project is already selected (1cfdd44, 2025-09-01)
 - feat(tasks): move range in configuration modal (fca916d, 2025-09-01)
