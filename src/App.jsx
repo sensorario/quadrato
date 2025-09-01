@@ -120,7 +120,8 @@ function App() {
       }
       if (e.ctrlKey && e.key === 'x') {
         e.preventDefault();
-        setTasks(tasks => tasks.filter(t => t.status !== 2 && t.status !== 3));
+        const updatedTasks = archiveCompletedAndSkippedTasks({ tasks });
+        setTasks(updatedTasks);
       }
       if (e.ctrlKey && e.key === 'h') {
         e.preventDefault();
@@ -137,7 +138,6 @@ function App() {
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [showHelp, showPopup]);
-
 
   const handleClick = (id) => {
     setTasks(tasks => {
@@ -163,6 +163,7 @@ function App() {
     };
     const updatedTasks = [...tasks, newTask];
     setTasks(updatedTasks);
+    {/* Todo spostare il salvataggio in un componente a parte in caso di cambio di strategia */ }
     localStorage.setItem('simplanner-tasks', JSON.stringify(updatedTasks));
     setNewTaskTitle('');
     setShowPopup(false);
@@ -189,7 +190,7 @@ function App() {
 
   const unarchivedTasks = tasks.filter(t => !t.archived);
 
-  const tasksWithDate =
+  const VisibleTasks =
     <TaskList
       tasks={(() => {
         // Filtra per progetto
@@ -226,7 +227,7 @@ function App() {
         onChange={setZenMode}
         label={zenMode ? "normal mode" : "zen mode"}
       />
-      {tasksWithDate}
+      {VisibleTasks}
     </div>
   }
 
@@ -283,8 +284,9 @@ function App() {
           </div>
         )}
         {/* Filtro task per range di giorni e progetto */}
-        {tasksWithDate}
+        {VisibleTasks}
         {/* Plus icon in basso al centro dopo tutti i task */}
+        {/* Todo creare componente footer */}
         <div style={{ width: '100%', display: 'flex', justifyContent: 'center', gap: '8px', margin: '24px 0' }}>
           <button
             className="plus-icon"
@@ -293,6 +295,7 @@ function App() {
             type="button"
             style={{ border: 'none', background: 'none', padding: 0 }}
           >
+            {/* Todo creare componente icona plus */}
             <svg width="32" height="32" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
               <circle cx="16" cy="16" r="15" fill="#f0f0f0" stroke="#888" strokeWidth="2" />
               <line x1="16" y1="10" x2="16" y2="22" stroke="#444" strokeWidth="2" />
@@ -309,6 +312,7 @@ function App() {
             type="button"
             style={{ border: 'none', background: 'none', padding: 0 }}
           >
+            {/* Todo creare componente icona pulisci */}
             <svg width="32" height="32" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
               <circle cx="16" cy="16" r="15" fill="#f0f0f0" stroke="#888" strokeWidth="2" />
               <line x1="10" y1="10" x2="22" y2="22" stroke="#444" strokeWidth="2" />
