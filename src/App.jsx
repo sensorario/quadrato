@@ -5,6 +5,7 @@ import HelpModal from './components/HelpModal';
 import TaskList from './components/TaskList';
 import { Header } from './components/Header';
 import { STATUS_ENUM, STATUS } from './utils';
+import Toggle from './components/Toggle';
 
 const initialTasks = [
   { id: 1, title: 'Studiare React', longDescription: '', project: '', dateTime: '', status: STATUS_ENUM.TODO },
@@ -101,6 +102,10 @@ function App() {
   const [newTaskTitle, setNewTaskTitle] = useState('');
   const [newTaskProject, setNewTaskProject] = useState();
   const [showHelp, setShowHelp] = useState(false);
+  const [zenMode, setZenMode] = useState(() => {
+    const saved = localStorage.getItem('simplanner-zen-mode');
+    return saved ? JSON.parse(saved) : false;
+  });
 
   useEffect(() => {
     localStorage.setItem('simplanner-project-filter', JSON.stringify(projectFilter));
@@ -172,6 +177,50 @@ function App() {
     setShowCleanConfirm(false);
   };
 
+  const tasksWithDate =
+    <TaskList
+      tasks={(() => {
+        // Filtra per progetto
+        let filtered =
+          projectFilter === 'ALL'
+            ? tasks
+            : projectFilter === null
+              ? tasks.filter(t => !t.project)
+              : projectFilter
+                ? tasks.filter(t => t.project === projectFilter)
+                : tasks;
+        // Filtra per range di giorni
+        const now = new Date();
+        const end = new Date(now);
+        end.setDate(now.getDate() + daysRange);
+        return filtered.filter(t => {
+          if (!t.dateTime) return true; // task senza scadenza
+          const dt = new Date(t.dateTime);
+          if (showExpired && dt < now) return true; // mostra scaduti se abilitato
+          return dt >= now && dt <= end;
+        });
+      })()}
+      onTaskClick={handleClick}
+      updateTaskTitle={updateTaskTitle}
+      editable={editable}
+      projectEditable={projectEditable}
+      dateTimeEnabled={dateTimeEnabled}
+    />
+
+  if (zenMode) {
+    return <>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', padding: '0 24px' }}>
+
+        <Toggle
+          checked={zenMode}
+          onChange={setZenMode}
+          label={zenMode ? "zen mode" : "normal  mode"}
+        />
+      </div>
+      {tasksWithDate}
+    </>;
+  }
+
   return (
     <div className="foo">
       <div className="top-bar" style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
@@ -195,6 +244,8 @@ function App() {
           setShowExpired={setShowExpired}
           daysRange={daysRange}
           setDaysRange={setDaysRange}
+          zenMode={zenMode}
+          setZenMode={setZenMode}
         />
         {/* Project filter links */}
         {projectEditable && tasks.some(t => t.project) && (
@@ -223,34 +274,7 @@ function App() {
           </div>
         )}
         {/* Filtro task per range di giorni e progetto */}
-        <TaskList
-          tasks={(() => {
-            // Filtra per progetto
-            let filtered =
-              projectFilter === 'ALL'
-                ? tasks
-                : projectFilter === null
-                  ? tasks.filter(t => !t.project)
-                  : projectFilter
-                    ? tasks.filter(t => t.project === projectFilter)
-                    : tasks;
-            // Filtra per range di giorni
-            const now = new Date();
-            const end = new Date(now);
-            end.setDate(now.getDate() + daysRange);
-            return filtered.filter(t => {
-              if (!t.dateTime) return true; // task senza scadenza
-              const dt = new Date(t.dateTime);
-              if (showExpired && dt < now) return true; // mostra scaduti se abilitato
-              return dt >= now && dt <= end;
-            });
-          })()}
-          onTaskClick={handleClick}
-          updateTaskTitle={updateTaskTitle}
-          editable={editable}
-          projectEditable={projectEditable}
-          dateTimeEnabled={dateTimeEnabled}
-        />
+        {tasksWithDate}
         {/* Plus icon in basso al centro dopo tutti i task */}
         <div style={{ width: '100%', display: 'flex', justifyContent: 'center', gap: '8px', margin: '24px 0' }}>
           <button

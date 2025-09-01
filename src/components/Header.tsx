@@ -3,14 +3,20 @@ import Toggle from "./Toggle";
 import GearIcon from "./GearIcon";
 import HelpIcon from "./HelpIcon";
 
-export const Header = ({ setShowHelp, editable, setEditable, projectEditable, setProjectEditable, dateTimeEnabled, setDateTimeEnabled, showExpired, setShowExpired, daysRange, setDaysRange }) => {
+export const Header = ({ setShowHelp, editable, setEditable, projectEditable, setProjectEditable, dateTimeEnabled, setDateTimeEnabled, showExpired, setShowExpired, daysRange, setDaysRange, zenMode, setZenMode }) => {
     const [showConfig, setShowConfig] = useState(false);
     return (
         <>
             <div className="header-bar">
                 <h1 className="header-title">To do list</h1>
                 <div className="header-icons">
-                    <span className="help-icon" title="Shortcut info" onClick={() => setShowHelp(true)}>
+                    <Toggle
+                        checked={zenMode}
+                        onChange={setZenMode}
+                        label={""}
+                    />
+                    <span>zen mode</span>
+                    <span onClick={() => setShowHelp(true)}>
                         <HelpIcon />
                     </span>
                     <span onClick={() => setShowHelp(true)} style={{ cursor: "pointer" }}>
