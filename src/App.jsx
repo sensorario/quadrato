@@ -224,6 +224,15 @@ function App() {
       dateTimeEnabled={dateTimeEnabled}
     />
 
+  const NewTaskModalView = <NewTaskModal
+    newTaskTitle={newTaskTitle}
+    setNewTaskTitle={setNewTaskTitle}
+    newTaskProject={newTaskProject}
+    setNewTaskProject={setNewTaskProject}
+    handleAddTask={handleAddTask}
+    setShowPopup={setShowPopup}
+    projectEditable={projectEditable} />
+
   if (zenMode) {
     return <div className="app-container">
       <Toggle
@@ -232,6 +241,7 @@ function App() {
         label={zenMode ? "normal mode" : "zen mode"}
       />
       {VisibleTasks}
+      {showPopup && NewTaskModalView}
     </div>
   }
 
@@ -264,15 +274,6 @@ function App() {
     showHelp={showHelp}
     setShowHelp={setShowHelp}
   />;
-
-  const NewTaskModalView = <NewTaskModal
-    newTaskTitle={newTaskTitle}
-    setNewTaskTitle={setNewTaskTitle}
-    newTaskProject={newTaskProject}
-    setNewTaskProject={setNewTaskProject}
-    handleAddTask={handleAddTask}
-    setShowPopup={setShowPopup}
-    projectEditable={projectEditable} />
 
   const ConfirmModalView = <ConfirmModal
     setShowCleanConfirm={setShowCleanConfirm}
