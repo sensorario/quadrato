@@ -147,7 +147,7 @@ input, textarea {
 .app-container {
     width: 100%;
     max-width: 600px;
-    margin: 0 auto;
+    margin: 24px auto;
     padding: 0 1rem;
     box-sizing: border-box;
 }
