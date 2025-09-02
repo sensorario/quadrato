@@ -234,7 +234,7 @@ function App() {
     </div>
   }
 
-  const DefinedHeader = <Header
+  const HeaderView = <Header
     setShowHelp={setShowHelp}
     editable={editable}
     setEditable={setEditable}
@@ -255,14 +255,14 @@ function App() {
     projectFilter={projectFilter}
     setProjectFilter={setProjectFilter} />
 
-  const DefinedFooter = <Footer setShowPopup={setShowPopup} setShowCleanConfirm={setShowCleanConfirm} />;
+  const FooterView = <Footer setShowPopup={setShowPopup} setShowCleanConfirm={setShowCleanConfirm} />;
 
-  const HelpModalDefined = <HelpModal
+  const HelpModalView = <HelpModal
     showHelp={showHelp}
     setShowHelp={setShowHelp}
   />;
 
-  const NewTaskModalDefined = <NewTaskModal
+  const NewTaskModalView = <NewTaskModal
     newTaskTitle={newTaskTitle}
     setNewTaskTitle={setNewTaskTitle}
     newTaskProject={newTaskProject}
@@ -270,20 +270,20 @@ function App() {
     handleAddTask={handleAddTask}
     setShowPopup={setShowPopup} />
 
-  const ConfirmModalDefined = <ConfirmModal
+  const ConfirmModalView = <ConfirmModal
     setShowCleanConfirm={setShowCleanConfirm}
     handleCleanTasks={handleCleanTasks} />;
 
   return (
     <div className="foo">
       <div className="app-container">
-        {DefinedHeader}
+        {HeaderView}
         {projectEditable && DefinedTaskProject}
         {VisibleTasks}
-        {DefinedFooter}
-        {showHelp && HelpModalDefined}
-        {showPopup && NewTaskModalDefined}
-        {showCleanConfirm && ConfirmModalDefined}
+        {FooterView}
+        {showHelp && HelpModalView}
+        {showPopup && NewTaskModalView}
+        {showCleanConfirm && ConfirmModalView}
       </div>
     </div >
   );
