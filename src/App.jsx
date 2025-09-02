@@ -1,11 +1,14 @@
 import { useState, useEffect } from 'react';
 import './App.css';
 import NewTaskModal from './components/NewTaskModal';
-import HelpModal from './components/HelpModal';
 import TaskList from './components/TaskList';
 import { Header } from './components/Header';
 import { STATUS_ENUM, STATUS } from './utils';
 import Toggle from './components/Toggle';
+import TaskProjectSelector from './components/TaskProjectSelector';
+import Footer from './components/Footer';
+import ConfirmModal from './components/ConfirmModal';
+import HelpModal from './components/HelpModal';
 
 const initialTasks = [
   { id: 1, title: 'Studiare React', longDescription: '', project: '', dateTime: '', status: STATUS_ENUM.TODO },
@@ -231,120 +234,58 @@ function App() {
     </div>
   }
 
+  const DefinedHeader = <Header
+    setShowHelp={setShowHelp}
+    editable={editable}
+    setEditable={setEditable}
+    projectEditable={projectEditable}
+    setProjectEditable={setProjectEditable}
+    dateTimeEnabled={dateTimeEnabled}
+    setDateTimeEnabled={setDateTimeEnabled}
+    showExpired={showExpired}
+    setShowExpired={setShowExpired}
+    daysRange={daysRange}
+    setDaysRange={setDaysRange}
+    zenMode={zenMode}
+    setZenMode={setZenMode}
+  />;
+
+  const DefinedTaskProject = <TaskProjectSelector
+    tasks={tasks}
+    projectFilter={projectFilter}
+    setProjectFilter={setProjectFilter} />
+
+  const DefinedFooter = <Footer setShowPopup={setShowPopup} setShowCleanConfirm={setShowCleanConfirm} />;
+
+  const HelpModalDefined = <HelpModal
+    showHelp={showHelp}
+    setShowHelp={setShowHelp}
+  />;
+
+  const NewTaskModalDefined = <NewTaskModal
+    newTaskTitle={newTaskTitle}
+    setNewTaskTitle={setNewTaskTitle}
+    newTaskProject={newTaskProject}
+    setNewTaskProject={setNewTaskProject}
+    handleAddTask={handleAddTask}
+    setShowPopup={setShowPopup} />
+
+  const ConfirmModalDefined = <ConfirmModal
+    setShowCleanConfirm={setShowCleanConfirm}
+    handleCleanTasks={handleCleanTasks} />;
+
   return (
     <div className="foo">
-      <div className="top-bar" style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-        {/* Status icons before logo and title */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-          {STATUS.map((icon, idx) => (
-            <span key={idx}>{icon}</span>
-          ))}
-        </div>
-      </div>
       <div className="app-container">
-        <Header
-          setShowHelp={setShowHelp}
-          editable={editable}
-          setEditable={setEditable}
-          projectEditable={projectEditable}
-          setProjectEditable={setProjectEditable}
-          dateTimeEnabled={dateTimeEnabled}
-          setDateTimeEnabled={setDateTimeEnabled}
-          showExpired={showExpired}
-          setShowExpired={setShowExpired}
-          daysRange={daysRange}
-          setDaysRange={setDaysRange}
-          zenMode={zenMode}
-          setZenMode={setZenMode}
-        />
-        {/* Project filter links */}
-        {projectEditable && tasks.some(t => t.project) && (
-          <div style={{ display: 'flex', gap: '1rem', marginBottom: '1rem', flexWrap: 'wrap' }}>
-            <span
-              style={{ textDecoration: projectFilter === 'ALL' ? 'underline' : 'none', cursor: 'pointer', color: '#444' }}
-              onClick={() => setProjectFilter('ALL')}
-            >
-              tutti i task
-            </span>
-            <span
-              style={{ textDecoration: projectFilter === null ? 'underline' : 'none', cursor: 'pointer', color: '#444' }}
-              onClick={() => setProjectFilter(null)}
-            >
-              nessun progetto
-            </span>
-            {[...new Set(tasks.filter(t => t.project).map(t => t.project))].map(proj => (
-              <span
-                key={proj}
-                style={{ textDecoration: projectFilter === proj ? 'underline' : 'none', cursor: 'pointer', color: '#444' }}
-                onClick={() => setProjectFilter(projectFilter === proj ? null : proj)}
-              >
-                {proj}
-              </span>
-            ))}
-          </div>
-        )}
-        {/* Filtro task per range di giorni e progetto */}
+        {DefinedHeader}
+        {projectEditable && DefinedTaskProject}
         {VisibleTasks}
-        {/* Plus icon in basso al centro dopo tutti i task */}
-        {/* Todo creare componente footer */}
-        <div style={{ width: '100%', display: 'flex', justifyContent: 'center', gap: '8px', margin: '24px 0' }}>
-          <button
-            className="plus-icon"
-            aria-label="Aggiungi nuovo task"
-            onClick={() => setShowPopup(true)}
-            type="button"
-            style={{ border: 'none', background: 'none', padding: 0 }}
-          >
-            {/* Todo creare componente icona plus */}
-            <svg width="32" height="32" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
-              <circle cx="16" cy="16" r="15" fill="#f0f0f0" stroke="#888" strokeWidth="2" />
-              <line x1="16" y1="10" x2="16" y2="22" stroke="#444" strokeWidth="2" />
-              <line x1="10" y1="16" x2="22" y2="16" stroke="#444" strokeWidth="2" />
-            </svg>
-          </button>
-          <span style={{ cursor: "pointer" }} onClick={() => setShowPopup(true)}>
-            aggiungi
-          </span>
-          <button
-            className="clean-icon"
-            aria-label="Pulisci task"
-            onClick={() => setShowCleanConfirm(true)}
-            type="button"
-            style={{ border: 'none', background: 'none', padding: 0 }}
-          >
-            {/* Todo creare componente icona pulisci */}
-            <svg width="32" height="32" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
-              <circle cx="16" cy="16" r="15" fill="#f0f0f0" stroke="#888" strokeWidth="2" />
-              <line x1="10" y1="10" x2="22" y2="22" stroke="#444" strokeWidth="2" />
-              <line x1="22" y1="10" x2="10" y2="22" stroke="#444" strokeWidth="2" />
-            </svg>
-          </button>
-          <span style={{ cursor: "pointer" }} onClick={() => setShowCleanConfirm(true)}>
-            archivia
-          </span>
-        </div>
-        {showHelp && <HelpModal setShowHelp={setShowHelp} />}
-        {showPopup && <NewTaskModal
-          newTaskTitle={newTaskTitle}
-          setNewTaskTitle={setNewTaskTitle}
-          newTaskProject={newTaskProject}
-          setNewTaskProject={setNewTaskProject}
-          handleAddTask={handleAddTask}
-          setShowPopup={setShowPopup} />}
-        {showCleanConfirm && (
-          <div className="modal-overlay" onClick={() => setShowCleanConfirm(false)}>
-            <div className="modal" onClick={e => e.stopPropagation()}>
-              <h2>Conferma pulizia</h2>
-              <p>Vuoi davvero archiviare tutti i task completati o skippati?</p>
-              <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center', marginTop: '1.5rem' }}>
-                <button className="modal-close-btn" onClick={() => setShowCleanConfirm(false)}>Annulla</button>
-                <button className="modal-close-btn" style={{ background: '#666666', color: '#fff' }} onClick={handleCleanTasks}>Conferma</button>
-              </div>
-            </div>
-          </div>
-        )}
+        {DefinedFooter}
+        {showHelp && HelpModalDefined}
+        {showPopup && NewTaskModalDefined}
+        {showCleanConfirm && ConfirmModalDefined}
       </div>
-    </div>
+    </div >
   );
 }
 

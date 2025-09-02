@@ -1,0 +1,35 @@
+interface TaskProjectSelectorProps {
+    tasks: any[],
+    projectFilter: string | null,
+    setProjectFilter: (val: string | null) => void
+}
+
+const TaskProjectSelector = ({ tasks, projectFilter, setProjectFilter }: TaskProjectSelectorProps) => {
+    return tasks.some((t: { project: string }) => t.project) && (
+        <div style={{ display: 'flex', gap: '1rem', marginBottom: '1rem', flexWrap: 'wrap' }}>
+            <span
+                style={{ textDecoration: projectFilter === 'ALL' ? 'underline' : 'none', cursor: 'pointer', color: '#444' }}
+                onClick={() => setProjectFilter('ALL')}
+            >
+                tutti i task
+            </span>
+            <span
+                style={{ textDecoration: projectFilter === null ? 'underline' : 'none', cursor: 'pointer', color: '#444' }}
+                onClick={() => setProjectFilter(null)}
+            >
+                nessun progetto
+            </span>
+            {[...new Set(tasks.filter(t => t.project).map((t: { project: string }) => t.project))].map((proj: any) => (
+                <span
+                    key={proj}
+                    style={{ textDecoration: projectFilter === proj ? 'underline' : 'none', cursor: 'pointer', color: '#444' }}
+                    onClick={() => setProjectFilter(projectFilter === proj ? null : proj)}
+                >
+                    {proj}
+                </span>
+            ))}
+        </div>
+    )
+}
+
+export default TaskProjectSelector;
