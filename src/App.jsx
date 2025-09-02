@@ -255,7 +255,9 @@ function App() {
     projectFilter={projectFilter}
     setProjectFilter={setProjectFilter} />
 
-  const FooterView = <Footer setShowPopup={setShowPopup} setShowCleanConfirm={setShowCleanConfirm} />;
+  const FooterView = <Footer
+    setShowPopup={setShowPopup}
+    setShowCleanConfirm={setShowCleanConfirm} />;
 
   const HelpModalView = <HelpModal
     showHelp={showHelp}
@@ -268,7 +270,8 @@ function App() {
     newTaskProject={newTaskProject}
     setNewTaskProject={setNewTaskProject}
     handleAddTask={handleAddTask}
-    setShowPopup={setShowPopup} />
+    setShowPopup={setShowPopup}
+    projectEditable={projectEditable} />
 
   const ConfirmModalView = <ConfirmModal
     setShowCleanConfirm={setShowCleanConfirm}
