@@ -49,6 +49,10 @@
 
 
 ### Other
+- chore(app): prepare view to get a simplest return (702df49, 2025-09-02)
+- refactor(refactor): thin return (56b6870, 2025-09-02)
+- chore(todos): add some todos for future versions (dc91fc5, 2025-09-02)
+- chore(changelog): update changelog (17cd817, 2025-09-02)
 - chore(buttons): make text linkable (31d59d7, 2025-08-30)
 - chore(header): remove github string (d733c4f, 2025-08-30)
 - chore(deploy): setup github pages (9b29375, 2025-08-29)
