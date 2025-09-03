@@ -103,6 +103,8 @@ function App() {
   const [showPopup, setShowPopup] = useState(false);
   const [newTaskTitle, setNewTaskTitle] = useState('');
   const [newTaskProject, setNewTaskProject] = useState();
+  const [newTaskDateTime, setNewTaskDateTime] = useState('');
+  const [newTaskLongDescription, setNewTaskLongDescription] = useState('');
   const [showHelp, setShowHelp] = useState(false);
   const [zenMode, setZenMode] = useState(() => {
     const saved = localStorage.getItem('simplanner-zen-mode');
@@ -159,10 +161,10 @@ function App() {
     const newTask = {
       id: Date.now(),
       title: newTaskTitle,
-      longDescription: '',
+      longDescription: newTaskLongDescription,
       project: newTaskProject,
-      dateTime: '',
-      status: 0
+      dateTime: newTaskDateTime,
+      status: 0,
     };
     const updatedTasks = [...tasks, newTask];
     setTasks(updatedTasks);
@@ -245,6 +247,14 @@ function App() {
           }}
         />
       </div>
+      <div className="modal-long-description">
+        <textarea
+          value={newTaskLongDescription}
+          onChange={e => setNewTaskLongDescription(e.target.value)}
+          placeholder="Descrizione del task"
+          className="modal-input"
+        />
+      </div>
       {projectEditable && <div className="modal-input-wrapper">
         <input
           type="text"
@@ -259,6 +269,15 @@ function App() {
           }}
         />
       </div>}
+      {dateTimeEnabled && <div className="modal-input-wrapper">
+        <input
+          type="datetime-local"
+          value={newTaskDateTime}
+          onChange={e => setNewTaskDateTime(e.target.value)}
+          className="modal-input"
+        />
+      </div>}
+      <button onClick={handleAddTask} className='modal-close-btn'>salva</button>
     </div>
   </div>
 

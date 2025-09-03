@@ -224,6 +224,11 @@ input, textarea {
     }
 }
 
+.modal-long-description {
+    display: flex;
+    justify-content: center;
+}
+
 .modal-input-wrapper {
     display: flex;
     justify-content: center;
