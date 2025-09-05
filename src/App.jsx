@@ -283,11 +283,13 @@ function App() {
 
   if (zenMode) {
     return <div className="app-container">
-      <Toggle
-        checked={zenMode}
-        onChange={setZenMode}
-        label={zenMode ? "normal mode" : "zen mode"}
-      />
+      <div style={{ display: "flex", justifyContent: "flex-end" }}>
+        <Toggle
+          checked={zenMode}
+          onChange={setZenMode}
+          label={zenMode ? "normal mode" : "zen mode"}
+        />
+      </div>
       {VisibleTasks}
       {showPopup && NewTaskModalView}
     </div>

@@ -3,7 +3,21 @@ import Toggle from "./Toggle";
 import GearIcon from "./GearIcon";
 import HelpIcon from "./HelpIcon";
 
-export const Header = ({ setShowHelp, editable, setEditable, projectEditable, setProjectEditable, dateTimeEnabled, setDateTimeEnabled, showExpired, setShowExpired, daysRange, setDaysRange, zenMode, setZenMode }) => {
+export const Header = ({
+    setShowHelp,
+    editable,
+    setEditable,
+    projectEditable,
+    setProjectEditable,
+    dateTimeEnabled,
+    setDateTimeEnabled,
+    showExpired,
+    setShowExpired,
+    daysRange,
+    setDaysRange,
+    zenMode,
+    setZenMode
+}) => {
     const [showConfig, setShowConfig] = useState(false);
     return (
         <>
@@ -15,7 +29,7 @@ export const Header = ({ setShowHelp, editable, setEditable, projectEditable, se
                         onChange={setZenMode}
                         label={""}
                     />
-                    <span>zen mode</span>
+                    <span onClick={() => setZenMode(!zenMode)} style={{ cursor: "pointer" }}>zen mode</span>
                     <span onClick={() => setShowHelp(true)}>
                         <HelpIcon />
                     </span>
