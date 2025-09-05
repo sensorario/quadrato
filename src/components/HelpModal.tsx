@@ -14,9 +14,9 @@ export const HelpModal = ({ setShowHelp }) => ((
             </ul>
             <h3 style={{ marginTop: '2rem', marginBottom: '0.5rem' }}>Scorciatorie:</h3>
             <ul style={{ marginTop: '1rem', marginBottom: '1rem' }}>
-                <li><strong>Ctrl+H</strong>: Mostra questa finestra</li>
-                <li><strong>Ctrl+N</strong>: Aggiungi un nuovo task</li>
-                <li><strong>Ctrl+X</strong>: Cancella tutti i task skippati o completati</li>
+                <li><strong>Ctrl+Shift+H</strong>: Mostra questa finestra</li>
+                <li><strong>Ctrl+Shift+N</strong>: Aggiungi un nuovo task</li>
+                <li><strong>Ctrl+Shift+X</strong>: Cancella tutti i task skippati o completati</li>
                 <li><strong>Click su task</strong>: Cambia stato del task</li>
                 <li><strong>ESC</strong>: Chiudi popup</li>
             </ul>

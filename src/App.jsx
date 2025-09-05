@@ -118,16 +118,17 @@ function App() {
 
   useEffect(() => {
     const handleKeyDown = (e) => {
-      if (e.ctrlKey && e.key === 'n') {
+      console.log(e.key, e.ctrlKey, e.shiftKey, e.altKey);
+      if (e.ctrlKey && e.shiftKey && e.key === 'N') {
         e.preventDefault();
         setShowPopup(true);
       }
-      if (e.ctrlKey && e.key === 'x') {
+      if (e.ctrlKey && e.shiftKey && e.key === 'X') {
         e.preventDefault();
         const updatedTasks = archiveCompletedAndSkippedTasks({ tasks });
         setTasks(updatedTasks);
       }
-      if (e.ctrlKey && e.key === 'h') {
+      if (e.ctrlKey && e.shiftKey && e.key === 'H') {
         e.preventDefault();
         setShowHelp(true);
       }
