@@ -4,6 +4,14 @@ import EditIcon from "./EditIcon";
 import EditTaskModal from "./EditTaskModal";
 
 export const TaskList = ({ tasks, onTaskClick, updateTaskTitle, editable, projectEditable, dateTimeEnabled }) => {
+    // Recupera i colori dei progetti dal localStorage
+    let projectColors: Record<string, string> = {};
+    try {
+        const saved = localStorage.getItem('simplanner-project-colors');
+        projectColors = saved ? JSON.parse(saved) : {};
+    } catch (e) {
+        projectColors = {};
+    }
 
     const [hoveredId, setHoveredId] = useState(null);
     const [editId, setEditId] = useState(null);
@@ -56,6 +64,11 @@ export const TaskList = ({ tasks, onTaskClick, updateTaskTitle, editable, projec
                 onMouseLeave={() => setHoveredId(null)}
                 style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}
             >
+                {/* Quadrato di stato (presente) */}
+                {/* Quadrato colore progetto */}
+                <svg width="18" height="18" style={{ marginRight: 6 }}>
+                    <rect width="18" height="18" rx="3" fill={projectColors[task.project] || '#ccc'} />
+                </svg>
                 <span
                     style={{
                         flex: 1,
