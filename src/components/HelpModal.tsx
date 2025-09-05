@@ -22,10 +22,10 @@ export const HelpModal = ({ setShowHelp }) => ((
             </ul>
             <h3 style={{ marginTop: '1rem', marginBottom: '0.5rem' }}>Legenda quadrati:</h3>
             <ul style={{ marginTop: '1rem', marginBottom: '1rem' }}>
-                <li><span style={{ verticalAlign: 'middle', marginRight: 8 }}><svg width="16" height="16"><rect x="1" y="1" width="14" height="14" fill="white" stroke="black" strokeWidth="2" /></svg></span> Da fare</li>
-                <li><span style={{ verticalAlign: 'middle', marginRight: 8 }}><svg width="16" height="16"><rect x="1" y="1" width="14" height="14" fill="white" stroke="black" strokeWidth="2" /><circle cx="8" cy="8" r="3" fill="black" /></svg></span> In progress</li>
-                <li><span style={{ verticalAlign: 'middle', marginRight: 8 }}><svg width="16" height="16"><rect x="1" y="1" width="14" height="14" fill="white" stroke="black" strokeWidth="2" /><line x1="4" y1="4" x2="12" y2="12" stroke="black" strokeWidth="2" /><line x1="12" y1="4" x2="4" y2="12" stroke="black" strokeWidth="2" /></svg></span> Completato</li>
-                <li><span style={{ verticalAlign: 'middle', marginRight: 8 }}><svg width="16" height="16"><rect x="1" y="1" width="14" height="14" fill="black" stroke="black" strokeWidth="2" /></svg></span> Skippato</li>
+                <li><span style={{ verticalAlign: 'middle', marginRight: 8 }}><svg width="18" height="18"><rect x="1" y="1" width="16" height="16" fill="white" stroke="black" strokeWidth="2" /></svg></span> Da fare</li>
+                <li><span style={{ verticalAlign: 'middle', marginRight: 8 }}><svg width="18" height="18"><rect x="1" y="1" width="16" height="16" fill="white" stroke="black" strokeWidth="2" /><circle cx="9" cy="9" r="3" fill="black" /></svg></span> In progress</li>
+                <li><span style={{ verticalAlign: 'middle', marginRight: 8 }}><svg width="18" height="18"><rect x="1" y="1" width="16" height="16" fill="white" stroke="black" strokeWidth="2" /><line x1="5" y1="5" x2="13" y2="13" stroke="black" strokeWidth="2" /><line x1="13" y1="5" x2="5" y2="13" stroke="black" strokeWidth="2" /></svg></span> Completato</li>
+                <li><span style={{ verticalAlign: 'middle', marginRight: 8 }}><svg width="18" height="18"><rect x="1" y="1" width="16" height="16" fill="black" stroke="black" strokeWidth="2" /></svg></span> Skippato</li>
             </ul>
         </div>
     </div>
