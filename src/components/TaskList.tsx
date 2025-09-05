@@ -110,6 +110,9 @@ export const TaskList = ({ tasks, onTaskClick, updateTaskTitle, editable, projec
         });
         orderedTasks = [...withDate, ...withoutDate];
     }
+
+    orderedTasks.filter(t => !t.archived);
+
     return (
         <>
             <ul className="task-list">

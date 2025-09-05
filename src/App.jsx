@@ -178,12 +178,14 @@ function App() {
   const [showCleanConfirm, setShowCleanConfirm] = useState(false);
 
   const archiveCompletedAndSkippedTasks = ({ tasks }) => {
-    return tasks.map(t => {
+    const updatedTasks = tasks.map(t => {
       if (t.status === STATUS_ENUM.SKIPPED || t.status === STATUS_ENUM.DONE) {
         return { ...t, archived: true };
       }
       return t;
     });
+    localStorage.setItem('simplanner-tasks', JSON.stringify(updatedTasks));
+    return updatedTasks;
   };
 
   const handleCleanTasks = () => {
