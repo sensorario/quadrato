@@ -67,7 +67,7 @@ export const TaskList = ({ tasks, onTaskClick, updateTaskTitle, editable, projec
                 {/* Quadrato di stato (presente) */}
                 {/* Quadrato colore progetto */}
                 <svg width="18" height="18" style={{ marginRight: 4, marginBottom: -3 }}>
-                    <rect width="18" height="18" rx="3" fill={projectColors[task.project] || '#ccc'} />
+                    <rect width="18" height="18" rx="6" fill={projectColors[task.project] || '#ccc'} />
                 </svg>
                 <span
                     style={{
