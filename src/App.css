@@ -191,6 +191,21 @@ input, textarea {
     box-sizing: border-box;
 }
 
+.tabbed-content {
+    height: calc(100vh - 360px);
+    .tabs {
+        display: flex;
+        .tab {
+            padding: 0.5rem 1rem;
+            cursor: pointer;
+            &.active {
+                font-weight: bold;
+                border-bottom: 2px solid #0073b1;
+            }
+        }
+    }
+}
+
 @media (min-width: 470px) {
     .header-title {
         visibility: visible;

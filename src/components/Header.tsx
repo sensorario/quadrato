@@ -4,6 +4,7 @@ import GearIcon from "./GearIcon";
 import HelpIcon from "./HelpIcon";
 
 export const Header = ({
+    tasks,
     setShowHelp,
     editable,
     setEditable,
@@ -19,14 +20,7 @@ export const Header = ({
     setZenMode
 }) => {
     const [showConfig, setShowConfig] = useState(false);
-    // Recupera i task dal localStorage
-    let tasks: any[] = [];
-    try {
-        const saved = localStorage.getItem('simplanner-tasks');
-        tasks = saved ? JSON.parse(saved) : [];
-    } catch (e) {
-        tasks = [];
-    }
+    // Usa i task passati come prop
 
     // Gestione colori progetti
     const [projectColors, setProjectColors] = useState(() => {
@@ -43,6 +37,128 @@ export const Header = ({
         setProjectColors(newColors);
         localStorage.setItem('simplanner-project-colors', JSON.stringify(newColors));
     };
+
+    const TogglePanel = () => {
+        return (
+            <div className="tab">
+                <Toggle
+                    checked={editable}
+                    onChange={setEditable}
+                    label={"Modifica"}
+                />
+                <Toggle
+                    checked={projectEditable}
+                    onChange={setProjectEditable}
+                    label={"Raggruppa"}
+                />
+                <Toggle
+                    checked={dateTimeEnabled}
+                    onChange={setDateTimeEnabled}
+                    label={"Con scadenza"}
+                />
+                <Toggle
+                    checked={showExpired}
+                    onChange={setShowExpired}
+                    label={"Mostra scaduti"}
+                />
+                <div style={{ margin: '16px 0', width: '100%', display: 'flex', alignItems: 'center' }}>
+                    Giorni da mostrare:
+                    <input
+                        type="range"
+                        id="daysRange"
+                        min={0}
+                        max={365}
+                        value={daysRange}
+                        onChange={e => setDaysRange(Number(e.target.value))}
+                        style={{ marginLeft: '12px', verticalAlign: 'middle', width: '100%' }}
+                    />
+                </div>
+            </div>
+        );
+    };
+
+    const ProjectPanel = () => {
+        return tasks && tasks.length > 0 && (
+            <div style={{ marginTop: '24px' }}>
+                <strong>Progetti:</strong>
+                <ul style={{ margin: '8px 0 0 0', padding: 0, listStyle: 'none' }}>
+                    {Array.from(new Set(tasks
+                        .map(t => t.project)
+                        .filter(p => typeof p === 'string' && p.trim() !== '')))
+                        .map((project, idx) => (
+                            <li key={idx} style={{ padding: '2px 0', display: 'flex', alignItems: 'center' }}>
+                                <span style={{ marginRight: '8px' }}>{String(project)}</span>
+                                <input
+                                    type="color"
+                                    style={{ width: 24, height: 24, border: 'none', background: 'none', cursor: 'pointer' }}
+                                    value={projectColors[String(project)] || '#000000'}
+                                    onChange={e => handleColorChange(String(project), e.target.value)}
+                                />
+                            </li>
+                        ))}
+                </ul>
+            </div>
+        )
+    };
+
+    // Gestione tema icone
+    const [iconTheme, setIconTheme] = useState(() => {
+        try {
+            const saved = localStorage.getItem('simplanner-icon-theme');
+            return saved ? saved : 'default';
+        } catch (e) {
+            return 'default';
+        }
+    });
+
+    const handleThemeChange = (theme: string) => {
+        setIconTheme(theme);
+        localStorage.setItem('simplanner-icon-theme', theme);
+    };
+
+    const ThemePanel = () => {
+        return (
+            <div>
+                <strong>Tema icone:</strong>
+                <div style={{ marginTop: '16px' }}>
+                    <Toggle
+                        checked={iconTheme === 'default'}
+                        onChange={() => handleThemeChange('default')}
+                        label={"Tema di default"}
+                    />
+                    <Toggle
+                        checked={iconTheme === 'checked'}
+                        onChange={() => handleThemeChange('checked')}
+                        label={"Stile con spunta"}
+                    />
+                </div>
+            </div>
+        );
+    }
+
+    const TabbedContent = ({ panels }: { panels: { content: React.ReactNode, title: string }[] }) => {
+        const [activeTab, setActiveTab] = useState(() => {
+            const saved = localStorage.getItem('simplanner-config-tab');
+            return saved ? Number(saved) : 0;
+        });
+        const handleTabChange = (index: number) => {
+            setActiveTab(index);
+            localStorage.setItem('simplanner-config-tab', String(index));
+        };
+        return <div className="tabbed-content">
+            <div className="tabs">
+                {panels.map((panel, index) => (
+                    <div className={`tab ${activeTab === index ? 'active' : ''}`} onClick={() => handleTabChange(index)} key={index}>
+                        <span>{panel.title}</span>
+                    </div>
+                ))}
+            </div>
+            <div className="content">
+                {panels[activeTab].content}
+            </div>
+        </div>
+    };
+
     return (
         <>
             <div className="header-bar">
@@ -73,61 +189,11 @@ export const Header = ({
                 <div className="modal-overlay" onClick={() => setShowConfig(false)}>
                     <div className="modal" onClick={e => e.stopPropagation()}>
                         <h2>Configurazioni</h2>
-                        <Toggle
-                            checked={editable}
-                            onChange={setEditable}
-                            label={"Modifica"}
-                        />
-                        <Toggle
-                            checked={projectEditable}
-                            onChange={setProjectEditable}
-                            label={"Raggruppa"}
-                        />
-                        <Toggle
-                            checked={dateTimeEnabled}
-                            onChange={setDateTimeEnabled}
-                            label={"Con scadenza"}
-                        />
-                        <Toggle
-                            checked={showExpired}
-                            onChange={setShowExpired}
-                            label={"Mostra scaduti"}
-                        />
-                        <div style={{ margin: '16px 0', width: '100%', display: 'flex', alignItems: 'center' }}>
-                            Giorni da mostrare:
-                            <input
-                                type="range"
-                                id="daysRange"
-                                min={0}
-                                max={365}
-                                value={daysRange}
-                                onChange={e => setDaysRange(Number(e.target.value))}
-                                style={{ marginLeft: '12px', verticalAlign: 'middle', width: '100%' }}
-                            />
-                            <span style={{ marginLeft: '8px', fontWeight: 500 }}>{daysRange}</span>
-                        </div>
-                        {/* Elenco dei progetti presenti nei task */}
-                        {tasks.length > 0 && (
-                            <div style={{ marginTop: '24px' }}>
-                                <strong>Progetti:</strong>
-                                <ul style={{ margin: '8px 0 0 0', padding: 0, listStyle: 'none' }}>
-                                    {Array.from(new Set(tasks
-                                        .map(t => t.project)
-                                        .filter(p => p && p.trim() !== '')))
-                                        .map((project, idx) => (
-                                            <li key={idx} style={{ padding: '2px 0', display: 'flex', alignItems: 'center' }}>
-                                                <span style={{ marginRight: '8px' }}>{String(project)}</span>
-                                                <input
-                                                    type="color"
-                                                    style={{ width: 24, height: 24, border: 'none', background: 'none', cursor: 'pointer' }}
-                                                    value={projectColors[project] || '#000000'}
-                                                    onChange={e => handleColorChange(project, e.target.value)}
-                                                />
-                                            </li>
-                                        ))}
-                                </ul>
-                            </div>
-                        )}
+                        <TabbedContent panels={[
+                            { content: <TogglePanel />, title: "Generale" },
+                            { content: <ProjectPanel />, title: "Progetti" },
+                            { content: <ThemePanel />, title: "Tema" }
+                        ]} />
                     </div>
                 </div>
             )}

@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import './App.css';
 import TaskList from './components/TaskList';
 import { Header } from './components/Header';
-import { STATUS_ENUM, STATUS } from './utils';
+import { STATUS_ENUM } from './utils';
 import Toggle from './components/Toggle';
 import TaskProjectSelector from './components/TaskProjectSelector';
 import Footer from './components/Footer';
@@ -23,6 +23,22 @@ const initialTasks = [
 ];
 
 function App() {
+  // Stato per il tema delle icone
+  const [iconTheme, setIconTheme] = useState(() => {
+    try {
+      const saved = localStorage.getItem('simplanner-icon-theme');
+      return saved ? saved : 'default';
+    } catch (e) {
+      return 'default';
+    }
+  });
+
+  // Funzione per aggiornare il tema e sincronizzare con localStorage
+  const handleThemeChange = (theme) => {
+    setIconTheme(theme);
+    localStorage.setItem('simplanner-icon-theme', theme);
+  };
+
   // Stato per abilitare/disabilitare il campo data-ora nei task
   const [dateTimeEnabled, setDateTimeEnabledState] = useState(() => {
     const saved = localStorage.getItem('simplanner-dateTime-enabled');
@@ -154,10 +170,10 @@ function App() {
     setTasks(tasks => {
       const updated = tasks.map(task =>
         task.id === id
-          ? { ...task, status: (task.status + 1) % STATUS.length }
+          ? { ...task, status: (task.status + 1) % 4 }
           : task
       );
-      // Nessuna cancellazione automatica dei task completati/skippati
+      localStorage.setItem('simplanner-tasks', JSON.stringify(updated));
       return updated;
     });
   };
@@ -304,6 +320,7 @@ function App() {
   }
 
   const HeaderView = <Header
+    tasks={tasks}
     setShowHelp={setShowHelp}
     editable={editable}
     setEditable={setEditable}
@@ -317,6 +334,8 @@ function App() {
     setDaysRange={setDaysRange}
     zenMode={zenMode}
     setZenMode={setZenMode}
+    iconTheme={iconTheme}
+    setIconTheme={handleThemeChange}
   />;
 
   const DefinedTaskProject = <TaskProjectSelector
@@ -342,13 +361,39 @@ function App() {
       <div className="app-container">
         {HeaderView}
         {projectEditable && DefinedTaskProject}
-        {VisibleTasks}
+        <TaskList
+          tasks={(() => {
+            let filtered =
+              projectFilter === 'ALL'
+                ? unarchivedTasks
+                : projectFilter === null
+                  ? unarchivedTasks.filter(t => !t.project)
+                  : projectFilter
+                    ? unarchivedTasks.filter(t => t.project === projectFilter)
+                    : unarchivedTasks;
+            const now = new Date();
+            const end = new Date(now);
+            end.setDate(now.getDate() + daysRange);
+            return filtered.filter(t => {
+              if (!t.dateTime) return true;
+              const dt = new Date(t.dateTime);
+              if (showExpired && dt < now) return true;
+              return dt >= now && dt <= end;
+            });
+          })()}
+          onTaskClick={handleClick}
+          updateTaskTitle={updateTaskTitle}
+          editable={editable}
+          projectEditable={projectEditable}
+          dateTimeEnabled={dateTimeEnabled}
+          iconTheme={iconTheme}
+        />
         {FooterView}
         {showHelp && HelpModalView}
         {showPopup && NewTaskModalView}
         {showCleanConfirm && ConfirmModalView}
       </div>
-    </div >
+    </div>
   );
 }
 
