@@ -335,7 +335,7 @@ function App() {
     zenMode={zenMode}
     setZenMode={setZenMode}
     iconTheme={iconTheme}
-    setIconTheme={handleThemeChange}
+    handleThemeChange={handleThemeChange}
   />;
 
   const DefinedTaskProject = <TaskProjectSelector

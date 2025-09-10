@@ -17,7 +17,9 @@ export const Header = ({
     daysRange,
     setDaysRange,
     zenMode,
-    setZenMode
+    setZenMode,
+    handleThemeChange,
+    iconTheme,
 }) => {
     const [showConfig, setShowConfig] = useState(false);
     // Usa i task passati come prop
@@ -99,21 +101,6 @@ export const Header = ({
                 </ul>
             </div>
         )
-    };
-
-    // Gestione tema icone
-    const [iconTheme, setIconTheme] = useState(() => {
-        try {
-            const saved = localStorage.getItem('simplanner-icon-theme');
-            return saved ? saved : 'default';
-        } catch (e) {
-            return 'default';
-        }
-    });
-
-    const handleThemeChange = (theme: string) => {
-        setIconTheme(theme);
-        localStorage.setItem('simplanner-icon-theme', theme);
     };
 
     const ThemePanel = () => {
