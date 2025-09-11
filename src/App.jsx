@@ -1,13 +1,15 @@
 import { useState, useEffect } from 'react';
 import './App.css';
 import TaskList from './components/TaskList';
-import { Header } from './components/Header';
+// import { Header } from './components/Header';
 import { STATUS_ENUM } from './utils';
 import Toggle from './components/Toggle';
 import TaskProjectSelector from './components/TaskProjectSelector';
 import Footer from './components/Footer';
 import ConfirmModal from './components/ConfirmModal';
 import HelpModal from './components/HelpModal';
+import GearIcon from "./components/GearIcon";
+import HelpIcon from "./components/HelpIcon";
 
 const initialTasks = [
   { id: 1, title: 'Questo è un task da fare', longDescription: '', project: 'Quadrato', dateTime: '', status: STATUS_ENUM.TODO },
@@ -29,6 +31,7 @@ function App() {
       const saved = localStorage.getItem('simplanner-icon-theme');
       return saved ? saved : 'default';
     } catch (e) {
+      console.log({ e })
       return 'default';
     }
   });
@@ -50,6 +53,8 @@ function App() {
     return saved ? JSON.parse(saved) : false;
   });
 
+  const [showConfig, setShowConfig] = useState(false);
+
   useEffect(() => {
     localStorage.setItem('simplanner-show-expired', JSON.stringify(showExpired));
   }, [showExpired]);
@@ -67,6 +72,7 @@ function App() {
     setProjectFilterState(val);
     localStorage.setItem('simplanner-project-filter', JSON.stringify(val));
   };
+
   // Stato per abilitare/disabilitare la modifica del progetto
   const [projectEditable, setProjectEditableState] = useState(() => {
     const saved = localStorage.getItem('simplanner-project-editable');
@@ -316,6 +322,214 @@ function App() {
     </div>
   }
 
+
+  const Header = ({
+    tasks,
+    setShowHelp,
+    editable,
+    setEditable,
+    projectEditable,
+    setProjectEditable,
+    dateTimeEnabled,
+    setDateTimeEnabled,
+    showExpired,
+    setShowExpired,
+    daysRange,
+    onDaysRangeChange,
+    zenMode,
+    setZenMode,
+    handleThemeChange,
+    iconTheme,
+    showConfig,
+    setShowConfig,
+  }) => {
+    // Usa i task passati come prop
+
+    // Gestione colori progetti
+    const [projectColors, setProjectColors] = useState(() => {
+      try {
+        const saved = localStorage.getItem('simplanner-project-colors');
+        return saved ? JSON.parse(saved) : {};
+      } catch (e) {
+        return { e };
+      }
+    });
+
+    const handleColorChange = (project, color) => {
+      const newColors = { ...projectColors, [project]: color };
+      setProjectColors(newColors);
+      localStorage.setItem('simplanner-project-colors', JSON.stringify(newColors));
+    };
+
+    const TogglePanel = ({ daysRange, onDaysRangeChange }) => {
+      return (
+        <div className="tab">
+          <Toggle
+            checked={editable}
+            onChange={setEditable}
+            label={"Modifica"}
+          />
+          <Toggle
+            checked={projectEditable}
+            onChange={setProjectEditable}
+            label={"Raggruppa"}
+          />
+          <Toggle
+            checked={dateTimeEnabled}
+            onChange={setDateTimeEnabled}
+            label={"Con scadenza"}
+          />
+          <Toggle
+            checked={showExpired}
+            onChange={setShowExpired}
+            label={"Mostra scaduti"}
+          />
+          <div style={{ margin: '16px 0', width: '100%', display: 'flex', alignItems: 'center' }}>
+            <div className="label" style={{ flex: '1' }}>
+              Giorni da mostrare:
+            </div>
+            <input type="number" name="daysRange" id="daysRange" min={0} max={365} value={daysRange}
+              onChange={e => onDaysRangeChange(Number(e.target.value))} style={{
+                marginLeft: '12px',
+                verticalAlign: 'middle',
+                width: '50px',
+                minWidth: '60px',
+                border: '1px solid #ccc',
+                borderRadius: '4px',
+                padding: '8px',
+                boxSizing: 'border-box',
+              }} />
+          </div>
+        </div>
+      );
+    };
+
+    const ProjectPanel = () => {
+      return tasks && tasks.length > 0 && (
+        <div style={{ marginTop: '24px' }}>
+          <strong>Progetti:</strong>
+          <ul style={{ margin: '8px 0 0 0', padding: 0, listStyle: 'none' }}>
+            {Array.from(new Set(tasks
+              .map(t => t.project)
+              .filter(p => typeof p === 'string' && p.trim() !== '')))
+              .map((project, idx) => (
+                <li key={idx} style={{ padding: '2px 0', display: 'flex', alignItems: 'center' }}>
+                  <span style={{ marginRight: '8px', flex: '1' }}>{String(project)}</span>
+                  <input
+                    type="color"
+                    style={{ width: 24, height: 24, border: 'none', background: 'none', cursor: 'pointer' }}
+                    value={projectColors[String(project)] || '#000000'}
+                    onChange={e => handleColorChange(String(project), e.target.value)}
+                  />
+                </li>
+              ))}
+          </ul>
+        </div>
+      )
+    };
+
+    const ThemePanel = () => {
+      return (
+        <div>
+          <strong>Tema icone:</strong>
+          <div style={{ marginTop: '16px' }}>
+            <Toggle
+              checked={iconTheme === 'default'}
+              onChange={() => handleThemeChange('default')}
+              label={"Tema di default"}
+            />
+            <Toggle
+              checked={iconTheme === 'checked'}
+              onChange={() => handleThemeChange('checked')}
+              label={"Stile con spunta"}
+            />
+          </div>
+        </div>
+      );
+    }
+
+    const TabbedContent = ({ panels }) => {
+      const [activeTab, setActiveTab] = useState(() => {
+        const saved = localStorage.getItem('simplanner-config-tab');
+        return saved ? Number(saved) : 0;
+      });
+
+      const handleTabChange = (index) => {
+        setActiveTab(index);
+        localStorage.setItem('simplanner-config-tab', String(index));
+      };
+
+      return <div className="tabbed-content">
+        <div className="tabs">
+          {panels.map((panel, index) => (
+            <div className={`tab ${activeTab === index ? 'active' : ''}`} onClick={() => handleTabChange(index)} key={index}>
+              <span>{panel.title}</span>
+            </div>
+          ))}
+        </div>
+        <div className="content">
+          {panels.map((panel, index) => (
+            <div
+              key={index}
+              className={`tab-content${activeTab === index ? ' active' : ''}`}
+            >
+              {panel.content}
+            </div>
+          ))}
+        </div>
+      </div>
+    };
+
+    console.log({ message: "re-render" })
+
+    return (
+      <>
+        <div className="header-bar">
+          <h1 className="header-title">To do list</h1>
+          <div className="header-icons">
+            <Toggle
+              checked={zenMode}
+              onChange={setZenMode}
+              label={""}
+            />
+            <span onClick={() => setZenMode(!zenMode)} style={{ cursor: "pointer" }}>zen mode</span>
+            <span onClick={() => setShowHelp(true)}>
+              <HelpIcon />
+            </span>
+            <span onClick={() => setShowHelp(true)} style={{ cursor: "pointer" }}>
+              help
+            </span>
+            <span onClick={() => setShowConfig(true)} style={{ cursor: "pointer" }}>
+              <GearIcon />
+            </span>
+            <span onClick={() => setShowConfig(true)} style={{ cursor: "pointer" }}>
+              config
+            </span>
+          </div>
+        </div>
+        {/** estrarre un componente modal da questo */}
+        {showConfig && (
+          <div className="modal-overlay" onClick={() => setShowConfig(false)}>
+            <div className="modal" onClick={e => e.stopPropagation()}>
+              <h2>Configurazioni</h2>
+              <TabbedContent panels={[
+                { content: <TogglePanel daysRange={daysRange} onDaysRangeChange={handleDaysRangeChange} />, title: "Generale" },
+                { content: <ProjectPanel />, title: "Progetti" },
+                { content: <ThemePanel />, title: "Tema" }
+              ]} />
+            </div>
+          </div>
+        )}
+      </>
+    );
+  };
+
+  // Gestione del range dei giorni a livello di App
+  const handleDaysRangeChange = (val) => {
+    setDaysRange(val);
+    localStorage.setItem('simplanner-days-range', JSON.stringify(val));
+  };
+
   const HeaderView = <Header
     tasks={tasks}
     setShowHelp={setShowHelp}
@@ -328,11 +542,13 @@ function App() {
     showExpired={showExpired}
     setShowExpired={setShowExpired}
     daysRange={daysRange}
-    setDaysRange={setDaysRange}
+    onDaysRangeChange={handleDaysRangeChange}
     zenMode={zenMode}
     setZenMode={setZenMode}
     iconTheme={iconTheme}
     handleThemeChange={handleThemeChange}
+    showConfig={showConfig}
+    setShowConfig={setShowConfig}
   />;
 
   const DefinedTaskProject = <TaskProjectSelector
