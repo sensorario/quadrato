@@ -336,7 +336,6 @@ function App() {
     showExpired,
     setShowExpired,
     daysRange,
-    onDaysRangeChange,
     zenMode,
     setZenMode,
     handleThemeChange,
@@ -510,25 +509,14 @@ function App() {
         </div>
         {/** estrarre un componente modal da questo */}
         {showConfig && (
-          <div className="modal-overlay" onClick={() => setShowConfig(false)}>
-            <div className="modal" onClick={e => e.stopPropagation()}>
-              <h2>Configurazioni</h2>
-              <TabbedContent panels={[
-                { content: <TogglePanel daysRange={daysRange} onDaysRangeChange={handleDaysRangeChange} />, title: "Generale" },
-                { content: <ProjectPanel />, title: "Progetti" },
-                { content: <ThemePanel />, title: "Tema" }
-              ]} />
-            </div>
-          </div>
-        )}
-        {/* {showConfig && (
-          <Modal
-            title="Configurazioni"
-            icon={<GearIcon />}
-          >
-
+          <Modal onclick={() => setShowConfig(false)} title="Configurazioni" icon={<GearIcon />}  >
+            <TabbedContent panels={[
+              { content: <TogglePanel daysRange={daysRange} onDaysRangeChange={handleDaysRangeChange} />, title: "Generale" },
+              { content: <ProjectPanel />, title: "Progetti" },
+              { content: <ThemePanel />, title: "Tema" }
+            ]} />
           </Modal>
-        )} */}
+        )}
       </>
     );
   };
