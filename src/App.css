@@ -193,6 +193,7 @@ input, textarea {
 
 .tabbed-content {
     height: calc(100vh - 360px);
+    min-height: fit-content;
     .tabs {
         display: flex;
         .tab {
