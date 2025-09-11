@@ -10,6 +10,7 @@ import ConfirmModal from './components/ConfirmModal';
 import HelpModal from './components/HelpModal';
 import GearIcon from "./components/GearIcon";
 import HelpIcon from "./components/HelpIcon";
+import { Modal } from './components/Modal';
 
 const initialTasks = [
   { id: 1, title: 'Questo è un task da fare', longDescription: '', project: 'Quadrato', dateTime: '', status: STATUS_ENUM.TODO },
@@ -520,6 +521,14 @@ function App() {
             </div>
           </div>
         )}
+        {/* {showConfig && (
+          <Modal
+            title="Configurazioni"
+            icon={<GearIcon />}
+          >
+
+          </Modal>
+        )} */}
       </>
     );
   };
