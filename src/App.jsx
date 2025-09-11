@@ -99,9 +99,16 @@ function App() {
     return saved ? JSON.parse(saved) : 7;
   });
 
-  useEffect(() => {
-    localStorage.setItem('simplanner-days-range', JSON.stringify(daysRange));
-  }, [daysRange]);
+  const [showPopup, setShowPopup] = useState(false);
+  const [newTaskTitle, setNewTaskTitle] = useState('');
+  const [newTaskProject, setNewTaskProject] = useState();
+  const [newTaskDateTime, setNewTaskDateTime] = useState('');
+  const [newTaskLongDescription, setNewTaskLongDescription] = useState('');
+  const [showHelp, setShowHelp] = useState(false);
+  const [zenMode, setZenMode] = useState(() => {
+    const saved = localStorage.getItem('simplanner-zen-mode');
+    return saved ? JSON.parse(saved) : false;
+  });
 
   // Funzione per aggiornare la descrizione di un task
   const updateTaskTitle = (id, value, longValue, projectValue, dateTimeValue) => {
@@ -121,16 +128,6 @@ function App() {
       return updated;
     });
   };
-  const [showPopup, setShowPopup] = useState(false);
-  const [newTaskTitle, setNewTaskTitle] = useState('');
-  const [newTaskProject, setNewTaskProject] = useState();
-  const [newTaskDateTime, setNewTaskDateTime] = useState('');
-  const [newTaskLongDescription, setNewTaskLongDescription] = useState('');
-  const [showHelp, setShowHelp] = useState(false);
-  const [zenMode, setZenMode] = useState(() => {
-    const saved = localStorage.getItem('simplanner-zen-mode');
-    return saved ? JSON.parse(saved) : false;
-  });
 
   useEffect(() => {
     localStorage.setItem('simplanner-project-filter', JSON.stringify(projectFilter));
@@ -356,31 +353,33 @@ function App() {
     setShowCleanConfirm={setShowCleanConfirm}
     handleCleanTasks={handleCleanTasks} />;
 
+  const visibleTasks = (() => {
+    let filtered =
+      projectFilter === 'ALL'
+        ? unarchivedTasks
+        : projectFilter === null
+          ? unarchivedTasks.filter(t => !t.project)
+          : projectFilter
+            ? unarchivedTasks.filter(t => t.project === projectFilter)
+            : unarchivedTasks;
+    const now = new Date();
+    const end = new Date(now);
+    end.setDate(now.getDate() + daysRange);
+    return filtered.filter(t => {
+      if (!t.dateTime) return true;
+      const dt = new Date(t.dateTime);
+      if (showExpired && dt < now) return true;
+      return dt >= now && dt <= end;
+    });
+  })();
+
   return (
     <div className="foo">
       <div className="app-container">
         {HeaderView}
         {projectEditable && DefinedTaskProject}
         <TaskList
-          tasks={(() => {
-            let filtered =
-              projectFilter === 'ALL'
-                ? unarchivedTasks
-                : projectFilter === null
-                  ? unarchivedTasks.filter(t => !t.project)
-                  : projectFilter
-                    ? unarchivedTasks.filter(t => t.project === projectFilter)
-                    : unarchivedTasks;
-            const now = new Date();
-            const end = new Date(now);
-            end.setDate(now.getDate() + daysRange);
-            return filtered.filter(t => {
-              if (!t.dateTime) return true;
-              const dt = new Date(t.dateTime);
-              if (showExpired && dt < now) return true;
-              return dt >= now && dt <= end;
-            });
-          })()}
+          tasks={visibleTasks}
           onTaskClick={handleClick}
           updateTaskTitle={updateTaskTitle}
           editable={editable}

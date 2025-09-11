@@ -71,9 +71,14 @@ export const Header = ({
                         min={0}
                         max={365}
                         value={daysRange}
-                        onChange={e => setDaysRange(Number(e.target.value))}
+                        onChange={e => {
+                            const val = Number(e.target.value);
+                            setDaysRange(val);
+                            localStorage.setItem('simplanner-days-range', JSON.stringify(val));
+                        }}
                         style={{ marginLeft: '12px', verticalAlign: 'middle', width: '100%' }}
                     />
+                    <span style={{ marginLeft: '12px', fontWeight: 500 }}>{daysRange} giorni</span>
                 </div>
             </div>
         );
