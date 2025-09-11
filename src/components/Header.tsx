@@ -133,10 +133,12 @@ export const Header = ({
             const saved = localStorage.getItem('simplanner-config-tab');
             return saved ? Number(saved) : 0;
         });
+
         const handleTabChange = (index: number) => {
             setActiveTab(index);
             localStorage.setItem('simplanner-config-tab', String(index));
         };
+
         return <div className="tabbed-content">
             <div className="tabs">
                 {panels.map((panel, index) => (
@@ -146,7 +148,14 @@ export const Header = ({
                 ))}
             </div>
             <div className="content">
-                {panels[activeTab].content}
+                {panels.map((panel, index) => (
+                    <div
+                        key={index}
+                        className={`tab-content${activeTab === index ? ' active' : ''}`}
+                    >
+                        {panel.content}
+                    </div>
+                ))}
             </div>
         </div>
     };
