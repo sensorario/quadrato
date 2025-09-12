@@ -9,13 +9,7 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    margin-bottom: 2rem;
-}
-.header-title {
-    font-size: 2rem;
-    font-weight: 700;
-    margin: 0;
-    visibility: hidden;
+    justify-content: end;
 }
 .header-icons {
     display: flex;
@@ -27,6 +21,7 @@
     display: flex;
     align-items: center;
     height: 100%;
+    
 }
 .clean-icon {
     display: inline-flex;
@@ -162,7 +157,7 @@ input, textarea {
 .app-container {
     width: 100%;
     max-width: 600px;
-    margin: 24px auto;
+    margin: 8px     auto;
     padding: 0 1rem;
     box-sizing: border-box;
 }
@@ -219,12 +214,6 @@ input, textarea {
                 border-bottom: 2px solid #0073b1;
             }
         }
-    }
-}
-
-@media (min-width: 470px) {
-    .header-title {
-        visibility: visible;
     }
 }
 

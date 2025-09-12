@@ -313,7 +313,7 @@ function App() {
           checked={zenMode}
           onChange={setZenMode}
         />
-        <span style={{ display: "flex", alignItems: "center" }}>zen mode</span>
+        <span onClick={() => setZenMode(!zenMode)} style={{ cursor: "pointer", display: "flex", alignItems: "center" }}>zen mode</span>
       </div>
       {VisibleTasks}
       {showPopup && NewTaskModalView}
@@ -480,7 +480,6 @@ function App() {
     return (
       <>
         <div className="header-bar" style={{ height: "35px" }}>
-          <h1 className="header-title">To do list</h1>
           <div className="header-icons">
             <span onClick={() => setShowHelp(true)}>
               <HelpIcon />
