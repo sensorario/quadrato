@@ -311,12 +311,12 @@ function App() {
 
   if (zenMode) {
     return <div className="app-container">
-      <div style={{ display: "flex", justifyContent: "flex-end" }}>
+      <div style={{ display: "flex", justifyContent: "flex-end", height: "35px", gap: "12px" }}>
         <Toggle
           checked={zenMode}
           onChange={setZenMode}
-          label={zenMode ? "normal mode" : "zen mode"}
         />
+        <span style={{ display: "flex", alignItems: "center" }}>zen mode</span>
       </div>
       {VisibleTasks}
       {showPopup && NewTaskModalView}
@@ -480,19 +480,11 @@ function App() {
       </div>
     };
 
-    console.log({ message: "re-render" })
-
     return (
       <>
-        <div className="header-bar">
+        <div className="header-bar" style={{ height: "35px" }}>
           <h1 className="header-title">To do list</h1>
           <div className="header-icons">
-            <Toggle
-              checked={zenMode}
-              onChange={setZenMode}
-              label={""}
-            />
-            <span onClick={() => setZenMode(!zenMode)} style={{ cursor: "pointer" }}>zen mode</span>
             <span onClick={() => setShowHelp(true)}>
               <HelpIcon />
             </span>
@@ -505,6 +497,12 @@ function App() {
             <span onClick={() => setShowConfig(true)} style={{ cursor: "pointer" }}>
               config
             </span>
+            <Toggle
+              checked={zenMode}
+              onChange={setZenMode}
+              label={""}
+            />
+            <span onClick={() => setZenMode(!zenMode)} style={{ cursor: "pointer" }}>zen mode</span>
           </div>
         </div>
         {/** estrarre un componente modal da questo */}
