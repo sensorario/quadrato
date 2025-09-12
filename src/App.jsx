@@ -253,61 +253,58 @@ function App() {
       dateTimeEnabled={dateTimeEnabled}
     />
 
-  const NewTaskModalView = <div className="modal-overlay" onClick={() => setShowPopup(false)}>
-    <div className="modal" onClick={e => e.stopPropagation()}>
-      <h2>Nuovo Task</h2>
-      <div className="modal-input-wrapper">
-        <input
-          type="text"
-          value={newTaskTitle}
-          onChange={e => setNewTaskTitle(e.target.value)}
-          placeholder="Titolo del task"
-          className="modal-input"
-          autoFocus
-          onFocus={e => e.currentTarget.classList.add('input-focus')}
-          onBlur={e => e.currentTarget.classList.remove('input-focus')}
-          onKeyDown={e => {
-            if (e.key === 'Enter') {
-              handleAddTask();
-            } else if (e.key === 'Escape') {
-              setShowPopup(false);
-            }
-          }}
-        />
-      </div>
-      <div className="modal-long-description">
-        <textarea
-          value={newTaskLongDescription}
-          onChange={e => setNewTaskLongDescription(e.target.value)}
-          placeholder="Descrizione del task"
-          className="modal-input"
-        />
-      </div>
-      {projectEditable && <div className="modal-input-wrapper">
-        <input
-          type="text"
-          value={newTaskProject}
-          onChange={e => setNewTaskProject(e.target.value)}
-          placeholder="Progetto (opzionale)"
-          className="modal-input"
-          onKeyDown={e => {
-            if (e.key === 'Enter') {
-              handleAddTask();
-            }
-          }}
-        />
-      </div>}
-      {dateTimeEnabled && <div className="modal-input-wrapper">
-        <input
-          type="datetime-local"
-          value={newTaskDateTime}
-          onChange={e => setNewTaskDateTime(e.target.value)}
-          className="modal-input"
-        />
-      </div>}
-      <button onClick={handleAddTask} className='modal-close-btn'>salva</button>
+  const NewTaskModalView = <Modal title="Nuovo Task" onclick={() => setShowPopup(false)}>
+    <div className="modal-input-wrapper">
+      <input
+        type="text"
+        value={newTaskTitle}
+        onChange={e => setNewTaskTitle(e.target.value)}
+        placeholder="Titolo del task"
+        className="modal-input"
+        autoFocus
+        onFocus={e => e.currentTarget.classList.add('input-focus')}
+        onBlur={e => e.currentTarget.classList.remove('input-focus')}
+        onKeyDown={e => {
+          if (e.key === 'Enter') {
+            handleAddTask();
+          } else if (e.key === 'Escape') {
+            setShowPopup(false);
+          }
+        }}
+      />
     </div>
-  </div>
+    <div className="modal-long-description">
+      <textarea
+        value={newTaskLongDescription}
+        onChange={e => setNewTaskLongDescription(e.target.value)}
+        placeholder="Descrizione del task"
+        className="modal-input"
+      />
+    </div>
+    {projectEditable && <div className="modal-input-wrapper">
+      <input
+        type="text"
+        value={newTaskProject}
+        onChange={e => setNewTaskProject(e.target.value)}
+        placeholder="Progetto (opzionale)"
+        className="modal-input"
+        onKeyDown={e => {
+          if (e.key === 'Enter') {
+            handleAddTask();
+          }
+        }}
+      />
+    </div>}
+    {dateTimeEnabled && <div className="modal-input-wrapper">
+      <input
+        type="datetime-local"
+        value={newTaskDateTime}
+        onChange={e => setNewTaskDateTime(e.target.value)}
+        className="modal-input"
+      />
+    </div>}
+    <button onClick={handleAddTask} className='modal-close-btn'>salva</button>
+  </Modal>;
 
   if (zenMode) {
     return <div className="app-container">
