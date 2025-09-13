@@ -1,3 +1,0 @@
-{
-  "onBeforeCommit": "node generate-changelog.js && git add CHANGELOG.md"
-}

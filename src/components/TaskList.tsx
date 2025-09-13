@@ -48,14 +48,29 @@ export const TaskList = ({ tasks, onTaskClick, updateTaskTitle, editable, projec
         const isExpired = dateTimeEnabled && task.dateTime && new Date(task.dateTime) < new Date();
         const formatDate = (dateStr) => {
             if (!dateStr) return '';
+            const today = new Date();
             const d = new Date(dateStr);
+            const date = d.toLocaleString('it-IT', {
+                month: '2-digit',
+                day: '2-digit',
+            });
+            const todayDate = today.toLocaleString('it-IT', {
+                month: '2-digit',
+                day: '2-digit',
+            });
+            if (date === todayDate) {
+                return d.toLocaleString('it-IT', {
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    hour12: false
+                }).replace(/\//g, '-');
+            }
+
             return d.toLocaleString('it-IT', {
                 month: '2-digit',
                 day: '2-digit',
-                hour: '2-digit',
-                minute: '2-digit',
                 hour12: false
-            }).replace(/\//g, '-');
+            });
         };
         const isMobile = /iPhone/i.test(navigator.userAgent);
         return (
