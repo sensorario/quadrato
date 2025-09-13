@@ -75,6 +75,7 @@
 
 
 ### Other
+- refactor(config): enhance configuration tabs (d90574e, 2025-09-13)
 - chore(version): update version (5618bd8, 2025-09-13)
 - chore(changelog): update changelog (0457e91, 2025-09-13)
 - test(clean): remove all completed tasks (9f57d0a, 2025-09-13)
