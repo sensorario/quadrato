@@ -1,3 +1,5 @@
+import React from 'react';
+
 const Footer = ({ setShowPopup, setShowCleanConfirm }) => {
     return <div style={{ width: '100%', display: 'flex', justifyContent: 'center', gap: '8px', margin: '24px 0' }}>
         <button

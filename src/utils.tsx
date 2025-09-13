@@ -1,3 +1,5 @@
+import React from 'react';
+
 export const STATUS_ENUM = {
     TODO: 0,
     IN_PROGRESS: 1,
