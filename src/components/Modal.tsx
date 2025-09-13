@@ -1,3 +1,5 @@
+import React from 'react';
+
 export const Modal = ({ children, title, icon, onclick }) => {
     return <div className="modal-overlay" onClick={onclick}>
         <div className="modal" onClick={e => e.stopPropagation()}>
