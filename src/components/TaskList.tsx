@@ -3,11 +3,9 @@ import { getStatusIcons } from "../utils";
 import EditIcon from "./EditIcon";
 import EditTaskModal from "./EditTaskModal";
 
-export const TaskList = ({ tasks, onTaskClick, updateTaskTitle, editable, projectEditable, dateTimeEnabled }) => {
-    // Scegli il tema dei quadrati di stato dal localStorage
-    const rawTheme = localStorage.getItem('simplanner-icon-theme');
-    const statusTheme = rawTheme === 'checked' ? 'checked' : 'default';
-    const STATUS = getStatusIcons(statusTheme);
+export const TaskList = ({ tasks, onTaskClick, updateTaskTitle, editable, projectEditable, dateTimeEnabled, iconTheme }: { tasks: Array<{ id: number; title: string; status: number; longDescription?: string; project?: string; dateTime?: string; archived?: boolean; }>; onTaskClick: (id: number) => void; updateTaskTitle: (id: number, title: string, longDescription?: string, project?: string, dateTime?: string) => void; editable: boolean; projectEditable: boolean; dateTimeEnabled: boolean; iconTheme: 'default' | 'checked' | 'panda'; }) => {
+    // Usa direttamente la prop iconTheme
+    const STATUS = getStatusIcons(iconTheme);
     // Recupera i colori dei progetti dal localStorage
     let projectColors: Record<string, string> = {};
     try {

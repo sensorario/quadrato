@@ -75,6 +75,7 @@
 
 
 ### Other
+- chore(version): update version (5618bd8, 2025-09-13)
 - chore(changelog): update changelog (0457e91, 2025-09-13)
 - test(clean): remove all completed tasks (9f57d0a, 2025-09-13)
 - test(tdd): add first tests (7b10b05, 2025-09-13)

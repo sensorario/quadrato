@@ -4,6 +4,11 @@
 }
 .tab-content.active {
     display: block;
+    padding: 8px;
+    border: #ccc 1px solid;
+    border-radius: 0 0 8px 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    background: #fff;
 }
 .header-bar {
     display: flex;
@@ -206,12 +211,22 @@ input, textarea {
     min-height: fit-content;
     .tabs {
         display: flex;
+        .tab:first-of-type {
+            margin-left: 8px;
+        }
         .tab {
+            border: #ccc 1px solid;
+            border-bottom: none;
+            border-radius: 8px 8px 0 0;
+            margin-right: 0.5rem;
             padding: 0.5rem 1rem;
             cursor: pointer;
+            position: relative;
+            top: 1px;
+            
             &.active {
                 font-weight: bold;
-                border-bottom: 2px solid #0073b1;
+                border-bottom: 2px solid #fff;
             }
         }
     }

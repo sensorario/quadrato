@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import './App.css';
 import TaskList from './components/TaskList';
 // import { Header } from './components/Header';
-import { STATUS_ENUM } from './utils';
+import { STATUS_ENUM, getStatusIcons } from './utils';
 import Toggle from './components/Toggle';
 import TaskProjectSelector from './components/TaskProjectSelector';
 import Footer from './components/Footer';
@@ -434,11 +434,19 @@ function App() {
               checked={iconTheme === 'default'}
               onChange={() => handleThemeChange('default')}
               label={"Tema di default"}
+              icons={getStatusIcons('default')}
             />
             <Toggle
               checked={iconTheme === 'checked'}
               onChange={() => handleThemeChange('checked')}
               label={"Stile con spunta"}
+              icons={getStatusIcons('checked')}
+            />
+            <Toggle
+              checked={iconTheme === 'panda'}
+              onChange={() => handleThemeChange('panda')}
+              label={"Panda"}
+              icons={getStatusIcons('panda')}
             />
           </div>
         </div>
