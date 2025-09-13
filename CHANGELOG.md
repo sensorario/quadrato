@@ -75,6 +75,7 @@
 
 
 ### Other
+- chore(config): update panda (a44e06f, 2025-09-13)
 - chore(theme): enhance panda (2e6d57e, 2025-09-13)
 - refactor(config): enhance configuration tabs (d90574e, 2025-09-13)
 - chore(version): update version (5618bd8, 2025-09-13)
