@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { getStatusIcons } from "../utils";
 import EditIcon from "./EditIcon";
 import EditTaskModal from "./EditTaskModal";
+import FormatDate from "./FormatDate";
 
 export const TaskList = ({ tasks, onTaskClick, updateTaskTitle, editable, projectEditable, dateTimeEnabled, iconTheme }: { tasks: Array<{ id: number; title: string; status: number; longDescription?: string; project?: string; dateTime?: string; archived?: boolean; }>; onTaskClick: (id: number) => void; updateTaskTitle: (id: number, title: string, longDescription?: string, project?: string, dateTime?: string) => void; editable: boolean; projectEditable: boolean; dateTimeEnabled: boolean; iconTheme: 'default' | 'checked' | 'panda'; }) => {
     // Usa direttamente la prop iconTheme
@@ -46,32 +47,8 @@ export const TaskList = ({ tasks, onTaskClick, updateTaskTitle, editable, projec
             });
         }
         const isExpired = dateTimeEnabled && task.dateTime && new Date(task.dateTime) < new Date();
-        const formatDate = (dateStr) => {
-            if (!dateStr) return '';
-            const today = new Date();
-            const d = new Date(dateStr);
-            const date = d.toLocaleString('it-IT', {
-                month: '2-digit',
-                day: '2-digit',
-            });
-            const todayDate = today.toLocaleString('it-IT', {
-                month: '2-digit',
-                day: '2-digit',
-            });
-            if (date === todayDate) {
-                return d.toLocaleString('it-IT', {
-                    hour: '2-digit',
-                    minute: '2-digit',
-                    hour12: false
-                }).replace(/\//g, '-');
-            }
 
-            return d.toLocaleString('it-IT', {
-                month: '2-digit',
-                day: '2-digit',
-                hour12: false
-            });
-        };
+
         const isMobile = /iPhone/i.test(navigator.userAgent);
         return (
             <li
@@ -99,12 +76,12 @@ export const TaskList = ({ tasks, onTaskClick, updateTaskTitle, editable, projec
 
                     {STATUS[task.status]}
                     {dateTimeEnabled && task.dateTime && (
-                        <span style={{ margin: '0 4px', color: '#666' }}>[{formatDate(task.dateTime)}]</span>
+                        <span style={{ margin: '0 2px', color: '#666' }}><FormatDate date={task.dateTime} /></span>
                     )}
                     {projectEditable && task.project && (
-                        <span style={{ margin: '0 4px', color: '#666' }}>({task.project})</span>
+                        <span style={{ margin: '0 2px', color: '#666' }}>({task.project})</span>
                     )}
-                    {' '}<span dangerouslySetInnerHTML={{ __html: title }} />
+                    <span dangerouslySetInnerHTML={{ __html: title }} />
                 </span>
                 {editable && (isMobile || hoveredId === task.id) && (
                     <span style={{ marginLeft: '1rem', cursor: 'pointer' }} title="Modifica" onClick={e => { e.stopPropagation(); handleEditClick(task); }}>

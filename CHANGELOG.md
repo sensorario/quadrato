@@ -58,7 +58,7 @@
 
 
 ### Fixes
-- fix(setup): remove configuration file from root folder (0be0c59, 2025-09-13)
+- fix(setup): remove configuration file from root folder (9c3c54f, 2025-09-13)
 - fix(task): new task's modal is not loading Modal component (0adddb4, 2025-09-12)
 - fix(zen-mode): fix height of headers (bfe376a, 2025-09-12)
 - fix(config): store configuration is not working (d92d43f, 2025-09-11)
