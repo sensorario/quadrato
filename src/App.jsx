@@ -13,16 +13,16 @@ import HelpIcon from "./components/HelpIcon";
 import { Modal } from './components/Modal';
 
 const initialTasks = [
-  { id: 1, title: 'Questo è un task da fare', longDescription: '', project: 'Quadrato', dateTime: '', status: STATUS_ENUM.TODO },
-  { id: 2, title: 'Questo è un altro task da completare', longDescription: '', project: 'Quadrato', dateTime: '', status: STATUS_ENUM.TODO },
-  { id: 3, title: 'Task semplice da svolgere', longDescription: '', project: 'Quadrato', dateTime: '', status: STATUS_ENUM.TODO },
-  { id: 4, title: 'Task in corso di lavorazione', longDescription: '', project: 'Quadrato', dateTime: '', status: STATUS_ENUM.IN_PROGRESS },
-  { id: 5, title: 'Altro task in progresso', longDescription: '', project: 'Quadrato', dateTime: '', status: STATUS_ENUM.IN_PROGRESS },
-  { id: 6, title: 'Task completato con successo', longDescription: '', project: 'Quadrato', dateTime: '', status: STATUS_ENUM.DONE },
-  { id: 7, title: 'Questo task è stato finito', longDescription: '', project: 'Quadrato', dateTime: '', status: STATUS_ENUM.DONE },
-  { id: 8, title: 'Task portato a termine', longDescription: '', project: 'Quadrato', dateTime: '', status: STATUS_ENUM.DONE },
-  { id: 9, title: 'Task skippato per il momento', longDescription: '', project: 'Quadrato', dateTime: '', status: STATUS_ENUM.SKIPPED },
-  { id: 10, title: 'Questo task è stato saltato', longDescription: '', project: 'Quadrato', dateTime: '', status: STATUS_ENUM.SKIPPED },
+  { id: 1, title: 'Questo è un task da fare', longDescription: '', project: 'quadrato', dateTime: '', status: STATUS_ENUM.TODO },
+  { id: 2, title: 'Questo è un altro task da completare', longDescription: '', project: 'quadrato', dateTime: '', status: STATUS_ENUM.TODO },
+  { id: 3, title: 'Task semplice da svolgere', longDescription: '', project: 'quadrato', dateTime: '', status: STATUS_ENUM.TODO },
+  { id: 4, title: 'Task in corso di lavorazione', longDescription: '', project: 'quadrato', dateTime: '', status: STATUS_ENUM.IN_PROGRESS },
+  { id: 5, title: 'Altro task in progresso', longDescription: '', project: 'quadrato', dateTime: '', status: STATUS_ENUM.IN_PROGRESS },
+  { id: 6, title: 'Task completato con successo', longDescription: '', project: 'quadrato', dateTime: '', status: STATUS_ENUM.DONE },
+  { id: 7, title: 'Questo task è stato finito', longDescription: '', project: 'quadrato', dateTime: '', status: STATUS_ENUM.DONE },
+  { id: 8, title: 'Task portato a termine', longDescription: '', project: 'quadrato', dateTime: '', status: STATUS_ENUM.DONE },
+  { id: 9, title: 'Task skippato per il momento', longDescription: '', project: 'quadrato', dateTime: '', status: STATUS_ENUM.SKIPPED },
+  { id: 10, title: 'Questo task è stato saltato', longDescription: '', project: 'quadrato', dateTime: '', status: STATUS_ENUM.SKIPPED },
 ];
 
 function App() {

@@ -5,6 +5,20 @@
 
 
 ### Features
+- feat(deploy): fix install (59afa3e, 2025-09-13)
+- feat(deploy): update installation step (aec779b, 2025-09-13)
+- feat(deploy): add test step (d73b0c2, 2025-09-13)
+- feat(zen): fix zen mode and adjust confim modal (a35f7ef, 2025-09-13)
+- feat(modal): create new modal component (7b52f62, 2025-09-11)
+- feat(config): enhance configiration popup again (78562e2, 2025-09-11)
+- feat(config): enhance configuration popup (4361f76, 2025-09-11)
+- feat(config): refacor tab rendering (0705f2f, 2025-09-11)
+- feat(theme): update theme in real time (202839b, 2025-09-10)
+- feat(theme): add icon theme with tick (d729b4b, 2025-09-10)
+- feat(task): make initial task the new legenda (7776bb3, 2025-09-10)
+- feat(task): fix square corner (e30e6d9, 2025-09-06)
+- feat(project): add color project (8f81254, 2025-09-05)
+- feat(task): enhace task creation (d8e36a9, 2025-09-03)
 - feat(tasks): archive skipped and completed (31c8e8d, 2025-09-02)
 - feat(changelog): add missing changelog file (8493ba5, 2025-09-01)
 - feat(zen-mode): activate or deactivate zen mode (5413b2e, 2025-09-01)
@@ -43,12 +57,28 @@
 
 
 ### Fixes
+- fix(task): new task's modal is not loading Modal component (0adddb4, 2025-09-12)
+- fix(zen-mode): fix height of headers (bfe376a, 2025-09-12)
+- fix(config): store configuration is not working (d92d43f, 2025-09-11)
+- fix(config): set min height for configuation popup (7a8f06a, 2025-09-11)
+- fix(archive): restore archive feature (7e0338b, 2025-09-06)
+- fix(shortcut): shortcut may conflict with browsers shortcuts (6983372, 2025-09-06)
+- fix(labels): wrong alignment (8e1a63c, 2025-09-06)
+- fix(zen): fix header alignments in zen mode (ff21108, 2025-09-05)
+- fix(task): project lost focus after key stroke (d80e370, 2025-09-03)
+- fix(task): cant create new task in zen mode via shortcut (c7f0ade, 2025-09-02)
+- fix(task): creation is no more available via shortcut (a3363fa, 2025-09-02)
 - fix(heaer): hide title in small devices (9708650, 2025-09-01)
 - fix(task-creation): persist after new task creation (25c2fff, 2025-09-01)
 - fix(task): after task deletion local storage is not updated (75f0aaa, 2025-08-31)
 
 
 ### Other
+- test(clean): remove all completed tasks (9f57d0a, 2025-09-13)
+- test(tdd): add first tests (7b10b05, 2025-09-13)
+- chore(refactor): small refactoring (3eec53e, 2025-09-02)
+- chore(header): update margin to get better visibility of header (e5f3eb5, 2025-09-02)
+- chore(changelog): update changelog (89fe77a, 2025-09-02)
 - chore(app): prepare view to get a simplest return (702df49, 2025-09-02)
 - refactor(refactor): thin return (56b6870, 2025-09-02)
 - chore(todos): add some todos for future versions (dc91fc5, 2025-09-02)
