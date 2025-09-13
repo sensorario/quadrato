@@ -1,0 +1,3 @@
+{
+  "onBeforeCommit": "node generate-changelog.js"
+}
