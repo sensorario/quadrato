@@ -223,29 +223,35 @@ function App() {
 
   const unarchivedTasks = tasks.filter(t => !t.archived);
 
+  const visible = (() => {
+    // Filtra per progetto
+    let filtered =
+      projectFilter === 'ALL'
+        ? unarchivedTasks
+        : projectFilter === null
+          ? unarchivedTasks.filter(t => !t.project)
+          : projectFilter
+            ? unarchivedTasks.filter(t => t.project === projectFilter)
+            : unarchivedTasks;
+    // Filtra per range di giorni
+    const now = new Date();
+    const end = new Date(now);
+    end.setDate(now.getDate() + daysRange);
+    return filtered.filter(t => {
+      if (!t.dateTime) return true; // task senza scadenza
+      const dt = new Date(t.dateTime);
+      if (showExpired && dt < now) return true; // mostra scaduti se abilitato
+      return dt >= now && dt <= end;
+    });
+  })()
+
+  const numOfUnarchivedTasks = unarchivedTasks.length;
+  const numOfVisibleTasks = visible.length;
+  const hiddenTasksCount = numOfUnarchivedTasks - numOfVisibleTasks;
+
   const VisibleTasks =
     <TaskList
-      tasks={(() => {
-        // Filtra per progetto
-        let filtered =
-          projectFilter === 'ALL'
-            ? unarchivedTasks
-            : projectFilter === null
-              ? unarchivedTasks.filter(t => !t.project)
-              : projectFilter
-                ? unarchivedTasks.filter(t => t.project === projectFilter)
-                : unarchivedTasks;
-        // Filtra per range di giorni
-        const now = new Date();
-        const end = new Date(now);
-        end.setDate(now.getDate() + daysRange);
-        return filtered.filter(t => {
-          if (!t.dateTime) return true; // task senza scadenza
-          const dt = new Date(t.dateTime);
-          if (showExpired && dt < now) return true; // mostra scaduti se abilitato
-          return dt >= now && dt <= end;
-        });
-      })()}
+      tasks={visible}
       onTaskClick={handleClick}
       updateTaskTitle={updateTaskTitle}
       editable={editable}
@@ -339,6 +345,7 @@ function App() {
     iconTheme,
     showConfig,
     setShowConfig,
+    hiddenTasksCount,
   }) => {
     // Usa i task passati come prop
 
@@ -499,6 +506,7 @@ function App() {
       <>
         <div className="header-bar" style={{ height: "35px" }}>
           <div className="header-icons">
+            <span className="hidden-tasks">hidden tasks: {hiddenTasksCount}</span>
             <span onClick={() => setShowHelp(true)}>
               <HelpIcon />
             </span>
@@ -559,6 +567,7 @@ function App() {
     handleThemeChange={handleThemeChange}
     showConfig={showConfig}
     setShowConfig={setShowConfig}
+    hiddenTasksCount={hiddenTasksCount}
   />;
 
   const DefinedTaskProject = <TaskProjectSelector
