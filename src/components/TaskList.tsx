@@ -98,8 +98,8 @@ export const TaskList = ({ tasks, onTaskClick, updateTaskTitle, editable, projec
         const withDate = tasks.filter(t => t.dateTime);
         const withoutDate = tasks.filter(t => !t.dateTime);
         withDate.sort((a, b) => {
-            const aTime = new Date(a.dateTime).getTime();
-            const bTime = new Date(b.dateTime).getTime();
+            const aTime = new Date(a.dateTime!).getTime();
+            const bTime = new Date(b.dateTime!).getTime();
             return aTime - bTime;
         });
         orderedTasks = [...withDate, ...withoutDate];
