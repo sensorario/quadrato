@@ -79,6 +79,8 @@
 
 
 ### Other
+- Merge branch '1-show-hidden-tasks' into next (a1621b5, 2025-09-14)
+- chore(changelog): update changelog (f95db8c, 2025-09-14)
 - refactor(config): change panel name (25752d3, 2025-09-14)
 - Update CHANGELOG.md (5f5bdb5, 2025-09-14)
 - Update CHANGELOG.md (5cfbfbf, 2025-09-14)
