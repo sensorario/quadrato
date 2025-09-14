@@ -5,6 +5,17 @@ import { act } from 'react';
 import App from '../src/App.jsx';
 
 describe('Home page', () => {
+    it('should show 4 tabs in config modal', async () => {
+        render(<App />);
+        const configButton = screen.getByText(/config/i);
+        act(() => {
+            fireEvent.click(configButton);
+        });
+        expect(await screen.findByText(/Generale/i)).toBeInTheDocument();
+        expect(await screen.findByText(/Info/i)).toBeInTheDocument();
+        expect(await screen.findByText(/Temi/i)).toBeInTheDocument();
+        expect(await screen.findByText(/Progetti/i)).toBeInTheDocument();
+    });
     it('should contain some strings', () => {
         render(<App />);
         expect(screen.getByText(/config/i)).toBeInTheDocument();

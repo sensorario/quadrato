@@ -79,6 +79,7 @@
 
 
 ### Other
+- chore: update changelog (9ede7a3, 2025-09-14)
 - chore(changelog): update changelog (21b09ef, 2025-09-14)
 - chore(licence): add MIT licence (b17f30d, 2025-09-14)
 - Merge branch '1-show-hidden-tasks' into next (a1621b5, 2025-09-14)

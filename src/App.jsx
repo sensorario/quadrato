@@ -411,7 +411,6 @@ function App() {
     const ProjectPanel = () => {
       return tasks && tasks.length > 0 && (
         <div style={{ marginTop: '24px' }}>
-          <strong>Progetti:</strong>
           <ul style={{ margin: '8px 0 0 0', padding: 0, listStyle: 'none' }}>
             {Array.from(new Set(tasks
               .map(t => t.project)
@@ -533,7 +532,7 @@ function App() {
             <TabbedContent panels={[
               { content: <TogglePanel daysRange={daysRange} onDaysRangeChange={handleDaysRangeChange} />, title: "Generale" },
               { content: <ProjectPanel />, title: "Progetti" },
-              { content: <ThemePanel />, title: "Tema" },
+              { content: <ThemePanel />, title: "Temi" },
               { content: <InfoPanel />, title: "Info" }
             ]} />
           </Modal>
