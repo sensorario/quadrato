@@ -5,6 +5,7 @@
 
 
 ### Features
+- feat(config): add info panel (426741a, 2025-09-14)
 - feat(tasks): fix inital tasks (11d9ccd, 2025-09-13)
 - feat(deploy): fix install (59afa3e, 2025-09-13)
 - feat(deploy): update installation step (aec779b, 2025-09-13)
@@ -76,6 +77,7 @@
 
 
 ### Other
+- Update CHANGELOG.md (5f5bdb5, 2025-09-14)
 - Update CHANGELOG.md (5cfbfbf, 2025-09-14)
 - chore(theme): ultimate panda (aba01b8, 2025-09-13)
 - chore(config): update panda (a44e06f, 2025-09-13)

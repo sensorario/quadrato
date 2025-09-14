@@ -485,7 +485,7 @@ function App() {
       </div>
     };
 
-    const Info = () => {
+    const InfoPanel = () => {
       return <>
         <strong>Versione:</strong> v1.0
         <br />
@@ -526,7 +526,7 @@ function App() {
               { content: <TogglePanel daysRange={daysRange} onDaysRangeChange={handleDaysRangeChange} />, title: "Generale" },
               { content: <ProjectPanel />, title: "Progetti" },
               { content: <ThemePanel />, title: "Tema" },
-              { content: <Info />, title: "Info" }
+              { content: <InfoPanel />, title: "Info" }
             ]} />
           </Modal>
         )}
