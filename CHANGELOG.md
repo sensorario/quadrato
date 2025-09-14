@@ -5,6 +5,7 @@
 
 
 ### Features
+- feat(hidden-tasks): display hidden tasks number (83b000f, 2025-09-14)
 - feat(config): add info panel (426741a, 2025-09-14)
 - feat(tasks): fix inital tasks (11d9ccd, 2025-09-13)
 - feat(deploy): fix install (59afa3e, 2025-09-13)
@@ -59,6 +60,7 @@
 
 
 ### Fixes
+- fix(typescript): manage typescript errors (add0b92, 2025-09-14)
 - fix(setup): remove configuration file from root folder (9c3c54f, 2025-09-13)
 - fix(task): new task's modal is not loading Modal component (0adddb4, 2025-09-12)
 - fix(zen-mode): fix height of headers (bfe376a, 2025-09-12)
@@ -77,6 +79,7 @@
 
 
 ### Other
+- refactor(config): change panel name (25752d3, 2025-09-14)
 - Update CHANGELOG.md (5f5bdb5, 2025-09-14)
 - Update CHANGELOG.md (5cfbfbf, 2025-09-14)
 - chore(theme): ultimate panda (aba01b8, 2025-09-13)
