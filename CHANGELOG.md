@@ -79,6 +79,7 @@
 
 
 ### Other
+- chore(tests): enhance coverage (f4cba97, 2025-09-14)
 - chore: update changelog (9ede7a3, 2025-09-14)
 - chore(changelog): update changelog (21b09ef, 2025-09-14)
 - chore(licence): add MIT licence (b17f30d, 2025-09-14)
