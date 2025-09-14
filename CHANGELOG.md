@@ -5,6 +5,7 @@
 
 
 ### Features
+- feat(contributing): add contributing guidelines for the community (1e43856, 2025-09-14)
 - feat(hidden-tasks): display hidden tasks number (83b000f, 2025-09-14)
 - feat(config): add info panel (426741a, 2025-09-14)
 - feat(tasks): fix inital tasks (11d9ccd, 2025-09-13)
