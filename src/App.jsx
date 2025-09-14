@@ -485,6 +485,16 @@ function App() {
       </div>
     };
 
+    const Info = () => {
+      return <>
+        <strong>Versione:</strong> v1.0
+        <br />
+        <strong>Creato da:</strong> sensorario
+        <br />
+        <strong>Repository:</strong> <a href="https://github.com/sensorario/quadrato">https://github.com/sensorario/quadrato</a>
+      </>
+    }
+
     return (
       <>
         <div className="header-bar" style={{ height: "35px" }}>
@@ -515,7 +525,8 @@ function App() {
             <TabbedContent panels={[
               { content: <TogglePanel daysRange={daysRange} onDaysRangeChange={handleDaysRangeChange} />, title: "Generale" },
               { content: <ProjectPanel />, title: "Progetti" },
-              { content: <ThemePanel />, title: "Tema" }
+              { content: <ThemePanel />, title: "Tema" },
+              { content: <Info />, title: "Info" }
             ]} />
           </Modal>
         )}
