@@ -11,6 +11,7 @@ import HelpModal from './components/HelpModal';
 import GearIcon from "./components/GearIcon";
 import HelpIcon from "./components/HelpIcon";
 import { Modal } from './components/Modal';
+import { Palette24 } from './types/Palette24';
 
 const initialTasks = [
   { id: 1, title: 'Questo è un task da fare', longDescription: '', project: 'quadrato', dateTime: '', status: STATUS_ENUM.TODO },
@@ -408,27 +409,66 @@ function App() {
       );
     };
 
+    // Palette Modal state
+    const [paletteModalProject, setPaletteModalProject] = useState(null);
+
+    const PaletteModal = ({ project, onClose }) => (
+      <Modal title="Scegli un colore" onclick={onClose} icon={<span style={{ width: 24, height: 24, background: projectColors[project] }} />} >
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', padding: '12px' }}>
+          {Object.entries(Palette24).map(([name, color]) => (
+            <button
+              key={name}
+              style={{
+                width: 32,
+                height: 32,
+                background: color,
+                border: '2px solid #fff',
+                borderRadius: '50%',
+                cursor: 'pointer',
+                boxShadow: '0 0 2px #0002'
+              }}
+              title={name}
+              onClick={() => {
+                handleColorChange(project, color);
+                onClose();
+              }}
+            />
+          ))}
+        </div>
+      </Modal>
+    );
+
     const ProjectPanel = () => {
       return tasks && tasks.length > 0 && (
         <div style={{ marginTop: '24px' }}>
           <ul style={{ margin: '8px 0 0 0', padding: 0, listStyle: 'none' }}>
             {Array.from(new Set(tasks
               .map(t => t.project)
-              .filter(p => typeof p === 'string' && p.trim() !== '')))
-              .map((project, idx) => (
-                <li key={idx} style={{ padding: '2px 0', display: 'flex', alignItems: 'center' }}>
-                  <span style={{ marginRight: '8px', flex: '1' }}>{String(project)}</span>
-                  <input
-                    type="color"
-                    style={{ width: 24, height: 24, border: 'none', background: 'none', cursor: 'pointer' }}
-                    value={projectColors[String(project)] || '#000000'}
-                    onChange={e => handleColorChange(String(project), e.target.value)}
-                  />
-                </li>
-              ))}
+              .filter(p => typeof p === 'string' && p.trim() !== ''))
+            ).map((project, idx) => (
+              <li key={idx} style={{ padding: '2px 0', display: 'flex', alignItems: 'center' }}>
+                <span style={{ marginRight: '8px', flex: '1' }}>{String(project)}</span>
+                <button
+                  style={{
+                    width: 24,
+                    height: 24,
+                    border: 'none',
+                    background: projectColors[String(project)] || '#000000',
+                    borderRadius: '50%',
+                    cursor: 'pointer',
+                    boxShadow: '0 0 2px #0002'
+                  }}
+                  title="Scegli colore"
+                  onClick={() => setPaletteModalProject(project)}
+                />
+              </li>
+            ))}
           </ul>
+          {paletteModalProject && (
+            <PaletteModal project={paletteModalProject} onClose={() => setPaletteModalProject(null)} />
+          )}
         </div>
-      )
+      );
     };
 
     const ThemePanel = () => {

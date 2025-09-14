@@ -80,6 +80,7 @@
 
 
 ### Other
+- chore(changelog): update (8e0c90a, 2025-09-14)
 - chore(changelog): add missing changelog (7949ae3, 2025-09-14)
 - chore(contributing): add missing content XD (05612a8, 2025-09-14)
 - chore(tests): enhance coverage (f4cba97, 2025-09-14)
