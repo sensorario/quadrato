@@ -12,6 +12,8 @@ import GearIcon from "./components/GearIcon";
 import HelpIcon from "./components/HelpIcon";
 import { Modal } from './components/Modal';
 import { Palette24 } from './types/Palette24';
+import TabbedContent from './components/TabbedContent';
+import InfoPanel from './components/InfoPanel';
 
 const initialTasks = [
   { id: 1, title: 'Questo è un task da fare', longDescription: '', project: 'quadrato', dateTime: '', status: STATUS_ENUM.TODO },
@@ -144,7 +146,6 @@ function App() {
 
   useEffect(() => {
     const handleKeyDown = (e) => {
-      console.log(e.key, e.ctrlKey, e.shiftKey, e.altKey);
       if (e.ctrlKey && e.shiftKey && e.key === 'N') {
         e.preventDefault();
         setShowPopup(true);
@@ -499,48 +500,6 @@ function App() {
       );
     }
 
-    const TabbedContent = ({ panels }) => {
-      const [activeTab, setActiveTab] = useState(() => {
-        const saved = localStorage.getItem('simplanner-config-tab');
-        return saved ? Number(saved) : 0;
-      });
-
-      const handleTabChange = (index) => {
-        setActiveTab(index);
-        localStorage.setItem('simplanner-config-tab', String(index));
-      };
-
-      return <div className="tabbed-content">
-        <div className="tabs">
-          {panels.map((panel, index) => (
-            <div className={`tab ${activeTab === index ? 'active' : ''}`} onClick={() => handleTabChange(index)} key={index}>
-              <span>{panel.title}</span>
-            </div>
-          ))}
-        </div>
-        <div className="content">
-          {panels.map((panel, index) => (
-            <div
-              key={index}
-              className={`tab-content${activeTab === index ? ' active' : ''}`}
-            >
-              {panel.content}
-            </div>
-          ))}
-        </div>
-      </div>
-    };
-
-    const InfoPanel = () => {
-      return <>
-        <strong>Versione:</strong> v1.0
-        <br />
-        <strong>Creato da:</strong> sensorario
-        <br />
-        <strong>Repository:</strong> <a href="https://github.com/sensorario/quadrato">https://github.com/sensorario/quadrato</a>
-      </>
-    }
-
     return (
       <>
         <div className="header-bar" style={{ height: "35px" }}>
@@ -573,8 +532,8 @@ function App() {
               { content: <TogglePanel daysRange={daysRange} onDaysRangeChange={handleDaysRangeChange} />, title: "Generale" },
               { content: <ProjectPanel />, title: "Progetti" },
               { content: <ThemePanel />, title: "Temi" },
-              { content: <InfoPanel />, title: "Info" }
             ]} />
+            <InfoPanel />
           </Modal>
         )}
       </>
