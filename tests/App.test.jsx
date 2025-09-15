@@ -12,7 +12,6 @@ describe('Home page', () => {
             fireEvent.click(configButton);
         });
         expect(await screen.findByText(/Generale/i)).toBeInTheDocument();
-        expect(await screen.findByText(/Info/i)).toBeInTheDocument();
         expect(await screen.findByText(/Temi/i)).toBeInTheDocument();
         expect(await screen.findByText(/Progetti/i)).toBeInTheDocument();
     });
