@@ -5,6 +5,7 @@
 
 
 ### Features
+- feat(palette): close #5 and close #6, define color palette and enhance color change (7f7d52a, 2025-09-14)
 - feat(contributing): add contributing guidelines for the community (1e43856, 2025-09-14)
 - feat(hidden-tasks): display hidden tasks number (83b000f, 2025-09-14)
 - feat(config): add info panel (426741a, 2025-09-14)
