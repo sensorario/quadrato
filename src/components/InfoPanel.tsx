@@ -1,3 +1,5 @@
+import React from "react";
+
 export const InfoPanel = () => {
     return <>
         <strong>Versione:</strong> v1.0

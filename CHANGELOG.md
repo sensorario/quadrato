@@ -5,6 +5,7 @@
 
 
 ### Features
+- feat(components): move <TabbedContents /> in a separate file (19409ea, 2025-09-15)
 - feat(palette): close #5 and close #6, define color palette and enhance color change (7f7d52a, 2025-09-14)
 - feat(contributing): add contributing guidelines for the community (1e43856, 2025-09-14)
 - feat(hidden-tasks): display hidden tasks number (83b000f, 2025-09-14)
@@ -81,6 +82,8 @@
 
 
 ### Other
+- Merge branch '3-split-help-popup-in-tabs' into next (25b3c9b, 2025-09-15)
+- Merge branch '8-move-tabbedcontent-in-a-separate-folder' into 3-split-help-popup-in-tabs (10c68f8, 2025-09-15)
 - chore(changelog): update (8e0c90a, 2025-09-14)
 - chore(changelog): add missing changelog (7949ae3, 2025-09-14)
 - chore(contributing): add missing content XD (05612a8, 2025-09-14)
