@@ -1,6 +1,13 @@
 # CHANGELOG
 
 
+## Unreleased
+
+
+### Fixes
+- fix(tests): update tests according to new popup contents (6f5ea89, 2025-09-15)
+
+
 ## v1.1
 
 
