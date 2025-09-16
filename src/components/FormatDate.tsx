@@ -1,51 +1,42 @@
-import { moduleRunnerTransform } from "vite";
 
-export const FormatDate = ({ date }: { date: string }) => {
-    if (!date) return '';
-    const today = new Date();
+
+import React from 'react';
+
+export const FormatDate = ({ date, systemDate }: { date: string, systemDate?: string }) => {
+    if (!date) return null;
     const d = new Date(date);
-
-    const todayDate = today.toLocaleString('it-IT', {
-        month: '2-digit',
-        day: '2-digit',
-    });
-
-    let referralDate = d.toLocaleString('it-IT', {
-        month: '2-digit',
-        day: '2-digit',
-        hour12: false
-    });
-
-    if (date === todayDate) {
-        referralDate = d.toLocaleString('it-IT', {
-            hour: '2-digit',
-            minute: '2-digit',
-            hour12: false
-        }).replace(/\//g, '-');
+    let sys: Date;
+    if (systemDate) {
+        sys = new Date(systemDate);
+    } else {
+        const now = new Date();
+        sys = new Date(now.getFullYear(), now.getMonth(), now.getDate());
     }
 
-    // @todo mostrare "tra tre giorni" "fra n mesi"
-    // @todo ...
+    // Controlla se la data è oggi
+    const isToday = d.getFullYear() === sys.getFullYear() && d.getMonth() === sys.getMonth() && d.getDate() === sys.getDate();
 
-    // Calcola la differenza in giorni
-    const daysDifference = (today.getTime() - d.getTime()) / (1000 * 60 * 60 * 24);
-    if (daysDifference > 0 && daysDifference < 1) {
-        referralDate = d.toLocaleString('it-IT', {
-            hour: '2-digit',
-            minute: '2-digit',
-            hour12: false
-        });
-    } else if (daysDifference >= -2 && daysDifference < -1) {
-        referralDate = 'domani';
-    } else if (daysDifference >= -14 && daysDifference < -7) {
-        referralDate = 'la prossima settimana';
-    } else if (daysDifference >= -60 && daysDifference < -30) {
-        referralDate = 'tra un mese';
-    } else if (daysDifference < -61) {
-        referralDate = 'tra qualche mese';
+    // Controlla se la data è domani rispetto a systemDate
+    const tomorrow = new Date(sys);
+    tomorrow.setDate(sys.getDate() + 1);
+    const isTomorrow = d.getFullYear() === tomorrow.getFullYear() && d.getMonth() === tomorrow.getMonth() && d.getDate() === tomorrow.getDate();
+
+    if (isToday) {
+        const hours = d.getHours().toString().padStart(2, '0');
+        const minutes = d.getMinutes().toString().padStart(2, '0');
+        return <>{`${hours}:${minutes}`}</>;
     }
-
-    return <>[{referralDate}]</>;
+    if (isTomorrow) {
+        return <>domani</>;
+    }
+    // Se la data è nell'anno successivo rispetto a systemDate, mostra anche l'anno
+    const isNextYear = d.getFullYear() > sys.getFullYear();
+    const day = d.getDate().toString().padStart(2, '0');
+    const month = (d.getMonth() + 1).toString().padStart(2, '0');
+    if (isNextYear) {
+        return <>{`${day}/${month}/${d.getFullYear()}`}</>;
+    }
+    return <>{`${day}/${month}`}</>;
 }
 
 export default FormatDate;

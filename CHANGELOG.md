@@ -63,6 +63,7 @@
 
 
 ### Fixes
+- fix(tests): update tests according to new popup contents (4166729, 2025-09-15)
 - fix(typescript): manage typescript errors (add0b92, 2025-09-14)
 - fix(setup): remove configuration file from root folder (9c3c54f, 2025-09-13)
 - fix(task): new task's modal is not loading Modal component (0adddb4, 2025-09-12)
