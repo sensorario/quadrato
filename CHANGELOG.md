@@ -10,6 +10,7 @@
 
 
 ### Fixes
+- fix(timestamp): use timestamp instead of dateTime (b0419e6, 2025-09-17)
 - fix(tests): update tests according to new popup contents (6f5ea89, 2025-09-15)
 
 
@@ -17,7 +18,7 @@
 - Merge pull request #16 from sensorario/15-add-periodic-tasks (e2ebc49, 2025-09-17)
 
 
-## v1.1
+## v1.1 (2025-09-15)
 
 
 ### Features
@@ -133,7 +134,7 @@
 - chore(deploy): setup github pages (9b29375, 2025-08-29)
 
 
-## v1.0
+## v1.0 (2025-08-29)
 
 
 ### Features

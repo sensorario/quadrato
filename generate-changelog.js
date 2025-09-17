@@ -46,7 +46,7 @@ function getGitLogByTag() {
     if (tags.length === 0) {
         // Nessun tag: mostra tutti i commit
         const log = execSync('git log --pretty=format:"%h %ad %s" --date=short', { encoding: 'utf8' });
-        changelog += '\n\n## Unreleased\n';
+        changelog += '\n\n## Unreleased (??/??/???)\n';
         changelog += categorizeCommits(log.split('\n'));
         return changelog;
     }
@@ -55,14 +55,19 @@ function getGitLogByTag() {
         const tag = tags[i];
         let range = '';
         if (i === tags.length - 1) {
-            // Ultimo tag: dalla prima commit al tag
             range = tag;
         } else {
-            // Intervallo tra tag
             range = `${tags[i + 1]}..${tag}`;
         }
+        // Recupera la data del tag
+        let tagDate = '';
+        try {
+            tagDate = execSync(`git log -1 --format=%ad --date=short ${tag}`, { encoding: 'utf8' }).trim();
+        } catch (e) {
+            tagDate = '';
+        }
         const log = execSync(`git log ${range} --pretty=format:"%h %ad %s" --date=short`, { encoding: 'utf8' });
-        changelog += '\n\n## ' + tag + '\n';
+        changelog += `\n\n## ${tag}${tagDate ? ` (${tagDate})` : ''}\n`;
         changelog += categorizeCommits(log.split('\n'));
     }
     // Commits dopo l'ultimo tag (Unreleased)
