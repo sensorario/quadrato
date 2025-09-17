@@ -22,6 +22,7 @@ export const TaskList = ({ tasks, onTaskClick, updateTaskTitle, editable, projec
     const [editLongValue, setEditLongValue] = useState("");
     const [editProjectValue, setEditProjectValue] = useState("");
     const [editDateTimeValue, setEditDateTimeValue] = useState("");
+    const [editPeriodicityValue, setEditPeriodicityValue] = useState({ number: '', unit: 'giorni' });
 
     const handleEditClick = (task) => {
         setEditId(task.id);
@@ -29,11 +30,12 @@ export const TaskList = ({ tasks, onTaskClick, updateTaskTitle, editable, projec
         setEditLongValue(task.longDescription || "");
         setEditProjectValue(task.project || "");
         setEditDateTimeValue(task.dateTime || "");
+        setEditPeriodicityValue(task.periodicity || { number: '', unit: 'giorni' });
     };
 
     const handleEditSave = () => {
         if (editValue.trim() === "") return;
-        updateTaskTitle(editId, editValue, editLongValue, editProjectValue, editDateTimeValue);
+        updateTaskTitle(editId, editValue, editLongValue, editProjectValue, editDateTimeValue, editPeriodicityValue);
         setEditId(null);
     };
 
@@ -122,6 +124,8 @@ export const TaskList = ({ tasks, onTaskClick, updateTaskTitle, editable, projec
                     setProjectValue={setEditProjectValue}
                     dateTimeValue={editDateTimeValue}
                     setDateTimeValue={setEditDateTimeValue}
+                    periodicityValue={editPeriodicityValue}
+                    setPeriodicityValue={setEditPeriodicityValue}
                     onClose={() => setEditId(null)}
                     onSave={handleEditSave}
                     projectEditable={projectEditable}
