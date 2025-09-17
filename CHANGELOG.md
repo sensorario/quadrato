@@ -5,11 +5,16 @@
 
 
 ### Features
+- feat(task): add periodicity to tasks (2385fb2, 2025-09-17)
 - feat(format-data): update format data component (7060ec9, 2025-09-17)
 
 
 ### Fixes
 - fix(tests): update tests according to new popup contents (6f5ea89, 2025-09-15)
+
+
+### Other
+- Merge pull request #16 from sensorario/15-add-periodic-tasks (e2ebc49, 2025-09-17)
 
 
 ## v1.1
