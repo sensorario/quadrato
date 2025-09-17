@@ -121,7 +121,7 @@ function App() {
   });
 
   // Funzione per aggiornare la descrizione di un task
-  const updateTaskTitle = (id, value, longValue, projectValue, dateTimeValue) => {
+  const updateTaskTitle = (id, value, longValue, projectValue, dateTimeValue, periodicityValue) => {
     setTasks(tasks => {
       const updated = tasks.map(task =>
         task.id === id
@@ -130,7 +130,8 @@ function App() {
             title: value,
             longDescription: longValue,
             project: projectValue ?? task.project,
-            dateTime: dateTimeValue ?? task.dateTime
+            dateTime: dateTimeValue ?? task.dateTime,
+            periodicity: periodicityValue ?? task.periodicity
           }
           : task
       );
@@ -205,14 +206,76 @@ function App() {
   const [showCleanConfirm, setShowCleanConfirm] = useState(false);
 
   const archiveCompletedAndSkippedTasks = ({ tasks }) => {
+    const newTasks = [];
     const updatedTasks = tasks.map(t => {
-      if (t.status === STATUS_ENUM.SKIPPED || t.status === STATUS_ENUM.DONE) {
+      if (t.status === STATUS_ENUM.SKIPPED) {
+        return { ...t, archived: true };
+      }
+
+      if (t.status === STATUS_ENUM.DONE && !t.archived) {
+        // Se il task è periodico, crea una copia con la nuova scadenza
+        if (t.periodicity && t.dateTime) {
+          const { number, unit } = t.periodicity;
+          const n = parseInt(number, 10);
+          if (n > 0 && unit) {
+            // Verifica che sia stato definito un numero positivo e un'unità di tempo
+            // Usa la data archiviata come base per la nuova scadenza
+            let baseDate = t.dateTime;
+            if (typeof baseDate === 'string' && baseDate.length >= 16) {
+              // Verifica che la data sia in formato valido YYYY-MM-DDTHH:mm
+              const nextDate = new Date(baseDate);
+
+              // Calcola la nuova data in base all'unità di periodicità
+              switch (unit) {
+                case 'giorni':
+                  nextDate.setDate(nextDate.getDate() + n);
+                  break;
+                case 'settimane':
+                  nextDate.setDate(nextDate.getDate() + n * 7);
+                  break;
+                case 'mesi':
+                  nextDate.setMonth(nextDate.getMonth() + n);
+                  break;
+                case 'anni':
+                  nextDate.setFullYear(nextDate.getFullYear() + n);
+                  break;
+                default:
+                  // Nessuna operazione per unità non riconosciute
+                  break;
+              }
+
+              // Genera un nuovo ID univoco per il task ricorrente
+              const newId = Date.now() + Math.floor(Math.random() * 1000000);
+
+              console.log({
+                aggiungo: {
+                  ...t,
+                  id: newId,
+                  status: STATUS_ENUM.TODO,
+                  archived: false,
+                  dateTime: nextDate.toISOString().slice(0, 16) // Formato YYYY-MM-DDTHH:mm
+                }
+              })
+
+              // Crea il nuovo task con la data aggiornata e stato TODO
+              newTasks.push({
+                ...t,
+                id: newId,
+                status: STATUS_ENUM.TODO,
+                archived: false,
+                dateTime: nextDate.toISOString().slice(0, 16) // Formato YYYY-MM-DDTHH:mm
+              });
+            }
+          }
+        }
         return { ...t, archived: true };
       }
       return t;
     });
-    localStorage.setItem('simplanner-tasks', JSON.stringify(updatedTasks));
-    return updatedTasks;
+    console.log({ newTasks, });
+    const allTasks = [...updatedTasks, ...newTasks];
+    localStorage.setItem('simplanner-tasks', JSON.stringify(allTasks));
+    return allTasks;
   };
 
   const handleCleanTasks = () => {

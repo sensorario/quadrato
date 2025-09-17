@@ -4,6 +4,10 @@
 ## Unreleased
 
 
+### Features
+- feat(format-data): update format data component (7060ec9, 2025-09-17)
+
+
 ### Fixes
 - fix(tests): update tests according to new popup contents (6f5ea89, 2025-09-15)
 

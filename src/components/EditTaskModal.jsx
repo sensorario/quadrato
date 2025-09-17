@@ -1,9 +1,15 @@
 
 import { Modal } from "./Modal";
 import HelpIcon from "./HelpIcon";
+import TabbedContent from "./TabbedContent";
 
-const EditTaskModal = ({ value, setValue, longValue, setLongValue, projectValue, setProjectValue, dateTimeValue, setDateTimeValue, onClose, onSave, projectEditable, dateTimeEnabled }) => (
-    <Modal title="Modifica task!!" icon={<HelpIcon />} onclick={onClose} >
+const EditTaskModal = ({ value, setValue, longValue, setLongValue, projectValue, setProjectValue, dateTimeValue, setDateTimeValue, periodicityValue, setPeriodicityValue, onClose, onSave, projectEditable, dateTimeEnabled }) => {
+    const Footer = () => <div style={{ display: 'flex', gap: '1rem', justifyContent: 'right' }}>
+        <button className="modal-close-btn" onClick={onClose}>Annulla</button>
+        <button className="modal-close-btn" style={{ background: '#666', color: '#fff' }} onClick={onSave}>Salva</button>
+    </div>
+
+    const Testo = () => <>
         <label style={{ fontWeight: 500, marginBottom: 4, display: 'block' }}>Titolo breve</label>
         <input
             type="text"
@@ -22,20 +28,36 @@ const EditTaskModal = ({ value, setValue, longValue, setLongValue, projectValue,
             onChange={e => setLongValue(e.target.value)}
             style={{ width: '90%', minHeight: '60px', marginBottom: '1rem', padding: '0.75rem 1rem', borderRadius: '8px', fontSize: '1rem', border: '1px solid #d1d1d1', resize: 'vertical' }}
         />
-        {projectEditable && (
+    </>
+
+    const Tempo = () => {
+        return dateTimeEnabled && (
             <>
-                <label style={{ fontWeight: 500, marginBottom: 4, display: 'block' }}>Progetto</label>
-                <input
-                    type="text"
-                    value={projectValue}
-                    onChange={e => setProjectValue(e.target.value)}
-                    style={{ width: '90%', marginBottom: '1rem', padding: '0.75rem 1rem', borderRadius: '8px', fontSize: '1rem', border: '1px solid #d1d1d1' }}
-                    placeholder="Modifica progetto..."
-                />
-            </>
-        )}
-        {dateTimeEnabled && (
-            <>
+                <label style={{ fontWeight: 500, marginBottom: 4, display: 'block' }}>Periodicità</label>
+                <div className="periodo">
+                    ripeti ogni <input
+                        type="number"
+                        min="1"
+                        value={periodicityValue.number}
+                        onChange={e => setPeriodicityValue({ ...periodicityValue, number: e.target.value })}
+                        style={{ width: '50px', margin: '0 0.5rem', padding: '0.25rem 0.5rem', borderRadius: '8px', fontSize: '1rem', border: '1px solid #d1d1d1' }}
+                    />
+                    <select
+                        value={periodicityValue.unit}
+                        onChange={e => setPeriodicityValue({ ...periodicityValue, unit: e.target.value })}
+                        style={{ padding: '0.25rem 0.5rem', borderRadius: '8px', fontSize: '1rem', border: '1px solid #d1d1d1' }}>
+                        <option value="minuti">minuti</option>
+                        <option value="giorni">giorni</option>
+                        <option value="settimane">settimane</option>
+                        <option value="mesi">mesi</option>
+                        <option value="anni">anni</option>
+                    </select>
+                </div>
+                <div style={{ height: '1rem' }}></div>
+                <div style={{ fontSize: '0.85rem', color: '#666', marginBottom: '0.5rem' }}>Lascia vuoto per nessuna scadenza</div>
+                <div style={{ height: '0.5rem' }}>
+                </div>
+                <hr />
                 <label style={{ fontWeight: 500, marginBottom: 4, display: 'block' }}>Scadenza</label>
                 <input
                     type="datetime-local"
@@ -65,7 +87,6 @@ const EditTaskModal = ({ value, setValue, longValue, setLongValue, projectValue,
                         const d = new Date();
                         d.setUTCMonth(d.getUTCMonth() + 1);
                         d.setUTCDate(1);
-                        // Trova il primo lunedì del mese prossimo
                         while (d.getUTCDay() !== 1) {
                             d.setUTCDate(d.getUTCDate() + 1);
                         }
@@ -74,12 +95,32 @@ const EditTaskModal = ({ value, setValue, longValue, setLongValue, projectValue,
                     }}>mese prossimo</button>
                 </div>
             </>
-        )}
-        <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center' }}>
-            <button className="modal-close-btn" onClick={onClose}>Annulla</button>
-            <button className="modal-close-btn" style={{ background: '#666', color: '#fff' }} onClick={onSave}>Salva</button>
-        </div>
-    </Modal >
-);
+        )
+    }
+
+    const Progetto = () => {
+        return projectEditable && (
+            <>
+                <label style={{ fontWeight: 500, marginBottom: 4, display: 'block' }}>Progetto</label>
+                <input
+                    type="text"
+                    value={projectValue}
+                    onChange={e => setProjectValue(e.target.value)}
+                    style={{ width: '90%', marginBottom: '1rem', padding: '0.75rem 1rem', borderRadius: '8px', fontSize: '1rem', border: '1px solid #d1d1d1' }}
+                    placeholder="Modifica progetto..."
+                />
+            </>
+        )
+    }
+
+    return <Modal title="Modifica task!!" icon={<HelpIcon />} onclick={onClose} >
+        <TabbedContent panels={[
+            { title: 'Cosa', content: <Testo /> },
+            { title: 'Quando', content: <Tempo /> },
+            { title: 'Progetto', content: <Progetto /> },
+        ]} />
+        <Footer />
+    </Modal >;
+};
 
 export default EditTaskModal;
