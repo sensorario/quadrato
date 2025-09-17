@@ -1,7 +1,7 @@
 # CHANGELOG
 
 
-## Unreleased
+## Unreleased (??/??/????)
 
 
 ### Features
@@ -15,6 +15,7 @@
 
 
 ### Other
+- chore(changelog): update the way changelog is defined (b9e0722, 2025-09-17)
 - Merge pull request #16 from sensorario/15-add-periodic-tasks (e2ebc49, 2025-09-17)
 
 

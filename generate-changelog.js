@@ -74,7 +74,7 @@ function getGitLogByTag() {
     const latestTag = tags[0];
     const logUnreleased = execSync(`git log ${latestTag}..HEAD --pretty=format:"%h %ad %s" --date=short`, { encoding: 'utf8' });
     if (logUnreleased.trim()) {
-        changelog = '\n\n## Unreleased\n' + categorizeCommits(logUnreleased.split('\n')) + changelog;
+        changelog = '\n\n## Unreleased (??/??/????)\n' + categorizeCommits(logUnreleased.split('\n')) + changelog;
     }
     return changelog;
 }
