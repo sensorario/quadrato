@@ -15,6 +15,7 @@
 
 
 ### Other
+- chore(changelog): update changelog (0467b26, 2025-09-18)
 - chore(changelog): enhance the way changelog is generated (ae930f0, 2025-09-17)
 - chore(changelog): update the way changelog is defined (b9e0722, 2025-09-17)
 
