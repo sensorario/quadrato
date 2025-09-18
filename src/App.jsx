@@ -578,7 +578,7 @@ function App() {
         </div>
         {/** estrarre un componente modal da questo */}
         {showConfig && (
-          <Modal onclick={() => setShowConfig(false)} title="Configurazioni" icon={<GearIcon />}  >
+          <Modal onClick={() => setShowConfig(false)} title="Configurazioni" icon={<GearIcon />}  >
             <TabbedContent panels={[
               { content: <TogglePanel daysRange={daysRange} onDaysRangeChange={handleDaysRangeChange} />, title: "Generale" },
               { content: <ProjectPanel />, title: "Progetti" },
@@ -634,6 +634,7 @@ function App() {
   />;
 
   const ConfirmModalView = <ConfirmModal
+    onClick={() => setShowCleanConfirm(false)}
     setShowCleanConfirm={setShowCleanConfirm}
     handleCleanTasks={handleCleanTasks} />;
 
