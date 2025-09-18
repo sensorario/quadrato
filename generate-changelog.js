@@ -66,6 +66,7 @@ function getGitLogByTag() {
         try {
             tagDate = execSync(`git log -1 --format=%ad --date=short ${tag}`, { encoding: 'utf8' }).trim();
         } catch (e) {
+            console.warn(`Impossibile ottenere la data per il tag ${tag}:`, e);
             tagDate = '';
         }
         const log = execSync(`git log ${range} --pretty=format:"%h %ad %s" --date=short`, { encoding: 'utf8' });
