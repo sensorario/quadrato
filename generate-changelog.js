@@ -39,9 +39,7 @@ function getGitLogByTag() {
         if (fixes.length) {
             result += '\n\n### Fixes\n' + fixes.join('\n') + '\n';
         }
-        if (others.length) {
-            result += '\n\n### Other\n' + others.join('\n') + '\n';
-        }
+        // Salta la sezione Other
         return result;
     }
 

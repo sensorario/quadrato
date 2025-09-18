@@ -15,13 +15,6 @@
 - fix(tests): update tests according to new popup contents (6f5ea89, 2025-09-15)
 
 
-### Other
-- chore(changelog): hide error message (c054b1d, 2025-09-18)
-- chore(changelog): update changelog (0467b26, 2025-09-18)
-- chore(changelog): enhance the way changelog is generated (ae930f0, 2025-09-17)
-- chore(changelog): update the way changelog is defined (b9e0722, 2025-09-17)
-
-
 ## v1.1 (2025-09-15)
 
 
@@ -101,38 +94,6 @@
 - fix(heaer): hide title in small devices (9708650, 2025-09-01)
 - fix(task-creation): persist after new task creation (25c2fff, 2025-09-01)
 - fix(task): after task deletion local storage is not updated (75f0aaa, 2025-08-31)
-
-
-### Other
-- chore(changelog): update (8e0c90a, 2025-09-14)
-- chore(changelog): add missing changelog (7949ae3, 2025-09-14)
-- chore(contributing): add missing content XD (05612a8, 2025-09-14)
-- chore(tests): enhance coverage (f4cba97, 2025-09-14)
-- chore: update changelog (9ede7a3, 2025-09-14)
-- chore(changelog): update changelog (21b09ef, 2025-09-14)
-- chore(licence): add MIT licence (b17f30d, 2025-09-14)
-- chore(changelog): update changelog (f95db8c, 2025-09-14)
-- refactor(config): change panel name (25752d3, 2025-09-14)
-- Update CHANGELOG.md (5f5bdb5, 2025-09-14)
-- Update CHANGELOG.md (5cfbfbf, 2025-09-14)
-- chore(theme): ultimate panda (aba01b8, 2025-09-13)
-- chore(config): update panda (a44e06f, 2025-09-13)
-- chore(theme): enhance panda (2e6d57e, 2025-09-13)
-- refactor(config): enhance configuration tabs (d90574e, 2025-09-13)
-- chore(version): update version (5618bd8, 2025-09-13)
-- chore(changelog): update changelog (0457e91, 2025-09-13)
-- test(clean): remove all completed tasks (9f57d0a, 2025-09-13)
-- test(tdd): add first tests (7b10b05, 2025-09-13)
-- chore(refactor): small refactoring (3eec53e, 2025-09-02)
-- chore(header): update margin to get better visibility of header (e5f3eb5, 2025-09-02)
-- chore(changelog): update changelog (89fe77a, 2025-09-02)
-- chore(app): prepare view to get a simplest return (702df49, 2025-09-02)
-- refactor(refactor): thin return (56b6870, 2025-09-02)
-- chore(todos): add some todos for future versions (dc91fc5, 2025-09-02)
-- chore(changelog): update changelog (17cd817, 2025-09-02)
-- chore(buttons): make text linkable (31d59d7, 2025-08-30)
-- chore(header): remove github string (d733c4f, 2025-08-30)
-- chore(deploy): setup github pages (9b29375, 2025-08-29)
 
 
 ## v1.0 (2025-08-29)
