@@ -16,16 +16,16 @@ import TabbedContent from './components/TabbedContent';
 import InfoPanel from './components/InfoPanel';
 
 const initialTasks = [
-  { id: 1, title: 'Questo è un task da fare', longDescription: '', project: 'quadrato', dateTime: '', status: STATUS_ENUM.TODO },
-  { id: 2, title: 'Questo è un altro task da completare', longDescription: '', project: 'quadrato', dateTime: '', status: STATUS_ENUM.TODO },
-  { id: 3, title: 'Task semplice da svolgere', longDescription: '', project: 'quadrato', dateTime: '', status: STATUS_ENUM.TODO },
-  { id: 4, title: 'Task in corso di lavorazione', longDescription: '', project: 'quadrato', dateTime: '', status: STATUS_ENUM.IN_PROGRESS },
-  { id: 5, title: 'Altro task in progresso', longDescription: '', project: 'quadrato', dateTime: '', status: STATUS_ENUM.IN_PROGRESS },
-  { id: 6, title: 'Task completato con successo', longDescription: '', project: 'quadrato', dateTime: '', status: STATUS_ENUM.DONE },
-  { id: 7, title: 'Questo task è stato finito', longDescription: '', project: 'quadrato', dateTime: '', status: STATUS_ENUM.DONE },
-  { id: 8, title: 'Task portato a termine', longDescription: '', project: 'quadrato', dateTime: '', status: STATUS_ENUM.DONE },
-  { id: 9, title: 'Task skippato per il momento', longDescription: '', project: 'quadrato', dateTime: '', status: STATUS_ENUM.SKIPPED },
-  { id: 10, title: 'Questo task è stato saltato', longDescription: '', project: 'quadrato', dateTime: '', status: STATUS_ENUM.SKIPPED },
+  { id: 1, title: 'Questo è un task da fare', longDescription: '', project: 'quadrato', timestamp: '', status: STATUS_ENUM.TODO },
+  { id: 2, title: 'Questo è un altro task da completare', longDescription: '', project: 'quadrato', timestamp: '', status: STATUS_ENUM.TODO },
+  { id: 3, title: 'Task semplice da svolgere', longDescription: '', project: 'quadrato', timestamp: '', status: STATUS_ENUM.TODO },
+  { id: 4, title: 'Task in corso di lavorazione', longDescription: '', project: 'quadrato', timestamp: '', status: STATUS_ENUM.IN_PROGRESS },
+  { id: 5, title: 'Altro task in progresso', longDescription: '', project: 'quadrato', timestamp: '', status: STATUS_ENUM.IN_PROGRESS },
+  { id: 6, title: 'Task completato con successo', longDescription: '', project: 'quadrato', timestamp: '', status: STATUS_ENUM.DONE },
+  { id: 7, title: 'Questo task è stato finito', longDescription: '', project: 'quadrato', timestamp: '', status: STATUS_ENUM.DONE },
+  { id: 8, title: 'Task portato a termine', longDescription: '', project: 'quadrato', timestamp: '', status: STATUS_ENUM.DONE },
+  { id: 9, title: 'Task skippato per il momento', longDescription: '', project: 'quadrato', timestamp: '', status: STATUS_ENUM.SKIPPED },
+  { id: 10, title: 'Questo task è stato saltato', longDescription: '', project: 'quadrato', timestamp: '', status: STATUS_ENUM.SKIPPED },
 ];
 
 function App() {
@@ -121,20 +121,24 @@ function App() {
   });
 
   // Funzione per aggiornare la descrizione di un task
-  const updateTaskTitle = (id, value, longValue, projectValue, dateTimeValue, periodicityValue) => {
+  const updateTaskTitle = (id, value, longValue, projectValue, timestampValue, periodicityValue) => {
     setTasks(tasks => {
-      const updated = tasks.map(task =>
-        task.id === id
+      const updated = tasks.map(task => {
+        let newTimestamp = timestampValue ?? task.timestamp;
+        if (typeof newTimestamp === 'string' && newTimestamp.length > 0) {
+          newTimestamp = new Date(newTimestamp).getTime();
+        }
+        return task.id === id
           ? {
             ...task,
             title: value,
             longDescription: longValue,
             project: projectValue ?? task.project,
-            dateTime: dateTimeValue ?? task.dateTime,
+            timestamp: newTimestamp,
             periodicity: periodicityValue ?? task.periodicity
           }
-          : task
-      );
+          : task;
+      });
       localStorage.setItem('simplanner-tasks', JSON.stringify(updated));
       return updated;
     });
@@ -187,17 +191,20 @@ function App() {
 
   const handleAddTask = () => {
     if (newTaskTitle.trim() === '') return;
+    let timestamp = '';
+    if (typeof newTaskDateTime === 'string' && newTaskDateTime.length > 0) {
+      timestamp = new Date(newTaskDateTime).getTime();
+    }
     const newTask = {
       id: Date.now(),
       title: newTaskTitle,
       longDescription: newTaskLongDescription,
       project: newTaskProject,
-      dateTime: newTaskDateTime,
+      timestamp,
       status: 0,
     };
     const updatedTasks = [...tasks, newTask];
     setTasks(updatedTasks);
-    {/* Todo spostare il salvataggio in un componente a parte in caso di cambio di strategia */ }
     localStorage.setItem('simplanner-tasks', JSON.stringify(updatedTasks));
     setNewTaskTitle('');
     setShowPopup(false);
@@ -214,19 +221,17 @@ function App() {
 
       if (t.status === STATUS_ENUM.DONE && !t.archived) {
         // Se il task è periodico, crea una copia con la nuova scadenza
-        if (t.periodicity && t.dateTime) {
+        if (t.periodicity && t.timestamp) {
           const { number, unit } = t.periodicity;
           const n = parseInt(number, 10);
           if (n > 0 && unit) {
-            // Verifica che sia stato definito un numero positivo e un'unità di tempo
-            // Usa la data archiviata come base per la nuova scadenza
-            let baseDate = t.dateTime;
-            if (typeof baseDate === 'string' && baseDate.length >= 16) {
-              // Verifica che la data sia in formato valido YYYY-MM-DDTHH:mm
+            let baseDate = t.timestamp;
+            if (typeof baseDate === 'string' || typeof baseDate === 'number') {
               const nextDate = new Date(baseDate);
-
-              // Calcola la nuova data in base all'unità di periodicità
               switch (unit) {
+                case 'minuti':
+                  nextDate.setMinutes(nextDate.getMinutes() + n);
+                  break;
                 case 'giorni':
                   nextDate.setDate(nextDate.getDate() + n);
                   break;
@@ -240,30 +245,14 @@ function App() {
                   nextDate.setFullYear(nextDate.getFullYear() + n);
                   break;
                 default:
-                  // Nessuna operazione per unità non riconosciute
                   break;
               }
-
-              // Genera un nuovo ID univoco per il task ricorrente
-              const newId = Date.now() + Math.floor(Math.random() * 1000000);
-
-              console.log({
-                aggiungo: {
-                  ...t,
-                  id: newId,
-                  status: STATUS_ENUM.TODO,
-                  archived: false,
-                  dateTime: nextDate.toISOString().slice(0, 16) // Formato YYYY-MM-DDTHH:mm
-                }
-              })
-
-              // Crea il nuovo task con la data aggiornata e stato TODO
               newTasks.push({
                 ...t,
-                id: newId,
+                id: Date.now() + Math.floor(Math.random() * 1000000),
                 status: STATUS_ENUM.TODO,
                 archived: false,
-                dateTime: nextDate.toISOString().slice(0, 16) // Formato YYYY-MM-DDTHH:mm
+                timestamp: nextDate.getTime(),
               });
             }
           }
@@ -272,7 +261,6 @@ function App() {
       }
       return t;
     });
-    console.log({ newTasks, });
     const allTasks = [...updatedTasks, ...newTasks];
     localStorage.setItem('simplanner-tasks', JSON.stringify(allTasks));
     return allTasks;
@@ -303,8 +291,8 @@ function App() {
     const end = new Date(now);
     end.setDate(now.getDate() + daysRange);
     return filtered.filter(t => {
-      if (!t.dateTime) return true; // task senza scadenza
-      const dt = new Date(t.dateTime);
+      if (!t.timestamp) return true; // task senza scadenza
+      const dt = new Date(t.timestamp);
       if (showExpired && dt < now) return true; // mostra scaduti se abilitato
       return dt >= now && dt <= end;
     });

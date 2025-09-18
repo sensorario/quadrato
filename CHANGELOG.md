@@ -1,18 +1,25 @@
 # CHANGELOG
 
 
-## Unreleased
+## Unreleased (??/??/????)
 
 
 ### Features
+- feat(task): add periodicity to tasks (2385fb2, 2025-09-17)
 - feat(format-data): update format data component (7060ec9, 2025-09-17)
 
 
 ### Fixes
+- fix(timestamp): use timestamp instead of dateTime (b0419e6, 2025-09-17)
 - fix(tests): update tests according to new popup contents (6f5ea89, 2025-09-15)
 
 
-## v1.1
+### Other
+- chore(changelog): update the way changelog is defined (b9e0722, 2025-09-17)
+- Merge pull request #16 from sensorario/15-add-periodic-tasks (e2ebc49, 2025-09-17)
+
+
+## v1.1 (2025-09-15)
 
 
 ### Features
@@ -128,7 +135,7 @@
 - chore(deploy): setup github pages (9b29375, 2025-08-29)
 
 
-## v1.0
+## v1.0 (2025-08-29)
 
 
 ### Features
