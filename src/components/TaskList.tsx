@@ -5,7 +5,8 @@ import EditTaskModal from "./EditTaskModal";
 import FormatDate from "./FormatDate";
 
 export const TaskList = ({ tasks, onTaskClick, updateTaskTitle, editable, projectEditable, dateTimeEnabled, iconTheme }: { tasks: Array<{ id: number; title: string; status: number; longDescription?: string; project?: string; dateTime?: string; archived?: boolean; }>; onTaskClick: (id: number) => void; updateTaskTitle: (id: number, title: string, longDescription?: string, project?: string, dateTime?: string) => void; editable: boolean; projectEditable: boolean; dateTimeEnabled: boolean; iconTheme: 'default' | 'checked' | 'panda'; }) => {
-    // Usa direttamente la prop iconTheme
+    // Aggiorno la tipizzazione per timestamp
+    // tasks: Array<{ id: number; title: string; status: number; longDescription?: string; project?: string; timestamp?: number | string; archived?: boolean; }>
     const STATUS = getStatusIcons(iconTheme);
     // Recupera i colori dei progetti dal localStorage
     let projectColors: Record<string, string> = {};
@@ -21,7 +22,7 @@ export const TaskList = ({ tasks, onTaskClick, updateTaskTitle, editable, projec
     const [editValue, setEditValue] = useState("");
     const [editLongValue, setEditLongValue] = useState("");
     const [editProjectValue, setEditProjectValue] = useState("");
-    const [editDateTimeValue, setEditDateTimeValue] = useState("");
+    const [editTimestampValue, setEditTimestampValue] = useState("");
     const [editPeriodicityValue, setEditPeriodicityValue] = useState({ number: '', unit: 'giorni' });
 
     const handleEditClick = (task) => {
@@ -29,13 +30,13 @@ export const TaskList = ({ tasks, onTaskClick, updateTaskTitle, editable, projec
         setEditValue(task.title);
         setEditLongValue(task.longDescription || "");
         setEditProjectValue(task.project || "");
-        setEditDateTimeValue(task.dateTime || "");
+        setEditTimestampValue(task.timestamp || "");
         setEditPeriodicityValue(task.periodicity || { number: '', unit: 'giorni' });
     };
 
     const handleEditSave = () => {
         if (editValue.trim() === "") return;
-        updateTaskTitle(editId, editValue, editLongValue, editProjectValue, editDateTimeValue, editPeriodicityValue);
+        updateTaskTitle(editId, editValue, editLongValue, editProjectValue, editTimestampValue, editPeriodicityValue);
         setEditId(null);
     };
 
@@ -48,7 +49,7 @@ export const TaskList = ({ tasks, onTaskClick, updateTaskTitle, editable, projec
                 return `<a href="${url}" class="task-link" target="_blank" rel="noopener noreferrer">${url}</a>`;
             });
         }
-        const isExpired = dateTimeEnabled && task.dateTime && new Date(task.dateTime) < new Date();
+        const isExpired = dateTimeEnabled && task.timestamp && new Date(task.timestamp) < new Date();
 
 
         const isMobile = /iPhone/i.test(navigator.userAgent);
@@ -77,8 +78,8 @@ export const TaskList = ({ tasks, onTaskClick, updateTaskTitle, editable, projec
                     onClick={() => onTaskClick(task.id)}>
 
                     {STATUS[task.status]}
-                    {dateTimeEnabled && task.dateTime && (
-                        <span style={{ margin: '0 2px', color: '#666' }}><FormatDate date={task.dateTime} /></span>
+                    {dateTimeEnabled && task.timestamp && (
+                        <span style={{ margin: '0 2px', color: '#666' }}><FormatDate date={task.timestamp} /></span>
                     )}
                     {projectEditable && task.project && (
                         <span style={{ margin: '0 2px', color: '#666' }}>({task.project})</span>
@@ -97,8 +98,8 @@ export const TaskList = ({ tasks, onTaskClick, updateTaskTitle, editable, projec
     // Ordina i task se dataTimeEnabled
     let orderedTasks = tasks;
     if (dateTimeEnabled) {
-        const withDate = tasks.filter(t => t.dateTime);
-        const withoutDate = tasks.filter(t => !t.dateTime);
+        const withDate = tasks.filter(t => t.timestamp);
+        const withoutDate = tasks.filter(t => !t.timestamp);
         withDate.sort((a, b) => {
             const aTime = new Date(a.dateTime!).getTime();
             const bTime = new Date(b.dateTime!).getTime();
@@ -122,8 +123,8 @@ export const TaskList = ({ tasks, onTaskClick, updateTaskTitle, editable, projec
                     setLongValue={setEditLongValue}
                     projectValue={editProjectValue}
                     setProjectValue={setEditProjectValue}
-                    dateTimeValue={editDateTimeValue}
-                    setDateTimeValue={setEditDateTimeValue}
+                    timestampValue={editTimestampValue}
+                    setTimestampValue={setEditTimestampValue}
                     periodicityValue={editPeriodicityValue}
                     setPeriodicityValue={setEditPeriodicityValue}
                     onClose={() => setEditId(null)}

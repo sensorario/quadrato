@@ -3,8 +3,9 @@
 import React from 'react';
 
 export const FormatDate = ({ date, systemDate }: { date: string, systemDate?: string }) => {
-    if (!date) return null;
-    const d = new Date(date);
+    if (date === undefined || date === null || date === '') return null;
+    // Se la data è un numero, è un timestamp
+    const d = typeof date === 'number' ? new Date(date) : new Date(date);
     let sys: Date;
     if (systemDate) {
         sys = new Date(systemDate);
