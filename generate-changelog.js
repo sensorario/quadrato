@@ -18,6 +18,8 @@ function getGitLogByTag() {
         const fixes = [];
         const others = [];
         for (const line of logLines) {
+            // Salta i commit di merge
+            if (/Merge (branch|pull request|remote-tracking branch|.*)/i.test(line)) continue;
             const match = line.match(/^(\w+) (\d{4}-\d{2}-\d{2}) (.+)$/);
             if (match) {
                 const [, hash, date, message] = match;

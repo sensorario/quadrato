@@ -15,8 +15,8 @@
 
 
 ### Other
+- chore(changelog): enhance the way changelog is generated (ae930f0, 2025-09-17)
 - chore(changelog): update the way changelog is defined (b9e0722, 2025-09-17)
-- Merge pull request #16 from sensorario/15-add-periodic-tasks (e2ebc49, 2025-09-17)
 
 
 ## v1.1 (2025-09-15)
@@ -101,8 +101,6 @@
 
 
 ### Other
-- Merge branch '3-split-help-popup-in-tabs' into next (25b3c9b, 2025-09-15)
-- Merge branch '8-move-tabbedcontent-in-a-separate-folder' into 3-split-help-popup-in-tabs (10c68f8, 2025-09-15)
 - chore(changelog): update (8e0c90a, 2025-09-14)
 - chore(changelog): add missing changelog (7949ae3, 2025-09-14)
 - chore(contributing): add missing content XD (05612a8, 2025-09-14)
@@ -110,7 +108,6 @@
 - chore: update changelog (9ede7a3, 2025-09-14)
 - chore(changelog): update changelog (21b09ef, 2025-09-14)
 - chore(licence): add MIT licence (b17f30d, 2025-09-14)
-- Merge branch '1-show-hidden-tasks' into next (a1621b5, 2025-09-14)
 - chore(changelog): update changelog (f95db8c, 2025-09-14)
 - refactor(config): change panel name (25752d3, 2025-09-14)
 - Update CHANGELOG.md (5f5bdb5, 2025-09-14)
