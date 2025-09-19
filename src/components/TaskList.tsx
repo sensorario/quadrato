@@ -63,9 +63,9 @@ export const TaskList = ({ tasks, onTaskClick, updateTaskTitle, editable, projec
             >
                 {/* Quadrato di stato (presente) */}
                 {/* Quadrato colore progetto */}
-                <svg width="18" height="18" style={{ marginRight: 4, marginBottom: -3 }}>
+                {projectEditable && <svg width="18" height="18" style={{ marginRight: 4, marginBottom: -3 }}>
                     <rect width="18" height="18" rx="6" fill={projectColors[task.project] || '#ccc'} />
-                </svg>
+                </svg>}
                 <span
                     style={{
                         flex: 1,
@@ -77,7 +77,8 @@ export const TaskList = ({ tasks, onTaskClick, updateTaskTitle, editable, projec
                     }}
                     onClick={() => onTaskClick(task.id)}>
 
-                    {STATUS[task.status]}
+                    {STATUS[task.status]}{!dateTimeEnabled && !projectEditable && " "}
+
                     {dateTimeEnabled && task.timestamp && (
                         <span style={{ margin: '0 2px', color: '#666' }}><FormatDate date={task.timestamp} /></span>
                     )}
