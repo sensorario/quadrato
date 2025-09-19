@@ -5,6 +5,7 @@
 
 
 ### Features
+- feat(task): select project from existing ones (close #29) (c4a61e4, 2025-09-20)
 - feat(task): add periodicity to tasks (2385fb2, 2025-09-17)
 - feat(format-data): update format data component (7060ec9, 2025-09-17)
 
