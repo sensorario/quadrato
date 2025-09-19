@@ -1,14 +1,10 @@
-
+import React from "react";
 import { Modal } from "./Modal";
 import HelpIcon from "./HelpIcon";
 import TabbedContent from "./TabbedContent";
+import { Footer } from "./Footer/index";
 
 const EditTaskModal = ({ value, setValue, longValue, setLongValue, projectValue, setProjectValue, timestampValue, setTimestampValue, periodicityValue, setPeriodicityValue, onClose, onSave, projectEditable, dateTimeEnabled }) => {
-    const Footer = () => <div style={{ display: 'flex', gap: '1rem', justifyContent: 'right' }}>
-        <button className="modal-close-btn" onClick={onClose}>Annulla</button>
-        <button className="modal-close-btn" style={{ background: '#666', color: '#fff' }} onClick={onSave}>Salva</button>
-    </div>
-
     return <Modal title="Modifica task!!" icon={<HelpIcon />} onclick={onClose} >
         <TabbedContent panels={[
             {
@@ -111,11 +107,38 @@ const EditTaskModal = ({ value, setValue, longValue, setLongValue, projectValue,
                             style={{ width: '90%', marginBottom: '1rem', padding: '0.75rem 1rem', borderRadius: '8px', fontSize: '1rem', border: '1px solid #d1d1d1' }}
                             placeholder="Modifica progetto..."
                         />
+                        {/** estrai dal local storage simplanner-tasks tutti i progetti di tutti i task e stampali qui sotto */}
+                        <div>
+                            {(() => {
+                                // Collect all tasks from localStorage under 'simplanner-tasks'
+                                let projects = [];
+                                Object.keys(localStorage)
+                                    .filter(key => key.startsWith('simplanner-tasks'))
+                                    .forEach(key => {
+                                        try {
+                                            const tasks = JSON.parse(localStorage.getItem(key));
+                                            if (Array.isArray(tasks)) {
+                                                tasks.forEach(task => {
+                                                    if (task.project) projects.push(task.project);
+                                                });
+                                            }
+                                        } catch (e) { console.error('Errore nel parsing dei task da localStorage:', e); }
+                                    });
+                                // Get distinct project values
+                                const uniqueProjects = Array.from(new Set(projects));
+                                return uniqueProjects.length > 0
+                                    ? uniqueProjects.map(project => <div style={{ padding: '4px 8px', borderBottom: '1px solid #eee', cursor: 'pointer' }} key={project} onClick={() => setProjectValue(project)}>{project}</div>)
+                                    : <div style={{ color: '#888' }}>Nessun progetto trovato</div>;
+                            })()}
+                        </div>
                     </>
                 )
             }
         ]} />
-        <Footer />
+        <Footer>
+            <button className="modal-close-btn" onClick={onClose}>Annulla</button>
+            <button className="modal-close-btn" style={{ background: '#666', color: '#fff' }} onClick={onSave}>Salva</button>
+        </Footer>
     </Modal >;
 };
 
