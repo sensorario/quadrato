@@ -23,12 +23,13 @@ function getGitLogByTag() {
             const match = line.match(/^(\w+) (\d{4}-\d{2}-\d{2}) (.+)$/);
             if (match) {
                 const [, hash, date, message] = match;
+                const hashLink = `[#${hash}]`;
                 if (/^(feat|feature|add|implement)/i.test(message)) {
-                    features.push(`- ${message} (${hash}, ${date})`);
+                    features.push(`- ${message} (${hashLink}, ${date})`);
                 } else if (/^(fix|bug|hotfix|patch|resolve)/i.test(message)) {
-                    fixes.push(`- ${message} (${hash}, ${date})`);
+                    fixes.push(`- ${message} (${hashLink}, ${date})`);
                 } else {
-                    others.push(`- ${message} (${hash}, ${date})`);
+                    others.push(`- ${message} (${hashLink}, ${date})`);
                 }
             }
         }
