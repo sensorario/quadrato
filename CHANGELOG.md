@@ -10,6 +10,7 @@
 
 
 ### Fixes
+- fix(task): fix editing (close #31) (34417b3, 2025-09-19)
 - fix(popups): ESC is not closing opened popups. (0062454, 2025-09-18)
 - fix(timestamp): use timestamp instead of dateTime (b0419e6, 2025-09-17)
 - fix(tests): update tests according to new popup contents (6f5ea89, 2025-09-15)
