@@ -5,13 +5,13 @@
 
 
 ### Features
-- feat(task): select project from existing ones (close [[#29](https://github.com/sensorario/quadrato/issues/29)](https://github.com/sensorario/quadrato/issues/29)) ([c4a61e4](https://github.com/sensorario/quadrato/commit/c4a61e4), 2025-09-20)
+- feat(task): select project from existing ones (close [#29](https://github.com/sensorario/quadrato/issues/29)) ([c4a61e4](https://github.com/sensorario/quadrato/commit/c4a61e4), 2025-09-20)
 - feat(task): add periodicity to tasks ([2385fb2](https://github.com/sensorario/quadrato/commit/2385fb2), 2025-09-17)
 - feat(format-data): update format data component ([7060ec9](https://github.com/sensorario/quadrato/commit/7060ec9), 2025-09-17)
 
 
 ### Fixes
-- fix(task): fix editing (close [[#31](https://github.com/sensorario/quadrato/issues/31)](https://github.com/sensorario/quadrato/issues/31)) ([34417b3](https://github.com/sensorario/quadrato/commit/34417b3), 2025-09-19)
+- fix(task): fix editing (close [#31](https://github.com/sensorario/quadrato/issues/31)) ([34417b3](https://github.com/sensorario/quadrato/commit/34417b3), 2025-09-19)
 - fix(popups): ESC is not closing opened popups. ([0062454](https://github.com/sensorario/quadrato/commit/0062454), 2025-09-18)
 - fix(timestamp): use timestamp instead of dateTime ([b0419e6](https://github.com/sensorario/quadrato/commit/b0419e6), 2025-09-17)
 - fix(tests): update tests according to new popup contents ([6f5ea89](https://github.com/sensorario/quadrato/commit/6f5ea89), 2025-09-15)
@@ -22,7 +22,7 @@
 
 ### Features
 - feat(components): move <TabbedContents /> in a separate file ([19409ea](https://github.com/sensorario/quadrato/commit/19409ea), 2025-09-15)
-- feat(palette): close [#5](https://github.com/sensorario/quadrato/issues/5) and close [#6](https://github.com/sensorario/quadrato/issues/6), define color palette and enhance color change ([7f7d52a](https://github.com/sensorario/quadrato/commit/7f7d52a), 2025-09-14)
+- feat(palette): close #5 and close #6, define color palette and enhance color change ([7f7d52a](https://github.com/sensorario/quadrato/commit/7f7d52a), 2025-09-14)
 - feat(contributing): add contributing guidelines for the community ([1e43856](https://github.com/sensorario/quadrato/commit/1e43856), 2025-09-14)
 - feat(hidden-tasks): display hidden tasks number ([83b000f](https://github.com/sensorario/quadrato/commit/83b000f), 2025-09-14)
 - feat(config): add info panel ([426741a](https://github.com/sensorario/quadrato/commit/426741a), 2025-09-14)

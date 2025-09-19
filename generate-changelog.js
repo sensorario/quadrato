@@ -25,7 +25,6 @@ function getGitLogByTag() {
                 let [, hash, date, message] = match;
                 // Replace (close #123) or (#123) with markdown link to GitHub issue
                 message = message.replace(/\(close #(\d+)\)/gi, (_, p1) => `(close [#${p1}](https://github.com/sensorario/quadrato/issues/${p1}))`);
-                message = message.replace(/#(\d+)/g, (m, p1) => `[#${p1}](https://github.com/sensorario/quadrato/issues/${p1})`);
                 const hashLink = `[${hash}](https://github.com/sensorario/quadrato/commit/${hash})`;
                 if (/^(feat|feature|add|implement)/i.test(message)) {
                     features.push(`- ${message} (${hashLink}, ${date})`);
