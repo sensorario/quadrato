@@ -29,6 +29,22 @@ const initialTasks = [
 ];
 
 function App() {
+  // Mostro nascondo testo accanto alle icone
+  const [showText, setShowText] = useState(() => {
+    try {
+      const saved = localStorage.getItem('simplanner-show-text');
+      return saved ? JSON.parse(saved) : false;
+    } catch (e) {
+      console.log({ e })
+      return true;
+    }
+  });
+
+  const handleShowTextToggle = () => {
+    setShowText((prev) => !prev);
+    localStorage.setItem('simplanner-show-text', JSON.stringify(!showText));
+  };
+
   // Stato per il tema delle icone
   const [iconTheme, setIconTheme] = useState(() => {
     try {
@@ -372,7 +388,7 @@ function App() {
           checked={zenMode}
           onChange={setZenMode}
         />
-        <span onClick={() => setZenMode(!zenMode)} style={{ cursor: "pointer", display: "flex", alignItems: "center" }}>zen mode</span>
+        {showText && <span onClick={() => setZenMode(!zenMode)} style={{ cursor: "pointer", display: "flex", alignItems: "center" }}>zen mode</span>}
       </div>
       {VisibleTasks}
       {showPopup && NewTaskModalView}
@@ -440,6 +456,10 @@ function App() {
             checked={showExpired}
             onChange={setShowExpired}
             label={"Mostra scaduti"}
+          />          <Toggle
+            checked={showText}
+            onChange={handleShowTextToggle}
+            label={"Mostra testo"}
           />
           <div style={{ margin: '16px 0', width: '100%', display: 'flex', alignItems: 'center' }}>
             <div className="label" style={{ flex: '1' }}>
@@ -559,21 +579,21 @@ function App() {
             <span onClick={() => setShowHelp(true)}>
               <HelpIcon />
             </span>
-            <span onClick={() => setShowHelp(true)} style={{ cursor: "pointer" }}>
+            {showText && <span onClick={() => setShowHelp(true)} style={{ cursor: "pointer" }}>
               help
-            </span>
+            </span>}
             <span onClick={() => setShowConfig(true)} style={{ cursor: "pointer" }}>
               <GearIcon />
             </span>
-            <span onClick={() => setShowConfig(true)} style={{ cursor: "pointer" }}>
+            {showText && <span onClick={() => setShowConfig(true)} style={{ cursor: "pointer" }}>
               config
-            </span>
+            </span>}
             <Toggle
               checked={zenMode}
               onChange={setZenMode}
               label={""}
             />
-            <span onClick={() => setZenMode(!zenMode)} style={{ cursor: "pointer" }}>zen mode</span>
+            {showText && <span onClick={() => setZenMode(!zenMode)} style={{ cursor: "pointer" }}>zen mode</span>}
           </div>
         </div>
         {/** estrarre un componente modal da questo */}
@@ -626,7 +646,8 @@ function App() {
 
   const FooterView = <Footer
     setShowPopup={setShowPopup}
-    setShowCleanConfirm={setShowCleanConfirm} />;
+    setShowCleanConfirm={setShowCleanConfirm}
+    showText={showText} />;
 
   const HelpModalView = <HelpModal
     showHelp={showHelp}

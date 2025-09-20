@@ -1,10 +1,14 @@
 import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
-import { describe, it, expect } from '@jest/globals';
+import { describe, it, expect, beforeEach } from '@jest/globals';
 import { act } from 'react';
 import App from '../src/App.jsx';
 
 describe('Home page', () => {
+    beforeEach(() => {
+        localStorage.setItem('simplanner-show-text', 'true');
+    });
+
     it('should show 4 tabs in config modal', async () => {
         render(<App />);
         const configButton = screen.getByText(/config/i);

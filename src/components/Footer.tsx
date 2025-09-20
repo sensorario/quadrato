@@ -1,6 +1,6 @@
 import React from 'react';
 
-const Footer = ({ setShowPopup, setShowCleanConfirm }) => {
+const Footer = ({ setShowPopup, setShowCleanConfirm, showText }) => {
     return <div style={{ width: '100%', display: 'flex', justifyContent: 'center', gap: '8px', margin: '24px 0' }}>
         <button
             className="plus-icon"
@@ -16,9 +16,9 @@ const Footer = ({ setShowPopup, setShowCleanConfirm }) => {
                 <line x1="10" y1="16" x2="22" y2="16" stroke="#444" strokeWidth="2" />
             </svg>
         </button>
-        <span style={{ cursor: "pointer" }} onClick={() => setShowPopup(true)}>
+        {showText && <span style={{ cursor: "pointer" }} onClick={() => setShowPopup(true)}>
             aggiungi
-        </span>
+        </span>}
         <button
             className="clean-icon"
             aria-label="Pulisci task"
@@ -33,9 +33,9 @@ const Footer = ({ setShowPopup, setShowCleanConfirm }) => {
                 <line x1="22" y1="10" x2="10" y2="22" stroke="#444" strokeWidth="2" />
             </svg>
         </button>
-        <span style={{ cursor: "pointer" }} onClick={() => setShowCleanConfirm(true)}>
+        {showText && <span style={{ cursor: "pointer" }} onClick={() => setShowCleanConfirm(true)}>
             archivia
-        </span>
+        </span>}
     </div>
 };
 
