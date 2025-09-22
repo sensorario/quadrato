@@ -1,12 +1,14 @@
 import React from 'react';
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { describe, it, expect, beforeEach } from '@jest/globals';
 import { act } from 'react';
 import App from '../src/App.jsx';
 
 describe('Home page', () => {
     beforeEach(() => {
+        localStorage.clear();
         localStorage.setItem('simplanner-show-text', 'true');
+        localStorage.setItem('simplanner-add-another', 'false');
     });
 
     it('should show 4 tabs in config modal', async () => {
@@ -61,5 +63,25 @@ describe('Home page', () => {
         // Conta i task dopo la conferma
         const finalTasks = screen.queryAllByRole('listitem');
         expect(finalTasks.length).toBe(0);
+    });
+
+    // cliccando su aggiungi, si apre il modal per aggiungere un task
+    it('should open modal when clicking on aggiungi and add a new task', () => {
+        render(<App />);
+        // Conta i task prima di aggiungere
+        const initialTasks = screen.queryAllByRole('listitem');
+        expect(initialTasks.length).toBe(0);
+
+        const aggiungiButton = screen.getByText(/aggiungi/i);
+        act(() => {
+            fireEvent.click(aggiungiButton);
+        });
+        expect(screen.getByText(/nuovo task/i)).toBeInTheDocument();
+
+        const salvaButton = screen.getByText(/salva/i);
+        act(() => {
+            fireEvent.click(salvaButton);
+        });
+        expect(screen.getByText(/nuovo task/i)).toBeInTheDocument();
     });
 });
