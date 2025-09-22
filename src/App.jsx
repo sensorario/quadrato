@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import './App.css';
 import TaskList from './components/TaskList';
 // import { Header } from './components/Header';
@@ -29,7 +29,6 @@ const initialTasks = [
 ];
 
 function App() {
-  const addAnotherRef = useRef();
   // Mostro nascondo testo accanto alle icone
   const [showText, setShowText] = useState(() => {
     try {
@@ -224,9 +223,7 @@ function App() {
     setTasks(updatedTasks);
     localStorage.setItem('simplanner-tasks', JSON.stringify(updatedTasks));
     setNewTaskTitle('');
-    // Leggi il valore della checkbox dalla ref
-    const isChecked = addAnotherRef.current ? addAnotherRef.current.checked : addAnotherValue;
-    if (!isChecked) {
+    if (!addAnother) {
       setShowPopup(false);
       setAddAnother(false);
     } else {
@@ -387,51 +384,11 @@ function App() {
         className="modal-input"
       />
     </div>}
-    <label style={{ display: "flex", alignItems: "center", cursor: "pointer", margin: "1rem 0" }}>
-      <span style={{ fontSize: "1rem", flex: 1 }}>Aggiungi un altro task</span>
-      <span style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-        <span style={{ position: "relative", width: "40px", height: "24px", display: "inline-block" }}>
-          <input
-            type="checkbox"
-            ref={addAnotherRef}
-            checked={addAnother}
-            onChange={e => setAddAnother(e.target.checked)}
-            style={{ opacity: 0, width: "100%", height: "100%", position: "absolute", left: 0, top: 0, margin: 0, cursor: "pointer" }}
-          />
-          <span
-            style={{
-              display: "block",
-              width: "100%",
-              height: "100%",
-              background: addAnother ? "#666666ff" : "#ccc",
-              borderRadius: "12px",
-              transition: "background 0.2s",
-            }}
-          ></span>
-          <span
-            style={{
-              position: "absolute",
-              top: "2px",
-              left: addAnother ? "18px" : "2px",
-              width: "20px",
-              height: "20px",
-              background: "#fff",
-              borderRadius: "50%",
-              boxShadow: "0 2px 6px rgba(0,0,0,0.12)",
-              border: "none",
-              transition: "left 0.2s",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-            }}
-          >
-            <svg width="18" height="18" viewBox="0 0 18 18">
-              <circle cx="8" cy="8" r="7" fill="#f0f0f0" stroke="none" />
-            </svg>
-          </span>
-        </span>
-      </span>
-    </label>
+    <Toggle
+      checked={addAnother}
+      onChange={setAddAnother}
+      label={"Aggiungi un altro task"}
+    />
     <button onClick={() => handleAddTask()} className='modal-close-btn'>salva</button>
   </Modal>;
 
