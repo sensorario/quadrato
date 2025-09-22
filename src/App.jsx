@@ -205,7 +205,7 @@ function App() {
     });
   };
 
-  const handleAddTask = (addAnotherValue) => {
+  const handleAddTask = () => {
     if (newTaskTitle.trim() === '') return;
     let timestamp = '';
     if (typeof newTaskDateTime === 'string' && newTaskDateTime.length > 0) {
@@ -221,6 +221,7 @@ function App() {
     };
     const updatedTasks = [...tasks, newTask];
     setTasks(updatedTasks);
+
     localStorage.setItem('simplanner-tasks', JSON.stringify(updatedTasks));
     setNewTaskTitle('');
     if (!addAnother) {
