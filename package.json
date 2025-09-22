@@ -12,11 +12,11 @@
     "test": "jest"
   },
   "dependencies": {
-    "@testing-library/jest-dom": "^6.8.0",
     "react": "^19.1.1",
     "react-dom": "^19.1.1"
   },
   "devDependencies": {
+    "@testing-library/jest-dom": "^6.8.0",
     "@babel/preset-env": "^7.28.3",
     "@babel/preset-react": "^7.27.1",
     "@babel/preset-typescript": "^7.27.1",
