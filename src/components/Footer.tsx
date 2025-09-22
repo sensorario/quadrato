@@ -1,6 +1,12 @@
 import React from 'react';
 
-const Footer = ({ setShowPopup, setShowCleanConfirm, showText }) => {
+type FooterProps = {
+    setShowPopup: (show: boolean) => void;
+    setShowCleanConfirm: (show: boolean) => void;
+    showText: boolean;
+};
+
+const Footer = ({ setShowPopup, setShowCleanConfirm, showText }: FooterProps) => {
     return <div style={{ width: '100%', display: 'flex', justifyContent: 'center', gap: '8px', margin: '24px 0' }}>
         <button
             className="plus-icon"
