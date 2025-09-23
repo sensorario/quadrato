@@ -1,6 +1,9 @@
 import React from "react";
 
 export const InfoPanel = () => {
+    // @todo #43 extract css in a separate file
+    // @todo #42 add links to privacy policy and terms of service
+    // @todo #41 add release date and dynamic version
     return <div style={{ fontSize: '12px', color: '#666', textAlign: 'center', marginTop: '16px' }}>
         <strong>Versione:</strong> v1.1
         <br />

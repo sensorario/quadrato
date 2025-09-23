@@ -4,6 +4,7 @@ import EditIcon from "./EditIcon";
 import EditTaskModal from "./EditTaskModal";
 import FormatDate from "./FormatDate";
 
+// @todo #44 extract task type in a common file and fix dateTime to timestamp
 export const TaskList = ({ tasks, onTaskClick, updateTaskTitle, editable, projectEditable, dateTimeEnabled, iconTheme }: { tasks: Array<{ id: number; title: string; status: number; longDescription?: string; project?: string; dateTime?: string; archived?: boolean; }>; onTaskClick: (id: number) => void; updateTaskTitle: (id: number, title: string, longDescription?: string, project?: string, dateTime?: string) => void; editable: boolean; projectEditable: boolean; dateTimeEnabled: boolean; iconTheme: 'default' | 'checked' | 'panda'; }) => {
     // Aggiorno la tipizzazione per timestamp
     // tasks: Array<{ id: number; title: string; status: number; longDescription?: string; project?: string; timestamp?: number | string; archived?: boolean; }>
@@ -46,15 +47,18 @@ export const TaskList = ({ tasks, onTaskClick, updateTaskTitle, editable, projec
 
     const handleEditSave = () => {
         if (editValue.trim() === "") return;
+        // @todo remove unnecessary parameters
         updateTaskTitle(editId, editValue, editLongValue, editProjectValue, editTimestampValue, editPeriodicityValue);
         setEditId(null);
     };
 
+    // @todo define task type
     const handler = (task) => {
         let title = task.title;
         const urlRegex = /(https?:\/\/[^\s]+)/g;
         const hasLink = urlRegex.test(title);
         if (hasLink) {
+            // @todo #45 define url type
             title = title.replace(urlRegex, (url) => {
                 return `<a href="${url}" class="task-link" target="_blank" rel="noopener noreferrer">${url}</a>`;
             });
@@ -109,6 +113,7 @@ export const TaskList = ({ tasks, onTaskClick, updateTaskTitle, editable, projec
     // Ordina i task se dataTimeEnabled
     let orderedTasks = tasks;
     if (dateTimeEnabled) {
+        // @todo ensure task.timestamp is defined
         const withDate = tasks.filter(t => t.timestamp);
         const withoutDate = tasks.filter(t => !t.timestamp);
         withDate.sort((a, b) => {
