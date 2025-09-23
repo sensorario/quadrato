@@ -328,6 +328,7 @@ function App() {
             editable={editable}
             projectEditable={projectEditable}
             dateTimeEnabled={dateTimeEnabled}
+            iconTheme={iconTheme}
         />
 
     const NewTaskModalView = <Modal title="Nuovo Task" onClick={() => { setShowPopup(false) }}>
