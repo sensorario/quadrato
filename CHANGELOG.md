@@ -5,6 +5,8 @@
 
 
 ### Features
+- feat(theme): Use same theme also in zen mode. (close [#37](https://github.com/sensorario/quadrato/issues/37)) ([4744deb](https://github.com/sensorario/quadrato/commit/4744deb), 2025-09-23)
+- feat(task): enable add more tasks ([1f283e4](https://github.com/sensorario/quadrato/commit/1f283e4), 2025-09-22)
 - feat(task): select project from existing ones (close [#29](https://github.com/sensorario/quadrato/issues/29)) ([c4a61e4](https://github.com/sensorario/quadrato/commit/c4a61e4), 2025-09-20)
 - feat(task): add periodicity to tasks ([2385fb2](https://github.com/sensorario/quadrato/commit/2385fb2), 2025-09-17)
 - feat(format-data): update format data component ([7060ec9](https://github.com/sensorario/quadrato/commit/7060ec9), 2025-09-17)
