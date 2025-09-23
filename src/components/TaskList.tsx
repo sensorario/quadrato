@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { SetStateAction, useState } from "react";
 import { getStatusIcons } from "../utils";
 import EditIcon from "./EditIcon";
 import EditTaskModal from "./EditTaskModal";
@@ -25,7 +25,17 @@ export const TaskList = ({ tasks, onTaskClick, updateTaskTitle, editable, projec
     const [editTimestampValue, setEditTimestampValue] = useState("");
     const [editPeriodicityValue, setEditPeriodicityValue] = useState({ number: '', unit: 'giorni' });
 
-    const handleEditClick = (task) => {
+    // @todo #38 move types in a common file
+    type HandleEditClickProp = {
+        id: SetStateAction<null>;
+        title: string;
+        longDescription?: string;
+        project?: string;
+        timestamp?: string;
+        periodicity?: { number: string; unit: string };
+    }
+
+    const handleEditClick = (task: HandleEditClickProp) => {
         setEditId(task.id);
         setEditValue(task.title);
         setEditLongValue(task.longDescription || "");
