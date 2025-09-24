@@ -84,20 +84,23 @@ export const TaskList = ({ tasks, onTaskClick, updateTaskTitle, editable, projec
                         overflow: 'hidden',
                         textOverflow: 'ellipsis',
                         minWidth: 0,
-                        color: isExpired ? 'red' : undefined
+                        color: isExpired ? 'red' : undefined,
+                        display: 'flex',
+                        gap: '2px',
+                        alignItems: 'center',
                     }}
                     onClick={() => onTaskClick(task.id)}>
-                    {projectEditable && <svg width="18" height="18" style={{ marginRight: 4, marginBottom: -5 }}>
+                    {projectEditable && <svg width="18" height="18" >
                         <rect width="18" height="18" rx="6" fill={projectColors[task.project] || '#ccc'} />
                     </svg>}
 
                     {STATUS[task.status]}{!dateTimeEnabled && !projectEditable && " "}
 
                     {dateTimeEnabled && task.timestamp && (
-                        <span style={{ margin: '0 2px', color: '#666' }}><FormatDate date={task.timestamp} /></span>
+                        <span style={{ margin: '0', color: '#666' }}><FormatDate date={task.timestamp} /></span>
                     )}
                     {projectEditable && task.project && (
-                        <span style={{ margin: '0 2px', color: '#666' }}>({task.project})</span>
+                        <span style={{ margin: '0', color: '#666' }}>({task.project})</span>
                     )}
                     <span dangerouslySetInnerHTML={{ __html: title }} />
                 </span>
