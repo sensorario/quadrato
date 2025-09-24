@@ -15,6 +15,7 @@ import { Palette24 } from './types/Palette24';
 import TabbedContent from './components/TabbedContent';
 import InfoPanel from './components/InfoPanel';
 import { handleAddAnotherModal } from './utils/handleAddAnotherModal';
+import { archiveCompletedAndSkippedTasks } from './functions/archiveCompletedAndSkippedTasks';
 
 const initialTasks = [
     { id: 1, title: 'Questo è un task da fare', longDescription: '', project: 'quadrato', timestamp: '', status: STATUS_ENUM.TODO },
@@ -28,6 +29,8 @@ const initialTasks = [
     { id: 9, title: 'Task skippato per il momento', longDescription: '', project: 'quadrato', timestamp: '', status: STATUS_ENUM.SKIPPED },
     { id: 10, title: 'Questo task è stato saltato', longDescription: '', project: 'quadrato', timestamp: '', status: STATUS_ENUM.SKIPPED },
 ];
+
+
 
 function App() {
     // Mostro nascondo testo accanto alle icone
@@ -228,60 +231,6 @@ function App() {
     };
 
     const [showCleanConfirm, setShowCleanConfirm] = useState(false);
-
-    const archiveCompletedAndSkippedTasks = ({ tasks }) => {
-        const newTasks = [];
-        const updatedTasks = tasks.map(t => {
-            if (t.status === STATUS_ENUM.SKIPPED) {
-                return { ...t, archived: true };
-            }
-
-            if (t.status === STATUS_ENUM.DONE && !t.archived) {
-                // Se il task è periodico, crea una copia con la nuova scadenza
-                if (t.periodicity && t.timestamp) {
-                    const { number, unit } = t.periodicity;
-                    const n = parseInt(number, 10);
-                    if (n > 0 && unit) {
-                        let baseDate = t.timestamp;
-                        if (typeof baseDate === 'string' || typeof baseDate === 'number') {
-                            const nextDate = new Date(baseDate);
-                            switch (unit) {
-                                case 'minuti':
-                                    nextDate.setMinutes(nextDate.getMinutes() + n);
-                                    break;
-                                case 'giorni':
-                                    nextDate.setDate(nextDate.getDate() + n);
-                                    break;
-                                case 'settimane':
-                                    nextDate.setDate(nextDate.getDate() + n * 7);
-                                    break;
-                                case 'mesi':
-                                    nextDate.setMonth(nextDate.getMonth() + n);
-                                    break;
-                                case 'anni':
-                                    nextDate.setFullYear(nextDate.getFullYear() + n);
-                                    break;
-                                default:
-                                    break;
-                            }
-                            newTasks.push({
-                                ...t,
-                                id: Date.now() + Math.floor(Math.random() * 1000000),
-                                status: STATUS_ENUM.TODO,
-                                archived: false,
-                                timestamp: nextDate.getTime(),
-                            });
-                        }
-                    }
-                }
-                return { ...t, archived: true };
-            }
-            return t;
-        });
-        const allTasks = [...updatedTasks, ...newTasks];
-        localStorage.setItem('simplanner-tasks', JSON.stringify(allTasks));
-        return allTasks;
-    };
 
     const handleCleanTasks = () => {
         // const updatedTasks = tasks.filter(t => t.status === STATUS_ENUM.TODO || t.status === STATUS_ENUM.IN_PROGRESS);
