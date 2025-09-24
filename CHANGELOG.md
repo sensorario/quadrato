@@ -5,6 +5,8 @@
 
 
 ### Features
+- feat(repetition): Schedule new task starting from current and not from last time of completion. (close [#47](https://github.com/sensorario/quadrato/issues/47)) ([d012f61](https://github.com/sensorario/quadrato/commit/d012f61), 2025-09-24)
+- feat(info): leave margin between tabs and info (close [#18](https://github.com/sensorario/quadrato/issues/18)) ([7408b7f](https://github.com/sensorario/quadrato/commit/7408b7f), 2025-09-23)
 - feat(theme): Use same theme also in zen mode. (close [#37](https://github.com/sensorario/quadrato/issues/37)) ([4744deb](https://github.com/sensorario/quadrato/commit/4744deb), 2025-09-23)
 - feat(task): enable add more tasks ([1f283e4](https://github.com/sensorario/quadrato/commit/1f283e4), 2025-09-22)
 - feat(task): select project from existing ones (close [#29](https://github.com/sensorario/quadrato/issues/29)) ([c4a61e4](https://github.com/sensorario/quadrato/commit/c4a61e4), 2025-09-20)
