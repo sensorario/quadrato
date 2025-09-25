@@ -5,6 +5,16 @@ import TabbedContent from "./TabbedContent";
 import { Footer } from "./Footer/index";
 
 const EditTaskModal = ({ value, setValue, longValue, setLongValue, projectValue, setProjectValue, timestampValue, setTimestampValue, periodicityValue, setPeriodicityValue, onClose, onSave, projectEditable, dateTimeEnabled }) => {
+    React.useEffect(() => {
+        const handleEsc = (e) => {
+            if (e.key === "Escape") {
+                onClose();
+            }
+        };
+        window.addEventListener("keydown", handleEsc);
+        return () => window.removeEventListener("keydown", handleEsc);
+    }, [onClose]);
+
     return <Modal title="Modifica task!!" icon={<HelpIcon />} onclick={onClose} >
         <TabbedContent panels={[
             {
