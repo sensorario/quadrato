@@ -61,6 +61,7 @@ describe('EditTaskModal project list', () => {
         fireEvent.click(overlay);
         expect(onClose).toHaveBeenCalled();
     });
+
     beforeEach(() => {
         localStorage.setItem('simplanner-show-text', 'true');
         mockLocalStorage({
