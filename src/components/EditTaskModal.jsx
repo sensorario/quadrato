@@ -15,7 +15,7 @@ const EditTaskModal = ({ value, setValue, longValue, setLongValue, projectValue,
         return () => window.removeEventListener("keydown", handleEsc);
     }, [onClose]);
 
-    return <Modal title="Modifica task" icon={<HelpIcon />} onclick={onClose} >
+    return <Modal title="Modifica task" icon={<HelpIcon />} onClick={onClose} >
         <TabbedContent panels={[
             {
                 title: 'Cosa', content: <>
