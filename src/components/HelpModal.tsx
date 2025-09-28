@@ -47,7 +47,7 @@ export const HelpModal = ({ setShowHelp }: { setShowHelp: (show: boolean) => voi
         </div>
     );
 
-    return <Modal title={"Help"} icon={<HelpIcon />} onClick={() => setShowHelp(false)}>
+    return <Modal title={"Help"} icon={<HelpIcon />} onClick={() => setShowHelp(false)} >
         <TabbedContent panels={[
             { title: "Colori", content: <ColorsPanel /> },
             { title: "Shortcuts", content: <ShortcutsPanel /> },
