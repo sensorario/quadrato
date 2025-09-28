@@ -5,9 +5,10 @@ type ModalProps = {
     title: string;
     icon?: React.ReactNode;
     onClick: () => void;
+    buttons: { label: string; onClick: () => void }[];
 };
 
-export const Modal = ({ children, title, icon, onClick }: ModalProps) => {
+export const Modal = ({ children, title, icon, onClick, buttons }: ModalProps) => {
     useEffect(() => {
         const handleKeyDown = (e: KeyboardEvent) => {
             if (e.key === 'Escape') {
@@ -25,6 +26,13 @@ export const Modal = ({ children, title, icon, onClick }: ModalProps) => {
                 <h2 className="title">{title}</h2>
             </div>
             <div className="modal-content">{children}</div>
+            {buttons && <div className="modal-footer">
+                {buttons.map((button, index) => (
+                    <button key={index} onClick={button.onClick} className='modal-close-btn'>
+                        {button.label}
+                    </button>
+                ))}
+            </div>}
         </div>
     </div>;
 };

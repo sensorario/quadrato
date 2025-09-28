@@ -280,7 +280,7 @@ function App() {
             iconTheme={iconTheme}
         />
 
-    const NewTaskModalView = <Modal title="Nuovo Task" onClick={() => { setShowPopup(false) }}>
+    const NewTaskModalView = <Modal title="Nuovo Task" onClick={() => { setShowPopup(false) }} buttons={[{ label: 'salva', onClick: () => handleAddTask() }]}  >
         <div className="modal-input-wrapper">
             <input
                 type="text"
@@ -335,7 +335,6 @@ function App() {
             onChange={setAddAnother}
             label={"Aggiungi un altro task"}
         />
-        <button onClick={() => handleAddTask()} className='modal-close-btn'>salva</button>
     </Modal>;
 
     if (zenMode) {
