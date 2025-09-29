@@ -5,6 +5,7 @@
 
 
 ### Features
+- feat(readme): add features in README file (close [#19](https://github.com/sensorario/quadrato/issues/19)). ([77ae54a](https://github.com/sensorario/quadrato/commit/77ae54a), 2025-09-29)
 - feat(edit-task): close popup pressing ESC button ([0b3fa09](https://github.com/sensorario/quadrato/commit/0b3fa09), 2025-09-25)
 - feat(repetition): Schedule new task starting from current and not from last time of completion. (close [#47](https://github.com/sensorario/quadrato/issues/47)) ([d012f61](https://github.com/sensorario/quadrato/commit/d012f61), 2025-09-24)
 - feat(info): leave margin between tabs and info (close [#18](https://github.com/sensorario/quadrato/issues/18)) ([7408b7f](https://github.com/sensorario/quadrato/commit/7408b7f), 2025-09-23)
