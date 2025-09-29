@@ -280,7 +280,10 @@ function App() {
             iconTheme={iconTheme}
         />
 
-    const NewTaskModalView = <Modal title="Nuovo Task" onClick={() => { setShowPopup(false) }} buttons={[{ label: 'salva', onClick: () => handleAddTask() }]}  >
+    const NewTaskModalView = <Modal title="Nuovo Task" onClick={() => { setShowPopup(false) }} buttons={[
+        { label: 'chiudi', onClick: () => setShowPopup(false) },
+        { label: 'salva', onClick: () => handleAddTask() },
+    ]}  >
         <div className="modal-input-wrapper">
             <input
                 type="text"
