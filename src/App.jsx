@@ -16,6 +16,7 @@ import TabbedContent from './components/TabbedContent';
 import InfoPanel from './components/InfoPanel';
 import { handleAddAnotherModal } from './utils/handleAddAnotherModal';
 import { archiveCompletedAndSkippedTasks } from './functions/archiveCompletedAndSkippedTasks';
+import { getConfigRepository } from './repositories';
 
 const initialTasks = [
     { id: 1, title: 'Questo è un task da fare', longDescription: '', project: 'quadrato', timestamp: '', status: STATUS_ENUM.TODO },
@@ -390,7 +391,7 @@ function App() {
         const handleColorChange = (project, color) => {
             const newColors = { ...projectColors, [project]: color };
             setProjectColors(newColors);
-            localStorage.setItem('simplanner-project-colors', JSON.stringify(newColors));
+            getConfigRepository().setProjectColor(project, color);
         };
 
         const TogglePanel = ({ daysRange, onDaysRangeChange }) => {

@@ -4,6 +4,7 @@ import EditIcon from "./EditIcon";
 import EditTaskModal from "./EditTaskModal";
 import FormatDate from "./FormatDate";
 import { Task, HandleEditClickProp } from "../types/commonTypes";
+import { getConfigRepository } from "../repositories";
 
 // @todo #44 extract task type in a common file and fix dateTime to timestamp
 export const TaskList = ({ tasks, onTaskClick, updateTaskTitle, editable, projectEditable, dateTimeEnabled, iconTheme }: {
@@ -19,13 +20,7 @@ export const TaskList = ({ tasks, onTaskClick, updateTaskTitle, editable, projec
     // tasks: Array<{ id: number; title: string; status: number; longDescription?: string; project?: string; timestamp?: number | string; archived?: boolean; }>
     const STATUS = getStatusIcons(iconTheme);
     // Recupera i colori dei progetti dal localStorage
-    let projectColors: Record<string, string> = {};
-    try {
-        const saved = localStorage.getItem('simplanner-project-colors');
-        projectColors = saved ? JSON.parse(saved) : {};
-    } catch (e) {
-        projectColors = {};
-    }
+    let projectColors: Record<string, string> = getConfigRepository().getProjectColors();
 
     const [hoveredId, setHoveredId] = useState<number | null>(null);
     const [editId, setEditId] = useState<number | null>(null);
