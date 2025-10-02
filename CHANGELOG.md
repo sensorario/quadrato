@@ -5,6 +5,7 @@
 
 
 ### Features
+- feat(task-list): restored days range filder ([d2e21f7](https://github.com/sensorario/quadrato/commit/d2e21f7), 2025-10-02)
 - feat(repository): add repository pattern ([465fa10](https://github.com/sensorario/quadrato/commit/465fa10), 2025-09-30)
 - feat(readme): add features in README file (close [#19](https://github.com/sensorario/quadrato/issues/19)). ([77ae54a](https://github.com/sensorario/quadrato/commit/77ae54a), 2025-09-29)
 - feat(edit-task): close popup pressing ESC button ([0b3fa09](https://github.com/sensorario/quadrato/commit/0b3fa09), 2025-09-25)
