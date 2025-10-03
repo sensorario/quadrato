@@ -1,4 +1,7 @@
-class ConfigRepository {
+
+import { Repository } from '../Repository';
+
+class ConfigRepository implements Repository {
     static PROJECT_COLORS_KEY = 'simplanner-project-colors';
     static SHOW_TEXT_KEY = 'simplanner-show-text';
 
