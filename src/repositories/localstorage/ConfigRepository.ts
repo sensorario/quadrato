@@ -1,5 +1,6 @@
 class ConfigRepository {
     static PROJECT_COLORS_KEY = 'simplanner-project-colors';
+    static SHOW_TEXT_KEY = 'simplanner-show-text';
 
     getProjectColors() {
         try {
@@ -9,6 +10,20 @@ class ConfigRepository {
             console.error('Failed to parse project colors from localStorage', e);
             return "{}";
         }
+    }
+
+    getShowText() {
+        try {
+            const saved = localStorage.getItem(ConfigRepository.SHOW_TEXT_KEY);
+            return saved ? JSON.parse(saved) : false;
+        } catch (e) {
+            console.log({ e });
+            return true;
+        }
+    }
+
+    setShowText(value: boolean) {
+        localStorage.setItem(ConfigRepository.SHOW_TEXT_KEY, JSON.stringify(value));
     }
 
     setProjectColor(project: string | number, color: any) {
