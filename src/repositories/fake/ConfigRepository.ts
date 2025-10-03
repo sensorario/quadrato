@@ -1,16 +1,20 @@
-class ConfigRepository {
-    static PROJECT_COLORS_KEY = 'simplanner-project-colors';
+import { Repository } from "../Repository";
 
+class ConfigRepository implements Repository {
     getProjectColors() {
-        // fake
+        throw new Error("Method not implemented.");
     }
-
-    setProjectColor(project: string | number, color: any) {
-        // fake
+    getShowText(): boolean {
+        throw new Error("Method not implemented.");
     }
-
-    removeProjectColor(project: string) {
-        // fake
+    setShowText(value: boolean): void {
+        throw new Error("Method not implemented.");
+    }
+    setProjectColor(project: string | number, color: any): void {
+        throw new Error("Method not implemented.");
+    }
+    removeProjectColor(project: string): void {
+        throw new Error("Method not implemented.");
     }
 }
 
