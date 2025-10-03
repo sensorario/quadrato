@@ -35,19 +35,11 @@ const initialTasks = [
 
 function App() {
     // Mostro nascondo testo accanto alle icone
-    const [showText, setShowText] = useState(() => {
-        try {
-            const saved = localStorage.getItem('simplanner-show-text');
-            return saved ? JSON.parse(saved) : false;
-        } catch (e) {
-            console.log({ e })
-            return true;
-        }
-    });
+    const [showText, setShowText] = useState(getConfigRepository().getShowText());
 
     const handleShowTextToggle = () => {
         setShowText((prev) => !prev);
-        localStorage.setItem('simplanner-show-text', JSON.stringify(!showText));
+        getConfigRepository().setShowText(!showText);
     };
 
     // Stato per il tema delle icone
