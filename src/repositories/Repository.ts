@@ -4,4 +4,5 @@ export interface Repository {
     setShowText(value: boolean): void;
     setProjectColor(project: string | number, color: any): void;
     removeProjectColor(project: string): void;
+    setIconTheme(theme: string): void;
 }
