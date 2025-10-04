@@ -5,6 +5,7 @@ import EditTaskModal from "./EditTaskModal";
 import FormatDate from "./FormatDate";
 import { Task, HandleEditClickProp } from "../types/commonTypes";
 import { getConfigRepository } from "../repositories";
+import sortByDate from "../utils/filterTaskByVisibilityRange";
 
 // @todo #44 extract task type in a common file and fix dateTime to timestamp
 export const TaskList = ({ tasks, onTaskClick, updateTaskTitle, editable, projectEditable, dateTimeEnabled, iconTheme }: {
@@ -114,17 +115,11 @@ export const TaskList = ({ tasks, onTaskClick, updateTaskTitle, editable, projec
     };
 
     // Ordina i task se dataTimeEnabled
-    let orderedTasks = tasks;
+
+    let orderedTasks: Task[] = [];
+
     if (dateTimeEnabled) {
-        // @todo ensure task.timestamp is defined
-        const withDate = tasks.filter(t => t.timestamp);
-        const withoutDate = tasks.filter(t => !t.timestamp);
-        withDate.sort((a, b) => {
-            const aTime = typeof a.timestamp === 'number' ? a.timestamp : new Date(a.timestamp || '').getTime();
-            const bTime = typeof b.timestamp === 'number' ? b.timestamp : new Date(b.timestamp || '').getTime();
-            return aTime - bTime;
-        });
-        orderedTasks = [...withDate, ...withoutDate];
+        orderedTasks = sortByDate(tasks);
     }
 
     orderedTasks.filter(t => !t.archived);
