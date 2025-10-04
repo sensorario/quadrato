@@ -4,6 +4,8 @@ import { Repository } from '../Repository';
 class ConfigRepository implements Repository {
     static PROJECT_COLORS_KEY = 'simplanner-project-colors';
     static SHOW_TEXT_KEY = 'simplanner-show-text';
+    static ICON_THEME_KEY = 'simplanner-icon-theme';
+    static SHOW_EXPIRED_KEY = 'simplanner-show-expired';
 
     getProjectColors() {
         try {
@@ -29,6 +31,20 @@ class ConfigRepository implements Repository {
         localStorage.setItem(ConfigRepository.SHOW_TEXT_KEY, JSON.stringify(value));
     }
 
+    setShowExpired(value: boolean) {
+        localStorage.setItem(ConfigRepository.SHOW_EXPIRED_KEY, JSON.stringify(value));
+    }
+
+    getShowExpired() {
+        try {
+            const saved = localStorage.getItem(ConfigRepository.SHOW_EXPIRED_KEY);
+            return saved ? JSON.parse(saved) : false;
+        } catch (e) {
+            console.log({ e });
+            return false;
+        }
+    }
+
     setProjectColor(project: string | number, color: any) {
         const colors = this.getProjectColors();
         colors[project] = color;
@@ -39,6 +55,14 @@ class ConfigRepository implements Repository {
         const colors = this.getProjectColors();
         delete colors[project];
         localStorage.setItem(ConfigRepository.PROJECT_COLORS_KEY, JSON.stringify(colors));
+    }
+
+    setIconTheme(theme: string): void {
+        localStorage.setItem(ConfigRepository.ICON_THEME_KEY, theme);
+    }
+
+    getIconTheme(): string {
+        return localStorage.getItem(ConfigRepository.ICON_THEME_KEY) || 'default';
     }
 }
 

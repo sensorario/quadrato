@@ -17,7 +17,6 @@ import InfoPanel from './components/InfoPanel';
 import { handleAddAnotherModal } from './utils/handleAddAnotherModal';
 import { archiveCompletedAndSkippedTasks } from './functions/archiveCompletedAndSkippedTasks';
 import { getConfigRepository } from './repositories';
-import sortByDate from './utils/filterTaskByVisibilityRange';
 
 const initialTasks = [
     { id: 1, title: 'Questo è un task da fare', longDescription: '', project: 'quadrato', timestamp: '', status: STATUS_ENUM.TODO },
@@ -44,20 +43,12 @@ function App() {
     };
 
     // Stato per il tema delle icone
-    const [iconTheme, setIconTheme] = useState(() => {
-        try {
-            const saved = localStorage.getItem('simplanner-icon-theme');
-            return saved ? saved : 'default';
-        } catch (e) {
-            console.log({ e })
-            return 'default';
-        }
-    });
+    const [iconTheme, setIconTheme] = useState(getConfigRepository().getIconTheme());
 
-    // Funzione per aggiornare il tema e sincronizzare con localStorage
+    // Funzione per aggiornare il tema
     const handleThemeChange = (theme) => {
         setIconTheme(theme);
-        localStorage.setItem('simplanner-icon-theme', theme);
+        getConfigRepository().setIconTheme(theme);
     };
 
     // Stato per abilitare/disabilitare il campo data-ora nei task
@@ -66,10 +57,7 @@ function App() {
         return saved ? JSON.parse(saved) : false;
     });
 
-    const [showExpired, setShowExpired] = useState(() => {
-        const saved = localStorage.getItem('simplanner-show-expired');
-        return saved ? JSON.parse(saved) : false;
-    });
+    const [showExpired, setShowExpiredFeature] = useState(getConfigRepository().getShowExpired());
 
     const [showConfig, setShowConfig] = useState(false);
 
@@ -360,14 +348,7 @@ function App() {
         // Usa i task passati come prop
 
         // Gestione colori progetti
-        const [projectColors, setProjectColors] = useState(() => {
-            try {
-                const saved = localStorage.getItem('simplanner-project-colors');
-                return saved ? JSON.parse(saved) : {};
-            } catch (e) {
-                return { e };
-            }
-        });
+        const [projectColors, setProjectColors] = useState(getConfigRepository().getProjectColors());
 
         const handleColorChange = (project, color) => {
             const newColors = { ...projectColors, [project]: color };
@@ -546,7 +527,7 @@ function App() {
         dateTimeEnabled={dateTimeEnabled}
         setDateTimeEnabled={setDateTimeEnabled}
         showExpired={showExpired}
-        setShowExpired={setShowExpired}
+        setShowExpired={setShowExpiredFeature}
         zenMode={zenMode}
         setZenMode={setZenMode}
         iconTheme={iconTheme}

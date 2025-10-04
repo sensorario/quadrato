@@ -20,7 +20,8 @@ export const TaskList = ({ tasks, onTaskClick, updateTaskTitle, editable, projec
     // Aggiorno la tipizzazione per timestamp
     // tasks: Array<{ id: number; title: string; status: number; longDescription?: string; project?: string; timestamp?: number | string; archived?: boolean; }>
     const STATUS = getStatusIcons(iconTheme);
-    // Recupera i colori dei progetti dal localStorage
+
+    // Recupera i colori dei progetti dal repository
     let projectColors: Record<string, string> = getConfigRepository().getProjectColors();
 
     const [hoveredId, setHoveredId] = useState<number | null>(null);

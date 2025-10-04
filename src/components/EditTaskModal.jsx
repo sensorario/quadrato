@@ -132,8 +132,9 @@ const EditTaskModal = ({ value, setValue, longValue, setLongValue, projectValue,
                                                     if (task.project) projects.push(task.project);
                                                 });
                                             }
-                                        } catch (e) { console.error('Errore nel parsing dei task da localStorage:', e); }
+                                        } catch (e) { console.error('Errore nel parsing dei task:', e); }
                                     });
+
                                 // Get distinct project values
                                 const uniqueProjects = Array.from(new Set(projects));
                                 return uniqueProjects.length > 0

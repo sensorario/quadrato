@@ -64,6 +64,8 @@ export const archiveCompletedAndSkippedTasks = ({ tasks }: ComponentProps) => {
         return t;
     });
     const allTasks = [...updatedTasks, ...newTasks];
+
     localStorage.setItem('simplanner-tasks', JSON.stringify(allTasks));
+
     return allTasks;
 };
