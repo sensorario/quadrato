@@ -17,6 +17,7 @@ import InfoPanel from './components/InfoPanel';
 import { handleAddAnotherModal } from './utils/handleAddAnotherModal';
 import { archiveCompletedAndSkippedTasks } from './functions/archiveCompletedAndSkippedTasks';
 import { getConfigRepository } from './repositories';
+import sortByDate from './utils/filterTaskByVisibilityRange';
 
 const initialTasks = [
     { id: 1, title: 'Questo è un task da fare', longDescription: '', project: 'quadrato', timestamp: '', status: STATUS_ENUM.TODO },
@@ -114,12 +115,6 @@ function App() {
     const [tasks, setTasks] = useState(() => {
         const saved = localStorage.getItem('simplanner-tasks');
         return saved ? JSON.parse(saved) : initialTasks;
-    });
-
-    // Stato per lo slider dei giorni
-    const [daysRange, setDaysRange] = useState(() => {
-        const saved = localStorage.getItem('simplanner-days-range');
-        return saved ? JSON.parse(saved) : 7;
     });
 
     const [showPopup, setShowPopup] = useState(false);
@@ -233,7 +228,8 @@ function App() {
         setShowCleanConfirm(false);
     };
 
-    const unarchivedTasks = tasks.filter(t => !t.archived);
+    const unarchivedTasks = sortByDate(tasks)
+        .filter(t => !t.archived);
 
     const visible = (() => {
         // Filtra per progetto
@@ -248,7 +244,6 @@ function App() {
         // Filtra per range di giorni
         const now = new Date();
         const end = new Date(now);
-        end.setDate(now.getDate() + daysRange);
         return filtered.filter(t => {
             if (!t.timestamp) return true; // task senza scadenza
             const dt = new Date(t.timestamp);
@@ -257,9 +252,6 @@ function App() {
         });
     })()
 
-    const numOfUnarchivedTasks = unarchivedTasks.length;
-    const numOfVisibleTasks = visible.length;
-    const hiddenTasksCount = numOfUnarchivedTasks - numOfVisibleTasks;
     const [addAnother, setAddAnother] = useState(false);
 
     const VisibleTasks =
@@ -359,14 +351,12 @@ function App() {
         setDateTimeEnabled,
         showExpired,
         setShowExpired,
-        daysRange,
         zenMode,
         setZenMode,
         handleThemeChange,
         iconTheme,
         showConfig,
         setShowConfig,
-        hiddenTasksCount,
     }) => {
         // Usa i task passati come prop
 
@@ -386,7 +376,7 @@ function App() {
             getConfigRepository().setProjectColor(project, color);
         };
 
-        const TogglePanel = ({ daysRange, onDaysRangeChange }) => {
+        const TogglePanel = () => {
             return (
                 <div className="tab">
                     <Toggle
@@ -413,22 +403,6 @@ function App() {
                         onChange={handleShowTextToggle}
                         label={"Mostra testo"}
                     />
-                    <div style={{ margin: '16px 0', width: '100%', display: 'flex', alignItems: 'center' }}>
-                        <div className="label" style={{ flex: '1' }}>
-                            Giorni da mostrare:
-                        </div>
-                        <input type="number" name="daysRange" id="daysRange" min={0} max={365} value={daysRange}
-                            onChange={e => onDaysRangeChange(Number(e.target.value))} style={{
-                                marginLeft: '12px',
-                                verticalAlign: 'middle',
-                                width: '50px',
-                                minWidth: '60px',
-                                border: '1px solid #ccc',
-                                borderRadius: '4px',
-                                padding: '8px',
-                                boxSizing: 'border-box',
-                            }} />
-                    </div>
                 </div>
             );
         };
@@ -523,11 +497,11 @@ function App() {
             );
         }
 
+
         return (
             <>
                 <div className="header-bar" style={{ height: "35px" }}>
                     <div className="header-icons">
-                        <span className="hidden-tasks">hidden tasks: {hiddenTasksCount}</span>
                         <span onClick={() => setShowHelp(true)}>
                             <HelpIcon />
                         </span>
@@ -552,7 +526,7 @@ function App() {
                 {showConfig && (
                     <Modal onClick={() => setShowConfig(false)} title="Configurazioni" icon={<GearIcon />}  >
                         <TabbedContent panels={[
-                            { content: <TogglePanel daysRange={daysRange} onDaysRangeChange={handleDaysRangeChange} />, title: "Generale" },
+                            { content: <TogglePanel />, title: "Generale" },
                             { content: <ProjectPanel />, title: "Progetti" },
                             { content: <ThemePanel />, title: "Temi" },
                         ]} />
@@ -561,12 +535,6 @@ function App() {
                 )}
             </>
         );
-    };
-
-    // Gestione del range dei giorni a livello di App
-    const handleDaysRangeChange = (val) => {
-        setDaysRange(val);
-        localStorage.setItem('simplanner-days-range', JSON.stringify(val));
     };
 
     const HeaderView = <Header
@@ -580,15 +548,12 @@ function App() {
         setDateTimeEnabled={setDateTimeEnabled}
         showExpired={showExpired}
         setShowExpired={setShowExpired}
-        daysRange={daysRange}
-        onDaysRangeChange={handleDaysRangeChange}
         zenMode={zenMode}
         setZenMode={setZenMode}
         iconTheme={iconTheme}
         handleThemeChange={handleThemeChange}
         showConfig={showConfig}
         setShowConfig={setShowConfig}
-        hiddenTasksCount={hiddenTasksCount}
     />;
 
     const DefinedTaskProject = <TaskProjectSelector
@@ -622,7 +587,6 @@ function App() {
                         : unarchivedTasks;
         const now = new Date();
         const end = new Date(now);
-        end.setDate(now.getDate() + daysRange);
         return filtered.filter(t => {
             if (!t.dateTime) return true;
             const dt = new Date(t.dateTime);
