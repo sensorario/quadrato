@@ -228,8 +228,7 @@ function App() {
         setShowCleanConfirm(false);
     };
 
-    const unarchivedTasks = sortByDate(tasks)
-        .filter(t => !t.archived);
+    const unarchivedTasks = tasks;
 
     const visible = (() => {
         // Filtra per progetto

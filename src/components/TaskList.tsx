@@ -117,23 +117,8 @@ export const TaskList = ({ tasks, onTaskClick, updateTaskTitle, editable, projec
     // Ordina i task se dataTimeEnabled
 
     let orderedTasks: Task[] = [];
-
-    if (dateTimeEnabled) {
-        orderedTasks = sortByDate(tasks);
-    }
-
-    orderedTasks.filter(t => !t.archived);
-
-    // @todo cover visible days functionality with tests
-    orderedTasks = orderedTasks.filter(t => {
-        if (dateTimeEnabled && t.timestamp) {
-            const taskDate = new Date(typeof t.timestamp === 'number' ? t.timestamp : t.timestamp || '');
-            const tomorrow = new Date();
-            tomorrow.setDate(tomorrow.getDate() + 1);
-            return taskDate <= tomorrow;
-        }
-        return true;
-    });
+    orderedTasks = sortByDate(tasks)
+        .filter(t => !t.archived);
 
     return (
         <>
