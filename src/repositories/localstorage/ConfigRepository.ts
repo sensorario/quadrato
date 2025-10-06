@@ -64,6 +64,16 @@ class ConfigRepository implements Repository {
     getIconTheme(): string {
         return localStorage.getItem(ConfigRepository.ICON_THEME_KEY) || 'default';
     }
+
+    getDateTimeEnabled(): boolean {
+        try {
+            const saved = localStorage.getItem('simplanner-dateTime-enabled');
+            return saved ? JSON.parse(saved) : false;
+        } catch (e) {
+            console.log({ e });
+            return false;
+        }
+    }
 }
 
 export default new ConfigRepository();
