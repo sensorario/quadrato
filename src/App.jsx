@@ -53,8 +53,7 @@ function App() {
 
     // Stato per abilitare/disabilitare il campo data-ora nei task
     const [dateTimeEnabled, setDateTimeEnabledState] = useState(() => {
-        const saved = localStorage.getItem('simplanner-dateTime-enabled');
-        return saved ? JSON.parse(saved) : false;
+        getConfigRepository().getDateTimeEnabled();
     });
 
     const [showExpired, setShowExpiredFeature] = useState(getConfigRepository().getShowExpired());
