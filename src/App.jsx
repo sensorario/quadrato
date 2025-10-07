@@ -61,13 +61,14 @@ function App() {
     const [showConfig, setShowConfig] = useState(false);
 
     useEffect(() => {
-        localStorage.setItem('simplanner-show-expired', JSON.stringify(showExpired));
+        getConfigRepository().setShowExpired(showExpired);
     }, [showExpired]);
 
     const setDateTimeEnabled = (val) => {
         setDateTimeEnabledState(val);
-        localStorage.setItem('simplanner-dateTime-enabled', JSON.stringify(val));
+        getConfigRepository().setDateTimeEnabled(val);
     };
+
     // Stato per filtro progetto
     const [projectFilter, setProjectFilterState] = useState(() => {
         const saved = localStorage.getItem('simplanner-project-filter');
