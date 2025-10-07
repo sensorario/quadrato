@@ -6,6 +6,7 @@ class ConfigRepository implements Repository {
     static SHOW_TEXT_KEY = 'simplanner-show-text';
     static ICON_THEME_KEY = 'simplanner-icon-theme';
     static SHOW_EXPIRED_KEY = 'simplanner-show-expired';
+    static DATE_TIME_ENABLED_KEY = 'simplanner-dateTime-enabled';
 
     getProjectColors() {
         try {
@@ -67,12 +68,16 @@ class ConfigRepository implements Repository {
 
     getDateTimeEnabled(): boolean {
         try {
-            const saved = localStorage.getItem('simplanner-dateTime-enabled');
+            const saved = localStorage.getItem(ConfigRepository.DATE_TIME_ENABLED_KEY);
             return saved ? JSON.parse(saved) : false;
         } catch (e) {
             console.log({ e });
             return false;
         }
+    }
+
+    setDateTimeEnabled(value: boolean): void {
+        localStorage.setItem(ConfigRepository.DATE_TIME_ENABLED_KEY, JSON.stringify(value));
     }
 }
 
