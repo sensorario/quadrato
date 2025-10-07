@@ -7,6 +7,8 @@ class ConfigRepository implements Repository {
     static ICON_THEME_KEY = 'simplanner-icon-theme';
     static SHOW_EXPIRED_KEY = 'simplanner-show-expired';
     static DATE_TIME_ENABLED_KEY = 'simplanner-dateTime-enabled';
+    static ZEN_MODE_KEY = 'simplanner-zen-mode';
+    static PROJECT_FILTER_KEY = 'simplanner-project-filter';
 
     getProjectColors() {
         try {
@@ -78,6 +80,34 @@ class ConfigRepository implements Repository {
 
     setDateTimeEnabled(value: boolean): void {
         localStorage.setItem(ConfigRepository.DATE_TIME_ENABLED_KEY, JSON.stringify(value));
+    }
+
+    getZenMode(): boolean {
+        try {
+            const saved = localStorage.getItem(ConfigRepository.ZEN_MODE_KEY);
+            return saved ? JSON.parse(saved) : false;
+        } catch (e) {
+            console.log({ e });
+            return false;
+        }
+    }
+
+    getProjectFilter(): string | null {
+        try {
+            const saved = localStorage.getItem(ConfigRepository.PROJECT_FILTER_KEY);
+            return saved ? JSON.parse(saved) : null;
+        } catch (e) {
+            console.log({ e });
+            return null;
+        }
+    }
+
+    setProjectFilter(val: string | null): void {
+        localStorage.setItem(ConfigRepository.PROJECT_FILTER_KEY, JSON.stringify(val));
+    }
+
+    setTasks(tasks: any[]): void {
+        localStorage.setItem('simplanner-tasks', JSON.stringify(tasks));
     }
 }
 

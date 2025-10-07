@@ -1,3 +1,4 @@
+import { getConfigRepository } from "../repositories";
 import { STATUS_ENUM } from "../utils";
 
 type ComponentProps = {
@@ -65,7 +66,7 @@ export const archiveCompletedAndSkippedTasks = ({ tasks }: ComponentProps) => {
     });
     const allTasks = [...updatedTasks, ...newTasks];
 
-    localStorage.setItem('simplanner-tasks', JSON.stringify(allTasks));
+    getConfigRepository().setTasks(allTasks);
 
     return allTasks;
 };
