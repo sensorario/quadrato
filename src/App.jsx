@@ -71,12 +71,11 @@ function App() {
 
     // Stato per filtro progetto
     const [projectFilter, setProjectFilterState] = useState(() => {
-        const saved = localStorage.getItem('simplanner-project-filter');
-        return saved ? JSON.parse(saved) : null;
+        return getConfigRepository().getProjectFilter();
     });
     const setProjectFilter = (val) => {
         setProjectFilterState(val);
-        localStorage.setItem('simplanner-project-filter', JSON.stringify(val));
+        getConfigRepository().setProjectFilter(val);
     };
 
     // Stato per abilitare/disabilitare la modifica del progetto
@@ -112,8 +111,7 @@ function App() {
     const [newTaskLongDescription, setNewTaskLongDescription] = useState('');
     const [showHelp, setShowHelp] = useState(false);
     const [zenMode, setZenMode] = useState(() => {
-        const saved = localStorage.getItem('simplanner-zen-mode');
-        return saved ? JSON.parse(saved) : false;
+        return getConfigRepository().getZenMode();
     });
 
     // Funzione per aggiornare la descrizione di un task
