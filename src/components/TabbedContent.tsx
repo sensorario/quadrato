@@ -1,16 +1,17 @@
+import { getConfig } from "@testing-library/react";
 import React from "react";
 import { useState } from "react";
+import { getConfigRepository } from "../repositories";
 
 
 export const TabbedContent = ({ panels }: { panels: { title: string; content: React.ReactNode }[] }) => {
     const [activeTab, setActiveTab] = useState(() => {
-        const saved = localStorage.getItem('simplanner-config-tab');
-        return saved ? Number(saved) : 0;
+        return getConfigRepository().getActiveTab() ?? 0;
     });
 
-    const handleTabChange = (index) => {
+    const handleTabChange = (index: React.SetStateAction<number>) => {
         setActiveTab(index);
-        localStorage.setItem('simplanner-config-tab', String(index));
+        getConfigRepository().setActiveTab(index);
     };
 
     return <div className="tabbed-content">

@@ -3,6 +3,7 @@ import { Modal } from "./Modal";
 import HelpIcon from "./HelpIcon";
 import TabbedContent from "./TabbedContent";
 import { Footer } from "./Footer/index";
+import { getConfigRepository } from "../repositories";
 
 const EditTaskModal = ({ value, setValue, longValue, setLongValue, projectValue, setProjectValue, timestampValue, setTimestampValue, periodicityValue, setPeriodicityValue, onClose, onSave, projectEditable, dateTimeEnabled }) => {
     React.useEffect(() => {
@@ -120,23 +121,9 @@ const EditTaskModal = ({ value, setValue, longValue, setLongValue, projectValue,
                         {/** estrai dal local storage simplanner-tasks tutti i progetti di tutti i task e stampali qui sotto */}
                         <div>
                             {(() => {
-                                // Collect all tasks from localStorage under 'simplanner-tasks'
-                                let projects = [];
-                                Object.keys(localStorage)
-                                    .filter(key => key.startsWith('simplanner-tasks'))
-                                    .forEach(key => {
-                                        try {
-                                            const tasks = JSON.parse(localStorage.getItem(key));
-                                            if (Array.isArray(tasks)) {
-                                                tasks.forEach(task => {
-                                                    if (task.project) projects.push(task.project);
-                                                });
-                                            }
-                                        } catch (e) { console.error('Errore nel parsing dei task:', e); }
-                                    });
-
-                                // Get distinct project values
-                                const uniqueProjects = Array.from(new Set(projects));
+                                // Use configRepository to get all unique projects
+                                const configRepository = getConfigRepository();
+                                const uniqueProjects = configRepository.getAllProjects();
                                 return uniqueProjects.length > 0
                                     ? uniqueProjects.map(project => <div style={{ padding: '4px 8px', borderBottom: '1px solid #eee', cursor: 'pointer' }} key={project} onClick={() => setProjectValue(project)}>{project}</div>)
                                     : <div style={{ color: '#888' }}>Nessun progetto trovato</div>;

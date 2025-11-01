@@ -151,28 +151,27 @@ function App() {
 
   // Stato per abilitare/disabilitare la modifica del progetto
   const [projectEditable, setProjectEditableState] = useState(() => {
-    const saved = localStorage.getItem('simplanner-project-editable')
-    return saved ? JSON.parse(saved) : false
+    return getConfigRepository().getProjectEditable()
   })
 
   const setProjectEditable = (val) => {
     setProjectEditableState(val)
-    localStorage.setItem('simplanner-project-editable', JSON.stringify(val))
+    getConfigRepository().setProjectEditable(val)
   }
   // Stato per abilitare/disabilitare la modifica dei task
   const [editable, setEditableState] = useState(() => {
-    const saved = localStorage.getItem('simplanner-editable')
-    return saved ? JSON.parse(saved) : true
+    return getConfigRepository().getProjectEditable
   })
 
   // Wrapper per aggiornare stato e localStorage
   const setEditable = (val) => {
     setEditableState(val)
-    localStorage.setItem('simplanner-editable', JSON.stringify(val))
+    getConfigRepository().setProjectEditable(val)
   }
+
+  // Stato per i task
   const [tasks, setTasks] = useState(() => {
-    const saved = localStorage.getItem('simplanner-tasks')
-    return saved ? JSON.parse(saved) : initialTasks
+    return getConfigRepository().getTasks()
   })
 
   const [showPopup, setShowPopup] = useState(false)
@@ -202,25 +201,22 @@ function App() {
         }
         return task.id === id
           ? {
-              ...task,
-              title: value,
-              longDescription: longValue,
-              project: projectValue ?? task.project,
-              timestamp: newTimestamp,
-              periodicity: periodicityValue ?? task.periodicity,
-            }
+            ...task,
+            title: value,
+            longDescription: longValue,
+            project: projectValue ?? task.project,
+            timestamp: newTimestamp,
+            periodicity: periodicityValue ?? task.periodicity,
+          }
           : task
       })
-      localStorage.setItem('simplanner-tasks', JSON.stringify(updated))
+      getConfigRepository().setTasks(updated)
       return updated
     })
   }
 
   useEffect(() => {
-    localStorage.setItem(
-      'simplanner-project-filter',
-      JSON.stringify(projectFilter)
-    )
+    getConfigRepository().setProjectFilter(projectFilter)
     setNewTaskProject(projectFilter === 'ALL' ? '' : projectFilter)
   }, [projectFilter])
 
@@ -257,7 +253,7 @@ function App() {
       const updated = tasks.map((task) =>
         task.id === id ? { ...task, status: (task.status + 1) % 4 } : task
       )
-      localStorage.setItem('simplanner-tasks', JSON.stringify(updated))
+      getConfigRepository().setTasks(updated)
       return updated
     })
   }
@@ -279,7 +275,7 @@ function App() {
     const updatedTasks = [...tasks, newTask]
     setTasks(updatedTasks)
 
-    localStorage.setItem('simplanner-tasks', JSON.stringify(updatedTasks))
+    getConfigRepository().setTasks(updatedTasks)
     handleAddAnotherModal({
       addAnother,
       setShowPopup,
@@ -294,7 +290,7 @@ function App() {
     // const updatedTasks = tasks.filter(t => t.status === STATUS_ENUM.TODO || t.status === STATUS_ENUM.IN_PROGRESS);
     const updatedTasks = archiveCompletedAndSkippedTasks({ tasks })
     setTasks(updatedTasks)
-    localStorage.setItem('simplanner-tasks', JSON.stringify(updatedTasks))
+    getConfigRepository().setTasks(updatedTasks)
     setShowCleanConfirm(false)
   }
 
