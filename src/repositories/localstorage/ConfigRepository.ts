@@ -1,21 +1,78 @@
-
-import { Repository } from '../Repository';
+import React from "react";
+import { Repository } from "../Repository";
 
 class ConfigRepository implements Repository {
-    static PROJECT_COLORS_KEY = 'simplanner-project-colors';
-    static SHOW_TEXT_KEY = 'simplanner-show-text';
-    static ICON_THEME_KEY = 'simplanner-icon-theme';
-    static SHOW_EXPIRED_KEY = 'simplanner-show-expired';
-    static DATE_TIME_ENABLED_KEY = 'simplanner-dateTime-enabled';
-    static ZEN_MODE_KEY = 'simplanner-zen-mode';
-    static PROJECT_FILTER_KEY = 'simplanner-project-filter';
+    static PROJECT_COLORS_KEY = "simplanner-project-colors";
+    static SHOW_TEXT_KEY = "simplanner-show-text";
+    static ICON_THEME_KEY = "simplanner-icon-theme";
+    static SHOW_EXPIRED_KEY = "simplanner-show-expired";
+    static DATE_TIME_ENABLED_KEY = "simplanner-dateTime-enabled";
+    static ZEN_MODE_KEY = "simplanner-zen-mode";
+    static PROJECT_FILTER_KEY = "simplanner-project-filter";
+    static PROJECT_EDITABLE = "simplanner-project-editabile";
+
+    /**
+     * Returns a list of unique project names from all tasks in localStorage (across all 'simplanner-tasks*' keys)
+     */
+    getAllProjects(): string[] {
+        let projects: string[] = [];
+        Object.keys(localStorage)
+            .filter(key => key.startsWith('simplanner-tasks'))
+            .forEach(key => {
+                try {
+                    const tasks = JSON.parse(localStorage.getItem(key)!);
+                    if (Array.isArray(tasks)) {
+                        tasks.forEach((task: any) => {
+                            if (task.project) projects.push(task.project);
+                        });
+                    }
+                } catch (e) {
+                    console.error('Errore nel parsing dei task:', e);
+                }
+            });
+        return Array.from(new Set(projects));
+    }
 
     getProjectColors() {
         try {
             const saved = localStorage.getItem(ConfigRepository.PROJECT_COLORS_KEY);
             return saved ? JSON.parse(saved) : "{}";
         } catch (e) {
-            console.error('Failed to parse project colors from localStorage', e);
+            console.error("Failed to parse project colors from localStorage", e);
+            return "{}";
+        }
+    }
+
+    getTasks(): any[] {
+        try {
+            const saved = localStorage.getItem("simplanner-tasks");
+            return saved ? JSON.parse(saved) : [];
+        } catch (e) {
+            console.error("Failed to parse tasks from localStorage", e);
+            return [];
+        }
+    }
+
+    getTasksFromKey(key: string): any[] {
+        try {
+            const saved = localStorage.getItem(key);
+            return saved ? JSON.parse(saved) : [];
+        } catch (e) {
+            console.error(`Failed to parse tasks from localStorage key ${key}`, e);
+            return [];
+        }
+    }
+
+    setProjectEditable(val: boolean) {
+        localStorage.setItem("simplanner-project-editable", JSON.stringify(val));
+    }
+
+    getProjectEditable() {
+        try {
+            const saved = localStorage.getItem("simplanner-project-editable");
+            return saved ? JSON.parse(saved) : false;
+        } catch (e) {
+            console.error("Failed to parse project editability from localStorage", e);
             return "{}";
         }
     }
@@ -65,7 +122,7 @@ class ConfigRepository implements Repository {
     }
 
     getIconTheme(): string {
-        return localStorage.getItem(ConfigRepository.ICON_THEME_KEY) || 'default';
+        return localStorage.getItem(ConfigRepository.ICON_THEME_KEY) || "default";
     }
 
     getDateTimeEnabled(): boolean {
@@ -107,7 +164,21 @@ class ConfigRepository implements Repository {
     }
 
     setTasks(tasks: any[]): void {
-        localStorage.setItem('simplanner-tasks', JSON.stringify(tasks));
+        localStorage.setItem("simplanner-tasks", JSON.stringify(tasks));
+    }
+
+    setActiveTab(index: React.SetStateAction<number>): void {
+        localStorage.setItem('simplanner-config-tab', String(index));
+    }
+
+    getActiveTab(): string | null {
+        try {
+            const saved = localStorage.getItem('simplanner-config-tab');
+            return saved ? JSON.parse(saved) : null;
+        } catch (e) {
+            console.error("Failed to parse active tab from localStorage", e);
+            return null;
+        }
     }
 }
 
