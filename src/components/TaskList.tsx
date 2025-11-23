@@ -4,6 +4,8 @@ import EditIcon from "./EditIcon";
 import EditTaskModal from "./EditTaskModal";
 import FormatDate from "./FormatDate";
 import { Task, HandleEditClickProp } from "../types/commonTypes";
+import { getConfigRepository } from "../repositories";
+import sortByDate from "../utils/filterTaskByVisibilityRange";
 
 // @todo #44 extract task type in a common file and fix dateTime to timestamp
 export const TaskList = ({ tasks, onTaskClick, updateTaskTitle, editable, projectEditable, dateTimeEnabled, iconTheme }: {
@@ -18,14 +20,9 @@ export const TaskList = ({ tasks, onTaskClick, updateTaskTitle, editable, projec
     // Aggiorno la tipizzazione per timestamp
     // tasks: Array<{ id: number; title: string; status: number; longDescription?: string; project?: string; timestamp?: number | string; archived?: boolean; }>
     const STATUS = getStatusIcons(iconTheme);
-    // Recupera i colori dei progetti dal localStorage
-    let projectColors: Record<string, string> = {};
-    try {
-        const saved = localStorage.getItem('simplanner-project-colors');
-        projectColors = saved ? JSON.parse(saved) : {};
-    } catch (e) {
-        projectColors = {};
-    }
+
+    // Recupera i colori dei progetti dal repository
+    let projectColors: Record<string, string> = getConfigRepository().getProjectColors();
 
     const [hoveredId, setHoveredId] = useState<number | null>(null);
     const [editId, setEditId] = useState<number | null>(null);
@@ -119,20 +116,10 @@ export const TaskList = ({ tasks, onTaskClick, updateTaskTitle, editable, projec
     };
 
     // Ordina i task se dataTimeEnabled
-    let orderedTasks = tasks;
-    if (dateTimeEnabled) {
-        // @todo ensure task.timestamp is defined
-        const withDate = tasks.filter(t => t.timestamp);
-        const withoutDate = tasks.filter(t => !t.timestamp);
-        withDate.sort((a, b) => {
-            const aTime = typeof a.timestamp === 'number' ? a.timestamp : new Date(a.timestamp || '').getTime();
-            const bTime = typeof b.timestamp === 'number' ? b.timestamp : new Date(b.timestamp || '').getTime();
-            return aTime - bTime;
-        });
-        orderedTasks = [...withDate, ...withoutDate];
-    }
 
-    orderedTasks.filter(t => !t.archived);
+    let orderedTasks: Task[] = [];
+    orderedTasks = sortByDate(tasks)
+        .filter(t => !t.archived);
 
     return (
         <>
