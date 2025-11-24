@@ -22,6 +22,8 @@ function App() {
   const [showText, setShowText] = useState(getConfigRepository().getShowText())
 
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
 
   const handleShowTextToggle = () => {
     setShowText((prev) => !prev)
@@ -683,18 +685,14 @@ function App() {
         buttons={[
           {
             label: 'Accedi', onClick: () => {
-              // Effettua la chiamata di autenticazione
-              // setIsAuthenticated(true); // Simula l'autenticazione riuscita
-              // invia username e password a api.simonegentili.com/quadrato/authenticate
-
               fetch('https://api.simonegentili.com/quadrato/authenticate', {
                 method: 'POST',
                 headers: {
                   'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({
-                  username: 'inserisci_username', // Sostituisci con il valore reale
-                  password: 'inserisci_password', // Sostituisci con il valore reale
+                  username: username,
+                  password: password,
                 }),
               })
                 .then((response) => response.json())
@@ -718,6 +716,8 @@ function App() {
             placeholder="Username"
             className="modal-input"
             autoFocus
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
           />
         </div>
         <div className="modal-input-wrapper">
@@ -725,6 +725,8 @@ function App() {
             type="password"
             placeholder="Password"
             className="modal-input"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
           />
         </div>
       </Modal>
