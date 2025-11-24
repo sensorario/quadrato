@@ -2,8 +2,14 @@
 import React from "react";
 
 export interface Repository {
+    requireAttention(): boolean;
+
     // projects
     getAllProjects(): string[];
+
+    // tasks
+    getAllTasks(): string[];
+
     // shot text close to icons
     setShowText(value: boolean): void;
     getShowText(): boolean;

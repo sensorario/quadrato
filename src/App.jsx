@@ -17,92 +17,11 @@ import { handleAddAnotherModal } from './utils/handleAddAnotherModal'
 import { archiveCompletedAndSkippedTasks } from './functions/archiveCompletedAndSkippedTasks'
 import { getConfigRepository } from './repositories'
 
-const initialTasks = [
-  {
-    id: 1,
-    title: 'Questo è un task da fare',
-    longDescription: '',
-    project: 'quadrato',
-    timestamp: '',
-    status: STATUS_ENUM.TODO,
-  },
-  {
-    id: 2,
-    title: 'Questo è un altro task da completare',
-    longDescription: '',
-    project: 'quadrato',
-    timestamp: '',
-    status: STATUS_ENUM.TODO,
-  },
-  {
-    id: 3,
-    title: 'Task semplice da svolgere',
-    longDescription: '',
-    project: 'quadrato',
-    timestamp: '',
-    status: STATUS_ENUM.TODO,
-  },
-  {
-    id: 4,
-    title: 'Task in corso di lavorazione',
-    longDescription: '',
-    project: 'quadrato',
-    timestamp: '',
-    status: STATUS_ENUM.IN_PROGRESS,
-  },
-  {
-    id: 5,
-    title: 'Altro task in progresso',
-    longDescription: '',
-    project: 'quadrato',
-    timestamp: '',
-    status: STATUS_ENUM.IN_PROGRESS,
-  },
-  {
-    id: 6,
-    title: 'Task completato con successo',
-    longDescription: '',
-    project: 'quadrato',
-    timestamp: '',
-    status: STATUS_ENUM.DONE,
-  },
-  {
-    id: 7,
-    title: 'Questo task è stato finito',
-    longDescription: '',
-    project: 'quadrato',
-    timestamp: '',
-    status: STATUS_ENUM.DONE,
-  },
-  {
-    id: 8,
-    title: 'Task portato a termine',
-    longDescription: '',
-    project: 'quadrato',
-    timestamp: '',
-    status: STATUS_ENUM.DONE,
-  },
-  {
-    id: 9,
-    title: 'Task skippato per il momento',
-    longDescription: '',
-    project: 'quadrato',
-    timestamp: '',
-    status: STATUS_ENUM.SKIPPED,
-  },
-  {
-    id: 10,
-    title: 'Questo task è stato saltato',
-    longDescription: '',
-    project: 'quadrato',
-    timestamp: '',
-    status: STATUS_ENUM.SKIPPED,
-  },
-]
-
 function App() {
   // Mostro nascondo testo accanto alle icone
   const [showText, setShowText] = useState(getConfigRepository().getShowText())
+
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   const handleShowTextToggle = () => {
     setShowText((prev) => !prev)
@@ -171,7 +90,7 @@ function App() {
 
   // Stato per i task
   const [tasks, setTasks] = useState(() => {
-    return getConfigRepository().getTasks()
+    return getConfigRepository().getAllTasks()
   })
 
   const [showPopup, setShowPopup] = useState(false)
@@ -752,6 +671,65 @@ function App() {
       return dt >= now && dt <= end
     })
   })()
+
+  if (getConfigRepository().requireAttention() === true && !isAuthenticated) {
+    // Mostra una modale con username e password. Al submit inviare ad api.simonegentili.com/quadrato/authenticate e ricevere un token di autenticazione.
+    return (
+      <Modal
+        title='Sign in'
+        onClick={() => {
+          setShowPopup(false)
+        }}
+        buttons={[
+          {
+            label: 'Accedi', onClick: () => {
+              // Effettua la chiamata di autenticazione
+              // setIsAuthenticated(true); // Simula l'autenticazione riuscita
+              // invia username e password a api.simonegentili.com/quadrato/authenticate
+
+              fetch('https://api.simonegentili.com/quadrato/authenticate', {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                  username: 'inserisci_username', // Sostituisci con il valore reale
+                  password: 'inserisci_password', // Sostituisci con il valore reale
+                }),
+              })
+                .then((response) => response.json())
+                .then((data) => {
+                  if (data.token) {
+                    setIsAuthenticated(true);
+                  } else {
+                    alert('Autenticazione fallita');
+                  }
+                })
+                .catch((error) => {
+                  console.error('Errore durante l\'autenticazione:', error);
+                });
+            }
+          },
+        ]}
+      >
+        <div className="modal-input-wrapper">
+          <input
+            type="text"
+            placeholder="Username"
+            className="modal-input"
+            autoFocus
+          />
+        </div>
+        <div className="modal-input-wrapper">
+          <input
+            type="password"
+            placeholder="Password"
+            className="modal-input"
+          />
+        </div>
+      </Modal>
+    )
+  }
 
   return (
     <div className="foo">

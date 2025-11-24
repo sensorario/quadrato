@@ -2,6 +2,10 @@ import React from "react";
 import { Repository } from "../Repository";
 
 class ConfigRepository implements Repository {
+    requireAttention(): boolean {
+        return false;
+    }
+
     static PROJECT_COLORS_KEY = "simplanner-project-colors";
     static SHOW_TEXT_KEY = "simplanner-show-text";
     static ICON_THEME_KEY = "simplanner-icon-theme";
@@ -43,7 +47,7 @@ class ConfigRepository implements Repository {
         }
     }
 
-    getTasks(): any[] {
+    getAllTasks(): any[] {
         try {
             const saved = localStorage.getItem("simplanner-tasks");
             return saved ? JSON.parse(saved) : [];

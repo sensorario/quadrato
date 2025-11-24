@@ -1,7 +1,13 @@
-export const DATA_BACKEND = 'localstorage' as 'localstorage' | 'fake';
-
-import LocalStorageConfigRepository from './localstorage/ConfigRepository';
+// import LocalStorageConfigRepository from './localstorage/ConfigRepository';
+import AjaxRepository from "./localstorage/AjaxRepository";
 
 export function getConfigRepository() {
-    return LocalStorageConfigRepository;
+    // return LocalStorageConfigRepository;
+    const repository = AjaxRepository;
+
+    if (repository.requireAttention()) {
+        console.log("Using AjaxRepository as it requires attention.");
+    }
+
+    return repository;
 }
