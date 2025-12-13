@@ -1,0 +1,161 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Quadrato LocalStorage Schema",
+  "description": "Schema completo di tutti i dati salvati in localStorage dall'applicazione Quadrato",
+  "type": "object",
+  "properties": {
+    "simplanner-tasks": {
+      "description": "Array di tasks principali",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number",
+            "description": "ID univoco del task"
+          },
+          "title": {
+            "type": "string",
+            "description": "Titolo del task"
+          },
+          "longDescription": {
+            "type": "string",
+            "description": "Descrizione dettagliata del task (opzionale)"
+          },
+          "project": {
+            "type": "string",
+            "description": "Nome del progetto associato (opzionale)"
+          },
+          "timestamp": {
+            "type": ["string", "number"],
+            "description": "Data/ora di scadenza del task (opzionale)"
+          },
+          "status": {
+            "type": "number",
+            "enum": [0, 1, 2, 3],
+            "description": "Status del task: 0=TODO, 1=IN_PROGRESS, 2=DONE, 3=SKIPPED"
+          },
+          "archived": {
+            "type": "boolean",
+            "description": "Indica se il task è archiviato (opzionale)"
+          },
+          "periodicity": {
+            "type": "object",
+            "description": "Periodicità del task (opzionale)",
+            "properties": {
+              "number": {
+                "type": "string",
+                "description": "Numero per la periodicità"
+              },
+              "unit": {
+                "type": "string",
+                "enum": ["minuti", "giorni", "settimane", "mesi", "anni"],
+                "description": "Unità di misura della periodicità"
+              }
+            },
+            "required": ["number", "unit"]
+          }
+        },
+        "required": ["id", "title", "status"]
+      }
+    },
+    "simplanner-project-colors": {
+      "description": "Mappa dei colori associati ai progetti",
+      "type": "object",
+      "additionalProperties": {
+        "type": "string",
+        "pattern": "^#[0-9A-Fa-f]{6}$",
+        "description": "Colore esadecimale per il progetto"
+      },
+      "example": {
+        "quadrato": "#FF5733",
+        "altro-progetto": "#33FF57"
+      }
+    },
+    "simplanner-show-text": {
+      "description": "Indica se mostrare il testo accanto alle icone",
+      "type": "boolean",
+      "default": false
+    },
+    "simplanner-icon-theme": {
+      "description": "Tema delle icone selezionato",
+      "type": "string",
+      "enum": ["default", "checked", "panda"],
+      "default": "default"
+    },
+    "simplanner-show-expired": {
+      "description": "Indica se mostrare i task scaduti",
+      "type": "boolean",
+      "default": false
+    },
+    "simplanner-dateTime-enabled": {
+      "description": "Indica se il campo data-ora è abilitato per i task",
+      "type": "boolean",
+      "default": false
+    },
+    "simplanner-zen-mode": {
+      "description": "Indica se la modalità zen è attiva",
+      "type": "boolean",
+      "default": false
+    },
+    "simplanner-project-filter": {
+      "description": "Filtro progetto selezionato (null = tutti i progetti)",
+      "type": ["string", "null"],
+      "default": null
+    },
+    "simplanner-project-editable": {
+      "description": "Indica se il campo progetto è modificabile",
+      "type": "boolean",
+      "default": false
+    },
+    "simplanner-config-tab": {
+      "description": "Indice del tab attivo nella modale di configurazione",
+      "type": "string",
+      "pattern": "^[0-9]+$",
+      "default": "0"
+    }
+  },
+  "example": {
+    "simplanner-tasks": [
+      {
+        "id": 1,
+        "title": "Completare il progetto",
+        "longDescription": "Finire tutte le funzionalità richieste",
+        "project": "quadrato",
+        "timestamp": "2025-12-31T23:59:59",
+        "status": 0,
+        "archived": false,
+        "periodicity": {
+          "number": "7",
+          "unit": "giorni"
+        }
+      },
+      {
+        "id": 2,
+        "title": "Riunione team",
+        "project": "work",
+        "status": 2,
+        "archived": false
+      }
+    ],
+    "simplanner-project-colors": {
+      "quadrato": "#3498db",
+      "work": "#e74c3c"
+    },
+    "simplanner-show-text": true,
+    "simplanner-icon-theme": "default",
+    "simplanner-show-expired": false,
+    "simplanner-dateTime-enabled": true,
+    "simplanner-zen-mode": false,
+    "simplanner-project-filter": "quadrato",
+    "simplanner-project-editable": true,
+    "simplanner-config-tab": "0"
+  },
+  "notes": [
+    "Tutte le chiavi seguono il pattern 'simplanner-*'",
+    "I valori booleani e oggetti sono salvati come JSON.stringify()",
+    "simplanner-icon-theme è salvato come stringa semplice",
+    "simplanner-config-tab è salvato come String(number)",
+    "Possono esistere chiavi aggiuntive con pattern 'simplanner-tasks*' per task multipli"
+  ]
+}

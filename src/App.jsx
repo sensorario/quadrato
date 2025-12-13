@@ -7,6 +7,7 @@ import TaskProjectSelector from './components/TaskProjectSelector'
 import Footer from './components/Footer'
 import ConfirmModal from './components/ConfirmModal'
 import HelpModal from './components/HelpModal'
+import { LoginModal } from './components/LoginModal'
 import GearIcon from './components/GearIcon'
 import HelpIcon from './components/HelpIcon'
 import { Modal } from './components/Modal'
@@ -101,6 +102,31 @@ const initialTasks = [
 ]
 
 function App() {
+  // Stato per il token di autenticazione - recupera dal localStorage se presente
+  const [token, setToken] = useState(() => {
+    return localStorage.getItem('simplanner-access-token')
+  })
+
+  // Registra callback per gestire 401 Unauthorized e autenticazione
+  useEffect(() => {
+    const repository = getConfigRepository()
+    repository.onUnauthorized(() => {
+      setToken(null)
+    })
+    repository.onAuthenticated((newToken) => {
+      setToken(newToken)
+    })
+  }, [])
+
+  // Handler per il login
+  const handleLogin = (username, password) => {
+    getConfigRepository()
+      .authenticate(username, password)
+      .catch((err) => {
+        alert('Login fallito: ' + err.message)
+      })
+  }
+
   // Mostro nascondo testo accanto alle icone
   const [showText, setShowText] = useState(getConfigRepository().getShowText())
 
@@ -214,6 +240,67 @@ function App() {
       return updated
     })
   }
+
+  // Ricarica tutti i dati quando l'API risponde
+  useEffect(() => {
+    const repository = getConfigRepository()
+    if (repository.onDataLoaded) {
+      repository.onDataLoaded(() => {
+        console.log('Dati caricati dall\'API, aggiornamento interfaccia...')
+
+        // Aggiorna tutti gli stati con i dati dall'API
+        const loadedTasks = repository.getTasks()
+        if (loadedTasks && loadedTasks.length > 0) {
+          console.log('Aggiornamento tasks con dati API:', loadedTasks)
+          setTasks(loadedTasks)
+        } else {
+          console.log('Nessun task caricato dall\'API, mantenendo lo stato attuale.')
+        }
+
+        // Aggiorna il tema delle icone
+        const loadedIconTheme = repository.getIconTheme()
+        setIconTheme(loadedIconTheme)
+        console.log('Icon theme aggiornato con dati API:', loadedIconTheme)
+
+        // Aggiorna showText
+        const loadedShowText = repository.getShowText()
+        setShowText(loadedShowText)
+        console.log('Show text aggiornato con dati API:', loadedShowText)
+
+        // Aggiorna showExpired
+        const loadedShowExpired = repository.getShowExpired()
+        setShowExpiredFeature(loadedShowExpired)
+        console.log('Show expired aggiornato con dati API:', loadedShowExpired)
+
+        // Aggiorna dateTimeEnabled
+        const loadedDateTimeEnabled = repository.getDateTimeEnabled()
+        setDateTimeEnabledState(loadedDateTimeEnabled)
+        console.log('Date time enabled aggiornato con dati API:', loadedDateTimeEnabled)
+
+        // Aggiorna projectEditable
+        const loadedProjectEditable = repository.getProjectEditable()
+        setProjectEditableState(loadedProjectEditable)
+        setEditableState(loadedProjectEditable)
+        console.log('Project editable aggiornato con dati API:', loadedProjectEditable)
+
+        // Aggiorna projectFilter
+        const loadedProjectFilter = repository.getProjectFilter()
+        setProjectFilterState(loadedProjectFilter)
+        console.log('Project filter aggiornato con dati API:', loadedProjectFilter)
+
+        // Aggiorna zenMode
+        const loadedZenMode = repository.getZenMode()
+        setZenMode(loadedZenMode)
+        console.log('Zen mode aggiornato con dati API:', loadedZenMode)
+
+        console.log('Interfaccia aggiornata con dati API:', {
+          iconTheme: loadedIconTheme,
+          showText: loadedShowText,
+          tasks: loadedTasks.length
+        })
+      })
+    }
+  }, [])
 
   useEffect(() => {
     getConfigRepository().setProjectFilter(projectFilter)
@@ -771,6 +858,12 @@ function App() {
         {showHelp && HelpModalView}
         {showPopup && NewTaskModalView}
         {showCleanConfirm && ConfirmModalView}
+        {token === null && (
+          <LoginModal
+            onClose={() => {}}
+            onLogin={handleLogin}
+          />
+        )}
       </div>
     </div>
   )
