@@ -44,4 +44,6 @@ export interface Repository {
     setProjectFilter(value: string): void;
     getProjectFilter(): string | null;
 
+    // events
+    onUnauthorized(callback: () => void): void;
 }

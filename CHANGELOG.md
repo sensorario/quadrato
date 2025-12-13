@@ -22,6 +22,7 @@
 
 
 ### Fixes
+- fix(tests): remove old test ([6d0cf18](https://github.com/sensorario/quadrato/commit/6d0cf18), 2025-12-13)
 - fix(task): fix editing (close [#31](https://github.com/sensorario/quadrato/issues/31)) ([34417b3](https://github.com/sensorario/quadrato/commit/34417b3), 2025-09-19)
 - fix(popups): ESC is not closing opened popups. ([0062454](https://github.com/sensorario/quadrato/commit/0062454), 2025-09-18)
 - fix(timestamp): use timestamp instead of dateTime ([b0419e6](https://github.com/sensorario/quadrato/commit/b0419e6), 2025-09-17)
