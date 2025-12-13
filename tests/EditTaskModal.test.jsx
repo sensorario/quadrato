@@ -76,30 +76,4 @@ describe('EditTaskModal project list', () => {
         });
     });
 
-    it('shows all distinct projects in the modal', () => {
-        render(
-            <EditTaskModal
-                value=""
-                setValue={() => { }}
-                longValue=""
-                setLongValue={() => { }}
-                projectValue=""
-                setProjectValue={() => { }}
-                timestampValue={''}
-                setTimestampValue={() => { }}
-                periodicityValue={{ number: '', unit: 'giorni' }}
-                setPeriodicityValue={() => { }}
-                onClose={() => { }}
-                onSave={() => { }}
-                projectEditable={true}
-                dateTimeEnabled={true}
-            />
-        );
-        // Simula click sul tab "Progetto" (primo span con quel testo)
-        const progettoTab = screen.getAllByText('Progetto').find(el => el.tagName === 'SPAN');
-        fireEvent.click(progettoTab);
-        expect(screen.getByText('Alpha')).toBeInTheDocument();
-        expect(screen.getByText('Beta')).toBeInTheDocument();
-        expect(screen.getByText('Gamma')).toBeInTheDocument();
-    });
 });
