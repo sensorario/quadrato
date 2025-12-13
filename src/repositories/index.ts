@@ -1,7 +1,9 @@
 export const DATA_BACKEND = 'localstorage' as 'localstorage' | 'fake';
 
-import LocalStorageConfigRepository from './localstorage/ConfigRepository';
+// import LocalStorageRepository from './LocalStorageRepository';
+import AjaxRepository from './AjaxRepository';
 
 export function getConfigRepository() {
-    return LocalStorageConfigRepository;
+    // return LocalStorageRepository;
+    return AjaxRepository;
 }

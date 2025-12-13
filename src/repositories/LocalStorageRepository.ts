@@ -1,7 +1,7 @@
 import React from "react";
-import { Repository } from "../Repository";
+import { Repository } from "./Repository";
 
-class ConfigRepository implements Repository {
+class LocalStorageRepository implements Repository {
     static PROJECT_COLORS_KEY = "simplanner-project-colors";
     static SHOW_TEXT_KEY = "simplanner-show-text";
     static ICON_THEME_KEY = "simplanner-icon-theme";
@@ -10,6 +10,14 @@ class ConfigRepository implements Repository {
     static ZEN_MODE_KEY = "simplanner-zen-mode";
     static PROJECT_FILTER_KEY = "simplanner-project-filter";
     static PROJECT_EDITABLE = "simplanner-project-editabile";
+
+    setAccessToken(token: string | null): void {
+        /** localstorage does not require access token */
+    }
+
+    requireAuthentication(): boolean {
+        return false;
+    }
 
     /**
      * Returns a list of unique project names from all tasks in localStorage (across all 'simplanner-tasks*' keys)
@@ -35,7 +43,7 @@ class ConfigRepository implements Repository {
 
     getProjectColors() {
         try {
-            const saved = localStorage.getItem(ConfigRepository.PROJECT_COLORS_KEY);
+            const saved = localStorage.getItem(LocalStorageRepository.PROJECT_COLORS_KEY);
             return saved ? JSON.parse(saved) : "{}";
         } catch (e) {
             console.error("Failed to parse project colors from localStorage", e);
@@ -79,7 +87,7 @@ class ConfigRepository implements Repository {
 
     getShowText() {
         try {
-            const saved = localStorage.getItem(ConfigRepository.SHOW_TEXT_KEY);
+            const saved = localStorage.getItem(LocalStorageRepository.SHOW_TEXT_KEY);
             return saved ? JSON.parse(saved) : false;
         } catch (e) {
             console.log({ e });
@@ -88,16 +96,16 @@ class ConfigRepository implements Repository {
     }
 
     setShowText(value: boolean) {
-        localStorage.setItem(ConfigRepository.SHOW_TEXT_KEY, JSON.stringify(value));
+        localStorage.setItem(LocalStorageRepository.SHOW_TEXT_KEY, JSON.stringify(value));
     }
 
     setShowExpired(value: boolean) {
-        localStorage.setItem(ConfigRepository.SHOW_EXPIRED_KEY, JSON.stringify(value));
+        localStorage.setItem(LocalStorageRepository.SHOW_EXPIRED_KEY, JSON.stringify(value));
     }
 
     getShowExpired() {
         try {
-            const saved = localStorage.getItem(ConfigRepository.SHOW_EXPIRED_KEY);
+            const saved = localStorage.getItem(LocalStorageRepository.SHOW_EXPIRED_KEY);
             return saved ? JSON.parse(saved) : false;
         } catch (e) {
             console.log({ e });
@@ -108,26 +116,26 @@ class ConfigRepository implements Repository {
     setProjectColor(project: string | number, color: any) {
         const colors = this.getProjectColors();
         colors[project] = color;
-        localStorage.setItem(ConfigRepository.PROJECT_COLORS_KEY, JSON.stringify(colors));
+        localStorage.setItem(LocalStorageRepository.PROJECT_COLORS_KEY, JSON.stringify(colors));
     }
 
     removeProjectColor(project: string) {
         const colors = this.getProjectColors();
         delete colors[project];
-        localStorage.setItem(ConfigRepository.PROJECT_COLORS_KEY, JSON.stringify(colors));
+        localStorage.setItem(LocalStorageRepository.PROJECT_COLORS_KEY, JSON.stringify(colors));
     }
 
     setIconTheme(theme: string): void {
-        localStorage.setItem(ConfigRepository.ICON_THEME_KEY, theme);
+        localStorage.setItem(LocalStorageRepository.ICON_THEME_KEY, theme);
     }
 
     getIconTheme(): string {
-        return localStorage.getItem(ConfigRepository.ICON_THEME_KEY) || "default";
+        return localStorage.getItem(LocalStorageRepository.ICON_THEME_KEY) || "default";
     }
 
     getDateTimeEnabled(): boolean {
         try {
-            const saved = localStorage.getItem(ConfigRepository.DATE_TIME_ENABLED_KEY);
+            const saved = localStorage.getItem(LocalStorageRepository.DATE_TIME_ENABLED_KEY);
             return saved ? JSON.parse(saved) : false;
         } catch (e) {
             console.log({ e });
@@ -136,12 +144,12 @@ class ConfigRepository implements Repository {
     }
 
     setDateTimeEnabled(value: boolean): void {
-        localStorage.setItem(ConfigRepository.DATE_TIME_ENABLED_KEY, JSON.stringify(value));
+        localStorage.setItem(LocalStorageRepository.DATE_TIME_ENABLED_KEY, JSON.stringify(value));
     }
 
     getZenMode(): boolean {
         try {
-            const saved = localStorage.getItem(ConfigRepository.ZEN_MODE_KEY);
+            const saved = localStorage.getItem(LocalStorageRepository.ZEN_MODE_KEY);
             return saved ? JSON.parse(saved) : false;
         } catch (e) {
             console.log({ e });
@@ -151,7 +159,7 @@ class ConfigRepository implements Repository {
 
     getProjectFilter(): string | null {
         try {
-            const saved = localStorage.getItem(ConfigRepository.PROJECT_FILTER_KEY);
+            const saved = localStorage.getItem(LocalStorageRepository.PROJECT_FILTER_KEY);
             return saved ? JSON.parse(saved) : null;
         } catch (e) {
             console.log({ e });
@@ -160,7 +168,7 @@ class ConfigRepository implements Repository {
     }
 
     setProjectFilter(val: string | null): void {
-        localStorage.setItem(ConfigRepository.PROJECT_FILTER_KEY, JSON.stringify(val));
+        localStorage.setItem(LocalStorageRepository.PROJECT_FILTER_KEY, JSON.stringify(val));
     }
 
     setTasks(tasks: any[]): void {
@@ -182,4 +190,4 @@ class ConfigRepository implements Repository {
     }
 }
 
-export default new ConfigRepository();
+export default new LocalStorageRepository();

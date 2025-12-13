@@ -16,17 +16,18 @@ export const TabbedContent = ({ panels }: { panels: { title: string; content: Re
 
     return <div className="tabbed-content">
         <div className="tabs">
-            {panels.map((panel, index) => (
-                <div className={`tab ${activeTab === index ? 'active' : ''}`} onClick={() => handleTabChange(index)} key={index}>
+            {panels.map((panel, index) => {
+                console.log("Rendering tab", index, "activeTab is", activeTab, " == ", index === activeTab);
+                return <div className={`tab ${parseInt(activeTab) == parseInt(index) ? 'active' : ''}`} onClick={() => handleTabChange(index)} key={index}>
                     <span>{panel.title}</span>
                 </div>
-            ))}
+            })}
         </div>
         <div className="content">
             {panels.map((panel, index) => (
                 <div
                     key={index}
-                    className={`tab-content${activeTab === index ? ' active' : ''}`}
+                    className={`tab-content${parseInt(activeTab) == parseInt(index) ? ' active' : ''}`}
                 >
                     {panel.content}
                 </div>
