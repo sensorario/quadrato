@@ -188,6 +188,14 @@ class LocalStorageRepository implements Repository {
             return null;
         }
     }
+
+    onUnauthorized(callback: () => void): void {
+        // this.onUnauthorizedCallback = callback;
+    }
+
+    onAuthenticated(callback: (token: string) => void): void {
+        // this.onAuthenticatedCallback = callback;
+    }
 }
 
 export default new LocalStorageRepository();
