@@ -5,6 +5,7 @@
 
 
 ### Features
+- feat(boxes): make project square alwais visible ([eb1c6ae](https://github.com/sensorario/quadrato/commit/eb1c6ae), 2025-12-13)
 - feat(auth): add login modal ([0d9a5b9](https://github.com/sensorario/quadrato/commit/0d9a5b9), 2025-12-13)
 - feat(task-list): restored days range filder ([d2e21f7](https://github.com/sensorario/quadrato/commit/d2e21f7), 2025-10-02)
 - feat(repository): add repository pattern ([465fa10](https://github.com/sensorario/quadrato/commit/465fa10), 2025-09-30)
