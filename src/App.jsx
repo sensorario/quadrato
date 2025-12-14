@@ -246,7 +246,7 @@ function App() {
     const repository = getConfigRepository()
     if (repository.onDataLoaded) {
       repository.onDataLoaded(() => {
-        console.log('Dati caricati dall\'API, aggiornamento interfaccia...')
+        console.log('Dati caricati dall\'API, aggiornamento interfaccia....')
 
         // Aggiorna tutti gli stati con i dati dall'API
         const loadedTasks = repository.getTasks()
@@ -860,7 +860,7 @@ function App() {
         {showCleanConfirm && ConfirmModalView}
         {token === null && (
           <LoginModal
-            onClose={() => {}}
+            onClose={() => { }}
             onLogin={handleLogin}
           />
         )}
