@@ -1,7 +1,7 @@
 # CHANGELOG
 
 
-## Unreleased (??/??/????)
+## v1.2 (2025-12-14)
 
 
 ### Features
