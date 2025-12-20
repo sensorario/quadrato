@@ -87,7 +87,7 @@ class AjaxRepository implements Repository {
         this.onAuthenticatedCallback = callback;
     }
 
-    private fetchData(): void {
+    public fetchData(): void {
         const headers: HeadersInit = {
             'Content-Type': 'application/json',
         };
@@ -171,31 +171,7 @@ class AjaxRepository implements Repository {
             headers['Authorization'] = `${this.accessToken}`;
         }
 
-        fetch('https://api.simonegentili.com/quadrato/data', {
-            method: 'POST',
-            headers: headers,
-            body: JSON.stringify(this.data)
-        })
-            .then(res => {
-                if (res.status === 401) {
-                    alert('Sessione scaduta. Effettua nuovamente il login.');
-                    if (this.onUnauthorizedCallback) {
-                        this.onUnauthorizedCallback();
-                    }
-                    throw new Error('Unauthorized');
-                }
-
-                if (!res.ok) {
-                    throw new Error(`HTTP error! status: ${res.status}`);
-                }
-
-                console.log('Data synced to server successfully');
-                // Aggiorna l'hash dopo il sync riuscito
-                this.lastSyncedHash = this.calculateHash();
-            })
-            .catch(err => {
-                console.error('Error syncing to server:', err);
-            });
+        // leggo di nuovo i dati dal server
     }
 
     setAccessToken(token: string | null): void {
@@ -226,8 +202,6 @@ class AjaxRepository implements Repository {
             body: JSON.stringify({ username, password })
         })
             .then(res => {
-                alert(`Stato HTTP: ${res.status}`);
-
                 if (res.status === 200) {
                     return res.json();
                 } else {
@@ -360,10 +334,9 @@ class AjaxRepository implements Repository {
         return this.data["simplanner-tasks"];
     }
 
-    setTasks(tasks: any[]): void {
+    async setTasks(tasks: any[]): Promise<void> {
         console.log("Setting tasks, count:", tasks.length);
         this.data["simplanner-tasks"] = tasks;
-        this.syncToServer();
     }
 }
 

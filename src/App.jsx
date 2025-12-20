@@ -17,90 +17,6 @@ import InfoPanel from './components/InfoPanel'
 import { handleAddAnotherModal } from './utils/handleAddAnotherModal'
 import { archiveCompletedAndSkippedTasks } from './functions/archiveCompletedAndSkippedTasks'
 import { getConfigRepository } from './repositories'
-
-const initialTasks = [
-  {
-    id: 1,
-    title: 'Questo è un task da fare',
-    longDescription: '',
-    project: 'quadrato',
-    timestamp: '',
-    status: STATUS_ENUM.TODO,
-  },
-  {
-    id: 2,
-    title: 'Questo è un altro task da completare',
-    longDescription: '',
-    project: 'quadrato',
-    timestamp: '',
-    status: STATUS_ENUM.TODO,
-  },
-  {
-    id: 3,
-    title: 'Task semplice da svolgere',
-    longDescription: '',
-    project: 'quadrato',
-    timestamp: '',
-    status: STATUS_ENUM.TODO,
-  },
-  {
-    id: 4,
-    title: 'Task in corso di lavorazione',
-    longDescription: '',
-    project: 'quadrato',
-    timestamp: '',
-    status: STATUS_ENUM.IN_PROGRESS,
-  },
-  {
-    id: 5,
-    title: 'Altro task in progresso',
-    longDescription: '',
-    project: 'quadrato',
-    timestamp: '',
-    status: STATUS_ENUM.IN_PROGRESS,
-  },
-  {
-    id: 6,
-    title: 'Task completato con successo',
-    longDescription: '',
-    project: 'quadrato',
-    timestamp: '',
-    status: STATUS_ENUM.DONE,
-  },
-  {
-    id: 7,
-    title: 'Questo task è stato finito',
-    longDescription: '',
-    project: 'quadrato',
-    timestamp: '',
-    status: STATUS_ENUM.DONE,
-  },
-  {
-    id: 8,
-    title: 'Task portato a termine',
-    longDescription: '',
-    project: 'quadrato',
-    timestamp: '',
-    status: STATUS_ENUM.DONE,
-  },
-  {
-    id: 9,
-    title: 'Task skippato per il momento',
-    longDescription: '',
-    project: 'quadrato',
-    timestamp: '',
-    status: STATUS_ENUM.SKIPPED,
-  },
-  {
-    id: 10,
-    title: 'Questo task è stato saltato',
-    longDescription: '',
-    project: 'quadrato',
-    timestamp: '',
-    status: STATUS_ENUM.SKIPPED,
-  },
-]
-
 function App() {
   // Stato per il token di autenticazione - recupera dal localStorage se presente
   const [token, setToken] = useState(() => {
@@ -347,22 +263,40 @@ function App() {
 
   const handleAddTask = () => {
     if (newTaskTitle.trim() === '') return
-    let timestamp = ''
+    let timestamp = '';
+
     if (typeof newTaskDateTime === 'string' && newTaskDateTime.length > 0) {
       timestamp = new Date(newTaskDateTime).getTime()
     }
+
     const newTask = {
-      id: Date.now(),
+      // simulate uuid with timestamp and random number
+      id: Date.now() + Math.floor(Math.random() * 1000),
       title: newTaskTitle,
       longDescription: newTaskLongDescription,
       project: newTaskProject,
       timestamp,
       status: 0,
     }
-    const updatedTasks = [...tasks, newTask]
-    setTasks(updatedTasks)
 
-    getConfigRepository().setTasks(updatedTasks)
+
+    const url = 'https://api.simonegentili.com/quadrato/task';
+    const options = {
+      method: 'POST',
+      headers: {
+        authorization: 'eyJ1c2VybmFtZSI6InNlbnNvcmFyaW8ifQ==',
+        'content-type': 'application/json'
+      },
+      body: JSON.stringify(newTask)
+    };
+
+    fetch(url, options)
+      .then(res => res.json())
+      .then(json => {
+        console.log({ json })
+        getConfigRepository().fetchData()
+      });
+
     handleAddAnotherModal({
       addAnother,
       setShowPopup,
@@ -426,7 +360,7 @@ function App() {
       }}
       buttons={[
         { label: 'chiudi', onClick: () => setShowPopup(false) },
-        { label: 'salva', onClick: () => handleAddTask() },
+        { label: 'salva task', onClick: () => handleAddTask() },
       ]}
     >
       <div className="modal-input-wrapper">
