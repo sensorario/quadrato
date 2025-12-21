@@ -135,13 +135,18 @@ function App() {
     timestampValue,
     periodicityValue
   ) => {
+    let putSent = false
     setTasks((tasks) => {
       const updated = tasks.map((task) => {
+        console.log({ task })
+
         let newTimestamp = timestampValue ?? task.timestamp
+
         if (typeof newTimestamp === 'string' && newTimestamp.length > 0) {
           newTimestamp = new Date(newTimestamp).getTime()
         }
-        return task.id === id
+
+        const taskObj = task.id === id
           ? {
             ...task,
             title: value,
@@ -150,8 +155,30 @@ function App() {
             timestamp: newTimestamp,
             periodicity: periodicityValue ?? task.periodicity,
           }
-          : task
+          : task;
+
+        // Send PUT request to update the task on the server
+        if (task.id === id && !putSent) {
+          putSent = true
+          const url = `https://api.simonegentili.com/quadrato/task/${task.id}`;
+          const options = {
+            method: 'PUT',
+            body: JSON.stringify(taskObj),
+            headers: {
+              authorization: token,
+              'Content-Type': 'application/json'
+            }
+          }
+          fetch(url, options)
+            .then(res => res.json())
+            .then(json => {
+              console.log({ json })
+            });
+        }
+
+        return taskObj;
       })
+
       getConfigRepository().setTasks(updated)
       return updated
     })
@@ -308,7 +335,26 @@ function App() {
   const [showCleanConfirm, setShowCleanConfirm] = useState(false)
 
   const handleCleanTasks = () => {
-    // const updatedTasks = tasks.filter(t => t.status === STATUS_ENUM.TODO || t.status === STATUS_ENUM.IN_PROGRESS);
+    const willArchivedTasts = tasks.filter(
+      (t) => t.status === STATUS_ENUM.DONE || t.status === STATUS_ENUM.SKIPPED
+    );
+    willArchivedTasts.forEach(task => {
+      const url = `https://api.simonegentili.com/quadrato/task/${task.id}`;
+      const options = {
+        method: 'PUT',
+        body: JSON.stringify({ archived: true }),
+        headers: {
+          authorization: token,
+          'Content-Type': 'application/json'
+        }
+      }
+      fetch(url, options)
+        .then(res => res.json())
+        .then(json => {
+          console.log({ json })
+        });
+    });
+
     const updatedTasks = archiveCompletedAndSkippedTasks({ tasks })
     setTasks(updatedTasks)
     getConfigRepository().setTasks(updatedTasks)
