@@ -5,6 +5,8 @@ interface TaskProjectSelectorProps {
 }
 
 const TaskProjectSelector = ({ tasks, projectFilter, setProjectFilter }: TaskProjectSelectorProps) => {
+    tasks = tasks.filter(t => !t.archived);
+
     return tasks.some((t: { project: string }) => t.project) && (
         <div style={{ display: 'flex', gap: '1rem', marginBottom: '1rem', flexWrap: 'wrap' }}>
             <span
