@@ -67,6 +67,15 @@ export const TaskList = ({ tasks, onTaskClick, updateTaskTitle, editable, projec
 
 
         const isMobile = /iPhone/i.test(navigator.userAgent);
+
+        // if timestamp does not contain "-" then convert it to ISO string for FormatDate
+        if (dateTimeEnabled && task.timestamp && typeof task.timestamp === 'string' && !task.timestamp.includes('-')) {
+            const timestampNum = Number(task.timestamp);
+            if (!isNaN(timestampNum)) {
+                task.timestamp = new Date(timestampNum).toISOString();
+            }
+        }
+
         return (
             <li
                 key={task.id}
@@ -74,6 +83,7 @@ export const TaskList = ({ tasks, onTaskClick, updateTaskTitle, editable, projec
                 onMouseEnter={() => setHoveredId(typeof task.id === 'number' ? task.id : null)}
                 onMouseLeave={() => setHoveredId(null)}
                 style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}
+
             >
                 {/* Quadrato di stato (presente) */}
                 {/* Quadrato colore progetto */}

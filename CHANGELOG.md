@@ -9,6 +9,10 @@
 - feat(sync): fetch data in the right moment ([51249fa](https://github.com/sensorario/quadrato/commit/51249fa), 2025-12-21)
 
 
+### Fixes
+- fix(update-task): update task never send PUT to update single task ([eaa5385](https://github.com/sensorario/quadrato/commit/eaa5385), 2025-12-21)
+
+
 ## v1.2 (2025-12-14)
 
 
