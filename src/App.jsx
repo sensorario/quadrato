@@ -536,11 +536,6 @@ function App() {
       return (
         <div className="tab">
           <Toggle
-            checked={editable}
-            onChange={setEditable}
-            label={'Modifica'}
-          />
-          <Toggle
             checked={projectEditable}
             onChange={setProjectEditable}
             label={'Raggruppa'}

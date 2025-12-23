@@ -36,7 +36,7 @@ export const TaskList = ({ tasks, onTaskClick, updateTaskTitle, editable, projec
     // Removed local type definition for HandleEditClickProp
 
     const handleEditClick = (task: HandleEditClickProp) => {
-        setEditId(typeof task.id === 'number' ? task.id : null);
+        setEditId(task.id);
         setEditValue(task.title);
         setEditLongValue(task.longDescription || "");
         setEditProjectValue(task.project || "");
@@ -116,7 +116,7 @@ export const TaskList = ({ tasks, onTaskClick, updateTaskTitle, editable, projec
                     )}
                     <span dangerouslySetInnerHTML={{ __html: title }} />
                 </span>
-                {editable && (isMobile || hoveredId === task.id) && (
+                {editable && (
                     <span style={{ marginLeft: '1rem', cursor: 'pointer' }} title="Modifica" onClick={e => { e.stopPropagation(); handleEditClick(task); }}>
                         <EditIcon />
                     </span>

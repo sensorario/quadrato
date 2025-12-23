@@ -17,7 +17,7 @@ export const TabbedContent = ({ panels }: { panels: { title: string; content: Re
     return <div className="tabbed-content">
         <div className="tabs">
             {panels.map((panel, index) => {
-                console.log("Rendering tab", index, "activeTab is", activeTab, " == ", index === activeTab);
+                // console.log("Rendering tab", index, "activeTab is", activeTab, " == ", index === activeTab);
                 return <div className={`tab ${parseInt(activeTab) == parseInt(index) ? 'active' : ''}`} onClick={() => handleTabChange(index)} key={index}>
                     <span>{panel.title}</span>
                 </div>

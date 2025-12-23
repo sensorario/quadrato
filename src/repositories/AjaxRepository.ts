@@ -335,7 +335,7 @@ class AjaxRepository implements Repository {
     }
 
     async setTasks(tasks: any[]): Promise<void> {
-        console.log("Setting tasks, count:", tasks.length);
+        // console.log("Setting tasks, count:", tasks.length);
         this.data["simplanner-tasks"] = tasks;
     }
 }

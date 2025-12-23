@@ -10,6 +10,7 @@
 
 
 ### Fixes
+- fix(task-list): convert datetime if is the wrong format ([af916bd](https://github.com/sensorario/quadrato/commit/af916bd), 2025-12-21)
 - fix(update-task): update task never send PUT to update single task ([eaa5385](https://github.com/sensorario/quadrato/commit/eaa5385), 2025-12-21)
 
 
