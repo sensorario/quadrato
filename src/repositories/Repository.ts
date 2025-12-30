@@ -31,6 +31,7 @@ export interface Repository {
     // tasks
     removeProjectColor(project: string): void;
     getZenMode(): boolean;
+    setZenMode(value: boolean): void;
 
     // project filter
     setProjectEditable(value: boolean): void;

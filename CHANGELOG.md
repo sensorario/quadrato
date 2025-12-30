@@ -5,6 +5,7 @@
 
 
 ### Features
+- feat(config): store configuration updates ([897548a](https://github.com/sensorario/quadrato/commit/897548a), 2025-12-30)
 - feat(TaskProjectSelector): show only project of unarkived tasks ([c9578bf](https://github.com/sensorario/quadrato/commit/c9578bf), 2025-12-21)
 - feat(sync): fetch data in the right moment ([51249fa](https://github.com/sensorario/quadrato/commit/51249fa), 2025-12-21)
 

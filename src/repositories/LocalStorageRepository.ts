@@ -157,6 +157,10 @@ class LocalStorageRepository implements Repository {
         }
     }
 
+    setZenMode(value: boolean): void {
+        localStorage.setItem(LocalStorageRepository.ZEN_MODE_KEY, JSON.stringify(value));
+    }
+
     getProjectFilter(): string | null {
         try {
             const saved = localStorage.getItem(LocalStorageRepository.PROJECT_FILTER_KEY);

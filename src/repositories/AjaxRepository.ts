@@ -279,6 +279,12 @@ class AjaxRepository implements Repository {
         return this.data["simplanner-zen-mode"];
     }
 
+    setZenMode(value: boolean): void {
+        console.log("Setting zen mode to", value);
+        this.data["simplanner-zen-mode"] = value;
+        this.syncToServer();
+    }
+
     getProjectEditable(): boolean {
         return this.data["simplanner-project-editable"];
     }

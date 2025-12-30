@@ -126,6 +126,11 @@ function App() {
     return getConfigRepository().getZenMode()
   })
 
+  // Sincronizza zenMode con il repository quando cambia
+  useEffect(() => {
+    getConfigRepository().setZenMode(zenMode)
+  }, [zenMode])
+
   // Funzione per aggiornare la descrizione di un task
   const updateTaskTitle = (
     id,
@@ -716,7 +721,11 @@ function App() {
             <Toggle checked={zenMode} onChange={setZenMode} label={''} />
             {showText && (
               <span
-                onClick={() => setZenMode(!zenMode)}
+                onClick={() => {
+                  setZenMode(!zenMode)
+                  // aggiorna anche il repository
+                  getConfigRepository().setZenMode(!zenMode)
+                }}
                 style={{ cursor: 'pointer' }}
               >
                 zen mode
