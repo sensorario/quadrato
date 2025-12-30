@@ -171,7 +171,29 @@ class AjaxRepository implements Repository {
             headers['Authorization'] = `${this.accessToken}`;
         }
 
-        // leggo di nuovo i dati dal server
+        // invio la configurazione aggiornata al server
+        fetch('https://api.simonegentili.com/quadrato/data', {
+            method: 'POST',
+            headers: headers,
+            body: JSON.stringify(this.data)
+        })
+            .then(res => {
+                if (!res.ok) {
+                    if (res.status === 401 && this.onUnauthorizedCallback) {
+                        this.onUnauthorizedCallback();
+                    }
+                    throw new Error(`HTTP error! status: ${res.status}`);
+                }
+                return res.json();
+            })
+            .then(responseData => {
+                console.log("Data synced successfully:", responseData);
+                // Aggiorna l'hash dopo la sincronizzazione
+                this.lastSyncedHash = this.calculateHash();
+            })
+            .catch(err => {
+                console.error('Error syncing data to server:', err);
+            });
     }
 
     setAccessToken(token: string | null): void {
