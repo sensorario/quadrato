@@ -504,8 +504,6 @@ function App() {
   const Header = ({
     tasks,
     setShowHelp,
-    editable,
-    setEditable,
     projectEditable,
     setProjectEditable,
     dateTimeEnabled,
