@@ -9,7 +9,7 @@ class LocalStorageRepository implements Repository {
     static DATE_TIME_ENABLED_KEY = "simplanner-dateTime-enabled";
     static ZEN_MODE_KEY = "simplanner-zen-mode";
     static PROJECT_FILTER_KEY = "simplanner-project-filter";
-    static PROJECT_EDITABLE = "simplanner-project-editabile";
+    static PROJECT_GROUPABLE = "simplanner-project-groupable";
 
     setAccessToken(token: string | null): void {
         /** localstorage does not require access token */

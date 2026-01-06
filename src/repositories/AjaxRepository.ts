@@ -9,7 +9,7 @@ interface QuadratoData {
     "simplanner-dateTime-enabled": boolean;
     "simplanner-zen-mode": boolean;
     "simplanner-project-filter": string | null;
-    "simplanner-project-editable": boolean;
+    "simplanner-project-groupable": boolean;
     "simplanner-config-tab": string;
 }
 
@@ -29,8 +29,8 @@ class AjaxRepository implements Repository {
         "simplanner-dateTime-enabled": true,
         "simplanner-zen-mode": false,
         "simplanner-project-filter": null,
-        "simplanner-project-editable": true,
-        "simplanner-config-tab": "0"
+        "simplanner-project-groupable": true,
+        "simplanner-config-tab": "0",
     };
 
     constructor() {
@@ -118,7 +118,7 @@ class AjaxRepository implements Repository {
                     "simplanner-dateTime-enabled": apiData["simplanner-dateTime-enabled"] ?? apiData.dateTimeEnabled ?? this.data["simplanner-dateTime-enabled"],
                     "simplanner-zen-mode": apiData["simplanner-zen-mode"] ?? apiData.zenMode ?? this.data["simplanner-zen-mode"],
                     "simplanner-project-filter": apiData["simplanner-project-filter"] ?? apiData.projectFilter ?? this.data["simplanner-project-filter"],
-                    "simplanner-project-editable": apiData["simplanner-project-editable"] ?? apiData.projectEditable ?? this.data["simplanner-project-editable"],
+                    "simplanner-project-groupable": apiData["simplanner-project-groupable"] ?? apiData.projectGroupable ?? this.data["simplanner-project-groupable"],
                     "simplanner-config-tab": apiData["simplanner-config-tab"] ?? apiData.activeTab ?? this.data["simplanner-config-tab"]
                 };
 
@@ -285,12 +285,12 @@ class AjaxRepository implements Repository {
         this.syncToServer();
     }
 
-    getProjectEditable(): boolean {
-        return this.data["simplanner-project-editable"];
+    getProjectGroupable(): boolean {
+        return this.data["simplanner-project-groupable"];
     }
 
-    setProjectEditable(value: boolean): void {
-        this.data["simplanner-project-editable"] = value;
+    setProjectGroupable(value: boolean): void {
+        this.data["simplanner-project-groupable"] = value;
         this.syncToServer();
     }
 
@@ -313,7 +313,10 @@ class AjaxRepository implements Repository {
 
     setProjectColor(project: string | number, color: string): void {
         console.log("Setting project color for", project, "to", color);
-        this.data["simplanner-project-colors"][String(project)] = color;
+        this.data["simplanner-project-colors"] = {
+            ...this.data["simplanner-project-colors"],
+            [String(project)]: color
+        };
         this.syncToServer();
     }
 
@@ -365,6 +368,7 @@ class AjaxRepository implements Repository {
     async setTasks(tasks: any[]): Promise<void> {
         // console.log("Setting tasks, count:", tasks.length);
         this.data["simplanner-tasks"] = tasks;
+        this.syncToServer();
     }
 }
 

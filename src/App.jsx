@@ -91,24 +91,24 @@ function App() {
     getConfigRepository().setProjectFilter(val)
   }
 
-  // Stato per abilitare/disabilitare la modifica del progetto
-  const [projectEditable, setProjectEditableState] = useState(() => {
-    return getConfigRepository().getProjectEditable()
+  // Stato per abilitare/disabilitare il raggruppamento per progetto
+  const [projectGroupable, setProjectGroupableState] = useState(() => {
+    return getConfigRepository().getProjectGroupable()
   })
 
-  const setProjectEditable = (val) => {
-    setProjectEditableState(val)
-    getConfigRepository().setProjectEditable(val)
+  const setProjectGroupable = (val) => {
+    setProjectGroupableState(val)
+    getConfigRepository().setProjectGroupable(val)
   }
   // Stato per abilitare/disabilitare la modifica dei task
   const [editable, setEditableState] = useState(() => {
-    return getConfigRepository().getProjectEditable
+    return getConfigRepository().getProjectGroupable()
   })
 
   // Wrapper per aggiornare stato e localStorage
   const setEditable = (val) => {
     setEditableState(val)
-    getConfigRepository().setProjectEditable(val)
+    getConfigRepository().setProjectGroupable(val)
   }
 
   // Stato per i task
@@ -225,11 +225,11 @@ function App() {
         setDateTimeEnabledState(loadedDateTimeEnabled)
         console.log('Date time enabled aggiornato con dati API:', loadedDateTimeEnabled)
 
-        // Aggiorna projectEditable
-        const loadedProjectEditable = repository.getProjectEditable()
-        setProjectEditableState(loadedProjectEditable)
-        setEditableState(loadedProjectEditable)
-        console.log('Project editable aggiornato con dati API:', loadedProjectEditable)
+        // Aggiorna projectGroupable
+        const loadedProjectGroupable = repository.getProjectGroupable()
+        setProjectGroupableState(loadedProjectGroupable)
+        setEditableState(loadedProjectGroupable)
+        console.log('Project groupable aggiornato con dati API:', loadedProjectGroupable)
 
         // Aggiorna projectFilter
         const loadedProjectFilter = repository.getProjectFilter()
@@ -397,7 +397,7 @@ function App() {
       onTaskClick={handleClick}
       updateTaskTitle={updateTaskTitle}
       editable={editable}
-      projectEditable={projectEditable}
+      projectEditable={projectGroupable}
       dateTimeEnabled={dateTimeEnabled}
       iconTheme={iconTheme}
     />
@@ -441,7 +441,7 @@ function App() {
           className="modal-input"
         />
       </div>
-      {projectEditable && (
+      {projectGroupable && (
         <div className="modal-input-wrapper">
           <input
             type="text"
@@ -509,8 +509,8 @@ function App() {
   const Header = ({
     tasks,
     setShowHelp,
-    projectEditable,
-    setProjectEditable,
+    projectGroupable,
+    setProjectGroupable,
     dateTimeEnabled,
     setDateTimeEnabled,
     showExpired,
@@ -539,8 +539,8 @@ function App() {
       return (
         <div className="tab">
           <Toggle
-            checked={projectEditable}
-            onChange={setProjectEditable}
+            checked={projectGroupable}
+            onChange={setProjectGroupable}
             label={'Raggruppa'}
           />
           <Toggle
@@ -760,8 +760,8 @@ function App() {
       setShowHelp={setShowHelp}
       editable={editable}
       setEditable={setEditable}
-      projectEditable={projectEditable}
-      setProjectEditable={setProjectEditable}
+      projectGroupable={projectGroupable}
+      setProjectGroupable={setProjectGroupable}
       dateTimeEnabled={dateTimeEnabled}
       setDateTimeEnabled={setDateTimeEnabled}
       showExpired={showExpired}
@@ -826,13 +826,13 @@ function App() {
     <div className="foo">
       <div className="app-container">
         {HeaderView}
-        {projectEditable && DefinedTaskProject}
+        {projectGroupable && DefinedTaskProject}
         <TaskList
           tasks={visibleTasks}
           onTaskClick={handleClick}
           updateTaskTitle={updateTaskTitle}
           editable={editable}
-          projectEditable={projectEditable}
+          projectEditable={projectGroupable}
           dateTimeEnabled={dateTimeEnabled}
           iconTheme={iconTheme}
         />

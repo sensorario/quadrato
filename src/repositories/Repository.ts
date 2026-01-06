@@ -25,8 +25,8 @@ export interface Repository {
     getDateTimeEnabled(): boolean;
 
     // tasks
-    setProjectEditable(value: boolean): void;
-    getProjectEditable(): boolean;
+    setProjectGroupable(value: boolean): void;
+    getProjectGroupable(): boolean;
 
     // tasks
     removeProjectColor(project: string): void;
@@ -34,8 +34,8 @@ export interface Repository {
     setZenMode(value: boolean): void;
 
     // project filter
-    setProjectEditable(value: boolean): void;
-    getProjectEditable(): boolean;
+    setProjectGroupable(value: boolean): void;
+    getProjectGroupable(): boolean;
 
     // active tab
     setActiveTab(index: React.SetStateAction<number>): void;
