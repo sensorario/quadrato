@@ -380,6 +380,39 @@ class AjaxRepository implements Repository {
         this.data["simplanner-tasks"] = tasks;
         this.syncToServer();
     }
+
+    /**
+     * Effettua il logout: rimuove il token e pulisce i dati
+     */
+    logout(): void {
+        console.log("Logging out...");
+        this.accessToken = null;
+        localStorage.removeItem('simplanner-access-token');
+        
+        // Pulisci tutti i dati locali
+        Object.keys(localStorage).forEach(key => {
+            if (key.startsWith('simplanner-')) {
+                localStorage.removeItem(key);
+            }
+        });
+        
+        // Reset dei dati in memoria
+        this.data = {
+            "simplanner-tasks": [],
+            "simplanner-project-colors": {},
+            "simplanner-show-text": false,
+            "simplanner-icon-theme": "light",
+            "simplanner-show-expired": false,
+            "simplanner-dateTime-enabled": false,
+            "simplanner-zen-mode": false,
+            "simplanner-project-filter": null,
+            "simplanner-project-groupable": false,
+            "simplanner-config-tab": "1"
+        };
+        
+        this.lastSyncedHash = "";
+        this.isDataLoaded = false;
+    }
 }
 
 export default new AjaxRepository();
