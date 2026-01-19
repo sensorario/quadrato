@@ -47,7 +47,7 @@ export interface Repository {
 
     // events
     onUnauthorized(callback: () => void): void;
-    
+
     // logout
     logout?(): void;
 }
