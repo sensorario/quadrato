@@ -17,11 +17,15 @@ import InfoPanel from './components/InfoPanel'
 import { handleAddAnotherModal } from './utils/handleAddAnotherModal'
 import { archiveCompletedAndSkippedTasks } from './functions/archiveCompletedAndSkippedTasks'
 import { getConfigRepository } from './repositories'
+import { Link } from './Router'
 function App() {
   // Stato per il token di autenticazione - recupera dal localStorage se presente
   const [token, setToken] = useState(() => {
     return localStorage.getItem('simplanner-access-token')
   })
+
+  // Stato per gestire la cancellazione del login
+  const [loginCancelled, setLoginCancelled] = useState(false)
 
   // Registra callback per gestire 401 Unauthorized e autenticazione
   useEffect(() => {
@@ -41,6 +45,11 @@ function App() {
       .catch((err) => {
         alert('Login fallito: ' + err.message)
       })
+  }
+
+  // Handler per la cancellazione del login
+  const handleCancelLogin = () => {
+    setLoginCancelled(true)
   }
 
   // Handler per il logout
@@ -725,6 +734,14 @@ function App() {
             >
               <GearIcon />
             </span>
+            {showText && (
+              <span
+                onClick={() => setShowConfig(true)}
+                style={{ cursor: 'pointer' }}
+              >
+                config
+              </span>
+            )}
             {token && (
               <button
                 onClick={handleLogout}
@@ -744,14 +761,6 @@ function App() {
               >
                 Logout
               </button>
-            )}
-            {showText && (
-              <span
-                onClick={() => setShowConfig(true)}
-                style={{ cursor: 'pointer' }}
-              >
-                config
-              </span>
             )}
             <Toggle checked={zenMode} onChange={setZenMode} label={''} />
             {showText && (
@@ -875,11 +884,64 @@ function App() {
         {showHelp && HelpModalView}
         {showPopup && NewTaskModalView}
         {showCleanConfirm && ConfirmModalView}
-        {token === null && (
+        {token === null && !loginCancelled && (
           <LoginModal
-            onClose={() => { }}
+            onClose={handleCancelLogin}
             onLogin={handleLogin}
           />
+        )}
+        {token === null && loginCancelled && (
+          <div style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            width: '100vw',
+            height: '100vh',
+            backgroundColor: 'white',
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: '30px',
+            zIndex: 10000
+          }}>
+            <h1 style={{ fontSize: '48px', color: '#333' }}>Quadrato</h1>
+            <div style={{ display: 'flex', gap: '20px' }}>
+              <button
+                onClick={() => setLoginCancelled(false)}
+                style={{
+                  padding: '12px 24px',
+                  backgroundColor: '#007bff',
+                  color: 'white',
+                  border: 'none',
+                  borderRadius: '4px',
+                  cursor: 'pointer',
+                  fontSize: '16px',
+                  fontWeight: 'bold'
+                }}
+                onMouseOver={(e) => e.target.style.backgroundColor = '#0056b3'}
+                onMouseOut={(e) => e.target.style.backgroundColor = '#007bff'}
+              >
+                Login
+              </button>
+              <Link
+                to="/register"
+                style={{
+                  padding: '12px 24px',
+                  backgroundColor: '#28a745',
+                  color: 'white',
+                  textDecoration: 'none',
+                  borderRadius: '4px',
+                  cursor: 'pointer',
+                  fontSize: '16px',
+                  fontWeight: 'bold',
+                  display: 'inline-block'
+                }}
+              >
+                Registrati
+              </Link>
+            </div>
+          </div>
         )}
       </div>
     </div>

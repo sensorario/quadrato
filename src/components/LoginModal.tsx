@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Modal } from './Modal';
+import { Link } from '../Router';
 
 type LoginModalProps = {
     onClose: () => void;
@@ -60,6 +61,18 @@ export const LoginModal = ({ onClose, onLogin }: LoginModalProps) => {
                         placeholder="Inserisci password"
                         style={{ width: '100%', padding: '8px' }}
                     />
+                </div>
+                <div style={{ marginTop: '8px', textAlign: 'center' }}>
+                    <Link
+                        to="/register"
+                        style={{
+                            color: '#007bff',
+                            textDecoration: 'none',
+                            fontSize: '14px'
+                        }}
+                    >
+                        Non hai un account? Registrati
+                    </Link>
                 </div>
             </div>
         </Modal>

@@ -388,14 +388,14 @@ class AjaxRepository implements Repository {
         console.log("Logging out...");
         this.accessToken = null;
         localStorage.removeItem('simplanner-access-token');
-        
+
         // Pulisci tutti i dati locali
         Object.keys(localStorage).forEach(key => {
             if (key.startsWith('simplanner-')) {
                 localStorage.removeItem(key);
             }
         });
-        
+
         // Reset dei dati in memoria
         this.data = {
             "simplanner-tasks": [],
@@ -409,7 +409,7 @@ class AjaxRepository implements Repository {
             "simplanner-project-groupable": false,
             "simplanner-config-tab": "1"
         };
-        
+
         this.lastSyncedHash = "";
         this.isDataLoaded = false;
     }
