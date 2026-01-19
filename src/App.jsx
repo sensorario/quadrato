@@ -47,8 +47,9 @@ function App() {
   const [showText, setShowText] = useState(getConfigRepository().getShowText())
 
   const handleShowTextToggle = () => {
-    setShowText((prev) => !prev)
-    getConfigRepository().setShowText(!showText)
+    const newValue = !showText
+    setShowText(newValue)
+    getConfigRepository().setShowText(newValue)
   }
 
   // Stato per il tema delle icone

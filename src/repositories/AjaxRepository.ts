@@ -131,8 +131,16 @@ class AjaxRepository implements Repository {
 
                 // oer ogni chiave di data, salva il valore nel localStorage per caching
                 Object.keys(this.data).forEach(key => {
-                    console.log("Salvo il local storage key:", key, "con valore:", (this.data as any)[key]);
-                    localStorage.setItem(key, JSON.stringify((this.data as any)[key]));
+                    const value = (this.data as any)[key];
+                    console.log("Salvo il local storage key:", key, "con valore:", value);
+                    // Salva oggetti e array con JSON.stringify, stringhe e primitivi così come sono
+                    if (typeof value === 'object' && value !== null) {
+                        localStorage.setItem(key, JSON.stringify(value));
+                    } else if (typeof value === 'string') {
+                        localStorage.setItem(key, value);
+                    } else {
+                        localStorage.setItem(key, String(value));
+                    }
                 });
 
                 console.log('Data loaded from API:', this.data);
@@ -170,6 +178,8 @@ class AjaxRepository implements Repository {
         if (this.accessToken) {
             headers['Authorization'] = `${this.accessToken}`;
         }
+
+        console.log({ data: this.data });
 
         // invio la configurazione aggiornata al server
         fetch('https://api.simonegentili.com/quadrato/data', {
