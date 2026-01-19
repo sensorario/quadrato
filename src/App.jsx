@@ -43,6 +43,20 @@ function App() {
       })
   }
 
+  // Handler per il logout
+  const handleLogout = () => {
+    if (window.confirm('Sei sicuro di voler uscire? Tutti i dati locali verranno rimossi.')) {
+      const repo = getConfigRepository()
+      if (repo.logout) {
+        repo.logout()
+      }
+      setToken(null)
+      setTasks([])
+      // Ricarica la pagina per resettare tutti gli stati
+      window.location.reload()
+    }
+  }
+
   // Mostro nascondo testo accanto alle icone
   const [showText, setShowText] = useState(getConfigRepository().getShowText())
 
@@ -711,6 +725,26 @@ function App() {
             >
               <GearIcon />
             </span>
+            {token && (
+              <button
+                onClick={handleLogout}
+                style={{
+                  marginLeft: '12px',
+                  padding: '4px 12px',
+                  backgroundColor: '#dc3545',
+                  color: 'white',
+                  border: 'none',
+                  borderRadius: '4px',
+                  cursor: 'pointer',
+                  fontSize: '12px',
+                  fontWeight: 'bold'
+                }}
+                onMouseOver={(e) => e.target.style.backgroundColor = '#c82333'}
+                onMouseOut={(e) => e.target.style.backgroundColor = '#dc3545'}
+              >
+                Logout
+              </button>
+            )}
             {showText && (
               <span
                 onClick={() => setShowConfig(true)}
