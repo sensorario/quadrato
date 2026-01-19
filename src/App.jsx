@@ -816,8 +816,8 @@ function App() {
     const now = new Date()
     const end = new Date(now)
     return filtered.filter((t) => {
-      if (!t.dateTime) return true
-      const dt = new Date(t.dateTime)
+      if (!t.timestamp) return true
+      const dt = new Date(t.timestamp)
       if (showExpired && dt < now) return true
       return dt >= now && dt <= end
     })
