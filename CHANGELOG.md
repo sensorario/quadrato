@@ -13,6 +13,7 @@
 
 
 ### Fixes
+- fix(expired): hide expired tasks ([8e744be](https://github.com/sensorario/quadrato/commit/8e744be), 2026-01-19)
 - fix(modal-footer): add missing margin in modal footer ([61c3597](https://github.com/sensorario/quadrato/commit/61c3597), 2026-01-06)
 - fix(edit-task): edit modal is no more available ([b4a4caa](https://github.com/sensorario/quadrato/commit/b4a4caa), 2025-12-23)
 - fix(task-list): convert datetime if is the wrong format ([af916bd](https://github.com/sensorario/quadrato/commit/af916bd), 2025-12-21)
