@@ -13,6 +13,7 @@
 
 
 ### Fixes
+- fix(auth): move logout button ([7d769ca](https://github.com/sensorario/quadrato/commit/7d769ca), 2026-01-19)
 - fix(auth): user cant logout ([064da26](https://github.com/sensorario/quadrato/commit/064da26), 2026-01-19)
 - fix(expired): hide expired tasks ([8e744be](https://github.com/sensorario/quadrato/commit/8e744be), 2026-01-19)
 - fix(modal-footer): add missing margin in modal footer ([61c3597](https://github.com/sensorario/quadrato/commit/61c3597), 2026-01-06)

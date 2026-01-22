@@ -340,7 +340,7 @@ function App() {
     const options = {
       method: 'POST',
       headers: {
-        authorization: 'eyJ1c2VybmFtZSI6InNlbnNvcmFyaW8ifQ==',
+        authorization: token,
         'content-type': 'application/json'
       },
       body: JSON.stringify(newTask)
@@ -404,12 +404,12 @@ function App() {
             : unarchivedTasks
     // Filtra per range di giorni
     const now = new Date()
-    const end = new Date(now)
     return filtered.filter((t) => {
       if (!t.timestamp) return true // task senza scadenza
-      const dt = new Date(t.timestamp)
+      // Gestisce sia timestamp numerici che stringhe
+      const dt = typeof t.timestamp === 'number' ? new Date(t.timestamp) : new Date(t.timestamp)
       if (showExpired && dt < now) return true // mostra scaduti se abilitato
-      return dt >= now && dt <= end
+      return dt >= now // mostra tutti i task futuri
     })
   })()
 
@@ -742,6 +742,19 @@ function App() {
                 config
               </span>
             )}
+            <Toggle checked={zenMode} onChange={setZenMode} label={''} />
+            {showText && (
+              <span
+                onClick={() => {
+                  setZenMode(!zenMode)
+                  // aggiorna anche il repository
+                  getConfigRepository().setZenMode(!zenMode)
+                }}
+                style={{ cursor: 'pointer' }}
+              >
+                zen mode
+              </span>
+            )}
             {token && (
               <button
                 onClick={handleLogout}
@@ -761,19 +774,6 @@ function App() {
               >
                 Logout
               </button>
-            )}
-            <Toggle checked={zenMode} onChange={setZenMode} label={''} />
-            {showText && (
-              <span
-                onClick={() => {
-                  setZenMode(!zenMode)
-                  // aggiorna anche il repository
-                  getConfigRepository().setZenMode(!zenMode)
-                }}
-                style={{ cursor: 'pointer' }}
-              >
-                zen mode
-              </span>
             )}
           </div>
         </div>
@@ -857,12 +857,12 @@ function App() {
             ? unarchivedTasks.filter((t) => t.project === projectFilter)
             : unarchivedTasks
     const now = new Date()
-    const end = new Date(now)
     return filtered.filter((t) => {
       if (!t.timestamp) return true
-      const dt = new Date(t.timestamp)
+      // Gestisce sia timestamp numerici che stringhe
+      const dt = typeof t.timestamp === 'number' ? new Date(t.timestamp) : new Date(t.timestamp)
       if (showExpired && dt < now) return true
-      return dt >= now && dt <= end
+      return dt >= now // mostra tutti i task futuri
     })
   })()
 
