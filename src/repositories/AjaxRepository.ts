@@ -179,21 +179,31 @@ class AjaxRepository implements Repository {
             headers['Authorization'] = `${this.accessToken}`;
         }
 
-        console.log({ data: this.data });
+        // Debug: verifica il contenuto prima di inviare
+        console.log(">>> DATA BEFORE SYNC:");
+        console.log("simplanner-tasks count:", this.data["simplanner-tasks"].length);
+        console.log("simplanner-project-colors:", this.data["simplanner-project-colors"]);
+        console.log("Full data object:", JSON.stringify(this.data, null, 2));
 
-        // invio la configurazione aggiornata al server
-        fetch('https://api.simonegentili.com/quadrato/data', {
-            method: 'POST',
+        // fare una PUT a /quadrato/settings cui passare tutti i valori delle configurazini
+        fetch('https://api.simonegentili.com/quadrato/config', {
+            method: 'PUT',
             headers: headers,
             body: JSON.stringify(this.data)
         })
             .then(res => {
-                if (!res.ok) {
-                    if (res.status === 401 && this.onUnauthorizedCallback) {
+                if (res.status === 401) {
+                    // Unauthorized
+                    if (this.onUnauthorizedCallback) {
                         this.onUnauthorizedCallback();
                     }
+                    throw new Error('Unauthorized');
+                }
+
+                if (!res.ok) {
                     throw new Error(`HTTP error! status: ${res.status}`);
                 }
+
                 return res.json();
             })
             .then(responseData => {
@@ -376,8 +386,11 @@ class AjaxRepository implements Repository {
     }
 
     async setTasks(tasks: any[]): Promise<void> {
-        // console.log("Setting tasks, count:", tasks.length);
+        console.log(">>> setTasks called with", tasks.length, "tasks");
+        console.log(">>> BEFORE setTasks - project-colors:", this.data["simplanner-project-colors"]);
         this.data["simplanner-tasks"] = tasks;
+        console.log(">>> AFTER setTasks - project-colors:", this.data["simplanner-project-colors"]);
+        console.log(">>> AFTER setTasks - tasks:", this.data["simplanner-tasks"].length);
         this.syncToServer();
     }
 
