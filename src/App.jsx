@@ -106,6 +106,50 @@ function App() {
     getConfigRepository().setDateTimeEnabled(val)
   }
 
+  // Funzione per sincronizzare le configurazioni con l'API
+  const syncConfigToAPI = () => {
+    const token = localStorage.getItem('simplanner-access-token');
+    if (!token) {
+      return; // Non sincronizzare se non c'è token
+    }
+    
+    const repository = getConfigRepository();
+    
+    // Recupera tutte le configurazioni correnti
+    const allConfig = {
+      "simplanner-tasks": repository.getTasks(),
+      "simplanner-project-colors": repository.getProjectColors(),
+      "simplanner-show-text": repository.getShowText(),
+      "simplanner-icon-theme": repository.getIconTheme(),
+      "simplanner-show-expired": repository.getShowExpired(),
+      "simplanner-dateTime-enabled": repository.getDateTimeEnabled(),
+      "simplanner-zen-mode": repository.getZenMode(),
+      "simplanner-project-filter": repository.getProjectFilter(),
+      "simplanner-project-groupable": repository.getProjectGroupable(),
+      "simplanner-config-tab": repository.getConfigTab()
+    };
+
+    // Invia PUT con tutte le configurazioni
+    const url = 'https://api.simonegentili.com/quadrato/data';
+    const options = {
+      method: 'PUT',
+      headers: {
+        'authorization': token,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(allConfig)
+    };
+
+    fetch(url, options)
+      .then(res => res.json())
+      .then(json => {
+        console.log('Configurazioni sincronizzate con API:', json);
+      })
+      .catch(err => {
+        console.error('Errore sincronizzazione configurazioni:', err);
+      });
+  }
+
   // Stato per filtro progetto
   const [projectFilter, setProjectFilterState] = useState(() => {
     return getConfigRepository().getProjectFilter()
@@ -113,6 +157,7 @@ function App() {
   const setProjectFilter = (val) => {
     setProjectFilterState(val)
     getConfigRepository().setProjectFilter(val)
+    syncConfigToAPI()
   }
 
   // Stato per abilitare/disabilitare il raggruppamento per progetto
@@ -123,6 +168,7 @@ function App() {
   const setProjectGroupable = (val) => {
     setProjectGroupableState(val)
     getConfigRepository().setProjectGroupable(val)
+    syncConfigToAPI()
   }
   // Stato per abilitare/disabilitare la modifica dei task
   const [editable, setEditableState] = useState(() => {
@@ -275,7 +321,6 @@ function App() {
   }, [])
 
   useEffect(() => {
-    getConfigRepository().setProjectFilter(projectFilter)
     setNewTaskProject(projectFilter === 'ALL' ? '' : projectFilter)
   }, [projectFilter])
 
