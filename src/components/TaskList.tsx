@@ -101,7 +101,7 @@ export const TaskList = ({ tasks, onTaskClick, updateTaskTitle, editable, projec
                     }}
                     onClick={() => onTaskClick(task.id)}>
                     {projectEditable && <svg width="18" height="18" style={{ flexShrink: 0, verticalAlign: 'middle' }}>
-                        <rect width="18" height="18" rx="6" fill={task.project && projectColors[task.project] ? projectColors[task.project] : '#ccc'} />
+                        <rect width="18" height="18" rx="3" fill={task.project && projectColors[task.project] ? projectColors[task.project] : '#ccc'} />
                     </svg>}
 
                     <span style={{ flexShrink: 0, verticalAlign: 'middle', display: 'inline-flex', alignItems: 'center' }}>{STATUS[task.status]}</span>{!dateTimeEnabled && !projectEditable && " "}
