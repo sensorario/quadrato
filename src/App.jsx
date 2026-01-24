@@ -333,6 +333,8 @@ function App() {
       project: newTaskProject,
       timestamp,
       status: 0,
+      archived: false,
+      periodicity: null,
     }
 
 
