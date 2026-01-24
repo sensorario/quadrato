@@ -112,9 +112,9 @@ function App() {
     if (!token) {
       return; // Non sincronizzare se non c'è token
     }
-    
+
     const repository = getConfigRepository();
-    
+
     // Recupera tutte le configurazioni correnti
     const allConfig = {
       "simplanner-tasks": repository.getTasks(),
@@ -806,7 +806,6 @@ function App() {
               <button
                 onClick={handleLogout}
                 style={{
-                  marginLeft: '12px',
                   padding: '4px 12px',
                   backgroundColor: '#dc3545',
                   color: 'white',
@@ -819,7 +818,7 @@ function App() {
                 onMouseOver={(e) => e.target.style.backgroundColor = '#c82333'}
                 onMouseOut={(e) => e.target.style.backgroundColor = '#dc3545'}
               >
-                Logout
+                Logout.
               </button>
             )}
           </div>
