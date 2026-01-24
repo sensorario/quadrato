@@ -17,9 +17,9 @@ const Footer = ({ setShowPopup, setShowCleanConfirm, showText }: FooterProps) =>
         >
             {/* Todo creare componente icona plus */}
             <svg width="32" height="32" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
-                <circle cx="16" cy="16" r="15" fill="#f0f0f0" stroke="#888" strokeWidth="2" />
-                <line x1="16" y1="10" x2="16" y2="22" stroke="#444" strokeWidth="2" />
-                <line x1="10" y1="16" x2="22" y2="16" stroke="#444" strokeWidth="2" />
+                <circle cx="16" cy="16" r="15" fill="#f0f0f0" stroke="#888" strokeWidth="1" />
+                <line x1="16" y1="10" x2="16" y2="22" stroke="#444" strokeWidth="1" />
+                <line x1="10" y1="16" x2="22" y2="16" stroke="#444" strokeWidth="1" />
             </svg>
         </button>
         {showText && <span style={{ cursor: "pointer" }} onClick={() => setShowPopup(true)}>
@@ -34,9 +34,9 @@ const Footer = ({ setShowPopup, setShowCleanConfirm, showText }: FooterProps) =>
         >
             {/* Todo creare componente icona pulisci */}
             <svg width="32" height="32" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
-                <circle cx="16" cy="16" r="15" fill="#f0f0f0" stroke="#888" strokeWidth="2" />
-                <line x1="10" y1="10" x2="22" y2="22" stroke="#444" strokeWidth="2" />
-                <line x1="22" y1="10" x2="10" y2="22" stroke="#444" strokeWidth="2" />
+                <circle cx="16" cy="16" r="15" fill="#f0f0f0" stroke="#888" strokeWidth="1" />
+                <line x1="10" y1="10" x2="22" y2="22" stroke="#444" strokeWidth="1" />
+                <line x1="22" y1="10" x2="10" y2="22" stroke="#444" strokeWidth="1" />
             </svg>
         </button>
         {showText && <span style={{ cursor: "pointer" }} onClick={() => setShowCleanConfirm(true)}>

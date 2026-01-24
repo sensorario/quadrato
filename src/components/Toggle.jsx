@@ -40,8 +40,8 @@ const Toggle = ({ checked, onChange, label, icons }) => (
                     }}
                 >
                     {/* Icona stile grigio senza bordo */}
-                    <svg width="18" height="18" viewBox="0 0 18 18">
-                        <circle cx="8" cy="8" r="7" fill="#f0f0f0" stroke="none" />
+                    <svg width="18" height="18" viewBox="0 0 18 18" stroke="#888" strokeWidth="1" >
+                        <circle cx="8" cy="8" r="7" fill="#f0f0f0" />
                     </svg>
                 </span>
             </span>
