@@ -5,11 +5,44 @@ import { Modal } from '../components/Modal';
 export const RegisterPage = () => {
     const [email, setEmail] = useState('');
     const [showModal, setShowModal] = useState(false);
+    const [modalMessage, setModalMessage] = useState('');
+    const [isLoading, setIsLoading] = useState(false);
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
         if (email.trim() && email.includes('@')) {
-            setShowModal(true);
+            setIsLoading(true);
+            try {
+                const response = await fetch('https://api.simonegentili.com/quadrato/register', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ email })
+                });
+
+                if (response.status === 405) {
+                    setModalMessage('Ci sono stati problemi con la registrazione. La funzionalità non è al momento disponibile.');
+                    setShowModal(true);
+                } else if (response.ok) {
+                    setModalMessage('Registrazione avviata con successo! Controlla la tua email.');
+                    setShowModal(true);
+                } else {
+                    try {
+                        const data = await response.json();
+                        setModalMessage(data.message || 'Si è verificato un errore durante la registrazione.');
+                    } catch (jsonError) {
+                        setModalMessage(`Errore ${response.status}: ${response.statusText || 'Si è verificato un errore durante la registrazione.'}`);
+                    }
+                    setShowModal(true);
+                }
+            } catch (error) {
+                console.error('Errore durante la registrazione:', error);
+                setModalMessage('Errore di connessione. Riprova più tardi.');
+                setShowModal(true);
+            } finally {
+                setIsLoading(false);
+            }
         }
     };
 
@@ -62,22 +95,23 @@ export const RegisterPage = () => {
 
                 <button
                     type="submit"
+                    disabled={isLoading}
                     style={{
                         width: '100%',
                         padding: '12px',
-                        backgroundColor: '#28a745',
+                        backgroundColor: isLoading ? '#6c757d' : '#28a745',
                         color: 'white',
                         border: 'none',
                         borderRadius: '4px',
-                        cursor: 'pointer',
+                        cursor: isLoading ? 'not-allowed' : 'pointer',
                         fontSize: '16px',
                         fontWeight: 'bold',
                         marginBottom: '15px'
                     }}
-                    onMouseOver={(e) => e.target.style.backgroundColor = '#218838'}
-                    onMouseOut={(e) => e.target.style.backgroundColor = '#28a745'}
+                    onMouseOver={(e) => !isLoading && (e.target.style.backgroundColor = '#218838')}
+                    onMouseOut={(e) => !isLoading && (e.target.style.backgroundColor = '#28a745')}
                 >
-                    Registrati
+                    {isLoading ? 'Invio in corso...' : 'Registrati'}
                 </button>
 
                 <Link
@@ -97,18 +131,19 @@ export const RegisterPage = () => {
 
             {showModal && (
                 <Modal
-                    title="Ci stiamo lavorando"
+                    title="Registrazione"
                     onClick={() => setShowModal(false)}
                     buttons={[
-                        { label: 'Annulla', onClick: () => setShowModal(false) }
+                        { label: 'Chiudi', onClick: () => setShowModal(false) }
                     ]}
                 >
                     <p style={{ fontSize: '16px', color: '#666', margin: '0' }}>
-                        La funzionalità di registrazione sarà presto disponibile!
+                        {modalMessage}
                     </p>
-                </Modal>
-            )}
-        </div>
+                </Modal >
+            )
+            }
+        </div >
     );
 };
 
