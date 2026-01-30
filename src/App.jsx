@@ -354,9 +354,30 @@ function App() {
 
   const handleClick = (id) => {
     setTasks((tasks) => {
-      const updated = tasks.map((task) =>
-        task.id === id ? { ...task, status: (task.status + 1) % 4 } : task
-      )
+      const updated = tasks.map((task) => {
+        if (task.id === id) {
+          const updatedTask = { ...task, status: (task.status + 1) % 4 };
+
+          // Send PUT request to update the task status on the server
+          const url = `https://api.simonegentili.com/quadrato/task/${task.id}`;
+          const options = {
+            method: 'PUT',
+            body: JSON.stringify(updatedTask),
+            headers: {
+              authorization: token,
+              'Content-Type': 'application/json'
+            }
+          }
+          fetch(url, options)
+            .then(res => res.json())
+            .then(json => {
+              console.log({ json })
+            });
+
+          return updatedTask;
+        }
+        return task;
+      })
       getConfigRepository().setTasks(updated)
       return updated
     })
