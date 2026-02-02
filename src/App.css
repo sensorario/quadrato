@@ -281,6 +281,17 @@ input, textarea {
     justify-content: center;
 }
 
+.workspace-buttons {
+    width: 100%;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+}
+
+.workspace-buttons .modal-close-btn {
+    width: 100%;
+}
+
 .modal-input {
     width: 100%;
     margin-bottom: 1rem;
@@ -305,4 +316,12 @@ input, textarea {
 h2 {
     margin: 0;
     margin-bottom: var(--unit);
+}
+
+.workspaces-container {
+    background-color: #d3d3d3;
+    border-radius: 8px;
+    padding: 6px;
+    border: 1px solid #eee;
+    color: #333;
 }

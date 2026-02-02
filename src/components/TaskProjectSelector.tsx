@@ -8,31 +8,36 @@ const TaskProjectSelector = ({ tasks, projectFilter, setProjectFilter }: TaskPro
     tasks = tasks.filter(t => !t.archived);
 
     return tasks.some((t: { project: string }) => t.project) && (
-        <div style={{ display: 'flex', gap: '1rem', marginBottom: '1rem', flexWrap: 'wrap' }}>
-            <span
-                style={{ textDecoration: projectFilter === 'ALL' ? 'underline' : 'none', cursor: 'pointer', color: '#444' }}
-                onClick={() => setProjectFilter('ALL')}
-            >
-                tutti i task
-            </span>
-            <span
-                style={{ textDecoration: projectFilter === null ? 'underline' : 'none', cursor: 'pointer', color: '#444' }}
-                onClick={() => setProjectFilter(null)}
-            >
-                nessun progetto
-            </span>
-            {[...new Set(tasks.filter(t => t.project).map((t: { project: string }) => t.project))].map((proj: any) => (
+        <div>
+
+            <div style={{ display: 'flex', gap: '1rem', padding: '8px', flexWrap: 'wrap' }}>
                 <span
-                    key={proj}
-                    style={{ textDecoration: projectFilter === proj ? 'underline' : 'none', cursor: 'pointer', color: '#444' }}
-                    onClick={() => {
-                        const newValue = projectFilter === proj ? null : proj;
-                        setProjectFilter(newValue);
-                    }}
+                    style={{ textDecoration: projectFilter === 'ALL' ? 'underline' : 'none', cursor: 'pointer', color: '#444' }}
+                    onClick={() => setProjectFilter('ALL')}
                 >
-                    {proj}
+                    tutti i task
                 </span>
-            ))}
+                <span
+                    style={{ textDecoration: projectFilter === null ? 'underline' : 'none', cursor: 'pointer', color: '#444' }}
+                    onClick={() => setProjectFilter(null)}
+                >
+                    nessun progetto
+                </span>
+            </div>
+            <div style={{ display: 'flex', gap: '1rem', padding: '8px', flexWrap: 'wrap' }}>
+                {[...new Set(tasks.filter(t => t.project).map((t: { project: string }) => t.project))].map((proj: any) => (
+                    <span
+                        key={proj}
+                        style={{ textDecoration: projectFilter === proj ? 'underline' : 'none', cursor: 'pointer', color: '#444' }}
+                        onClick={() => {
+                            const newValue = projectFilter === proj ? null : proj;
+                            setProjectFilter(newValue);
+                        }}
+                    >
+                        {proj}
+                    </span>
+                ))}
+            </div>
         </div>
     )
 }

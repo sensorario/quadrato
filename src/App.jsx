@@ -186,6 +186,11 @@ function App() {
     return getConfigRepository().getTasks()
   })
 
+
+  const [ws, setWs] = useState('default');
+  const [workspaces, setWorkspaces] = useState(['default'])
+  const [workspaceFilter, setWorkspaceFilter] = useState('')
+
   const [showPopup, setShowPopup] = useState(false)
   const [newTaskTitle, setNewTaskTitle] = useState('')
   const [newTaskProject, setNewTaskProject] = useState()
@@ -200,6 +205,42 @@ function App() {
   useEffect(() => {
     getConfigRepository().setZenMode(zenMode)
   }, [zenMode])
+
+  useEffect(() => {
+    const accessToken = localStorage.getItem('simplanner-access-token')
+    if (!accessToken) {
+      setWorkspaces(['default'])
+      return
+    }
+
+    fetch('https://api.simonegentili.com/quadrato/workspaces', {
+      method: 'GET',
+      headers: {
+        authorization: accessToken,
+        'Content-Type': 'application/json',
+      },
+    })
+      .then((res) => res.json())
+      .then((json) => {
+        const list = Array.isArray(json?.workspaces) ? json.workspaces : []
+        const names = list
+          .map((workspace) => workspace?.name)
+          .filter((name) => typeof name === 'string' && name.trim().length > 0)
+        setWorkspaces(names.length ? names : ['default'])
+
+
+        // scorri tutti i workspace e quello che ha come chave current, a true setta ws
+        const currentWorkspace = list.find(
+          (workspace) => workspace?.current === true
+        )
+        if (currentWorkspace && currentWorkspace.name) {
+          setWs(currentWorkspace.name)
+        }
+      })
+      .catch(() => {
+        setWorkspaces(['default'])
+      })
+  }, [token])
 
   // Funzione per aggiornare la descrizione di un task
   const updateTaskTitle = (
@@ -352,6 +393,14 @@ function App() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
+  useEffect(() => {
+    const accessToken = localStorage.getItem('simplanner-access-token')
+    if (!accessToken) return
+
+    // Ricarica i dati quando cambia il workspace
+    getConfigRepository().fetchData(tasks => setTasks(tasks))
+  }, [ws])
+
   const handleClick = (id) => {
     setTasks((tasks) => {
       const updated = tasks.map((task) => {
@@ -494,6 +543,8 @@ function App() {
       iconTheme={iconTheme}
     />
   )
+
+  const [showChangeWorkspace, setShowChangeWorkspace] = useState(false)
 
   const NewTaskModalView = (
     <Modal
@@ -914,6 +965,122 @@ function App() {
     />
   )
 
+  const ChangeWorkspaceModalView = (
+    (() => {
+      const filteredWorkspaces = workspaces.filter((workspaceName) =>
+        workspaceName
+          .toLowerCase()
+          .includes(workspaceFilter.trim().toLowerCase())
+      )
+
+      return (
+        <Modal
+          title="Change Workspace"
+          onClick={() => setShowChangeWorkspace(false)}
+        >
+          <div className="modal-input-wrapper">
+            <input
+              type="text"
+              value={workspaceFilter}
+              onChange={(e) => setWorkspaceFilter(e.target.value)}
+              placeholder="Nome workspace"
+              className="modal-input"
+            />
+          </div>
+          <div className="modal-input-wrapper workspace-buttons">
+            {filteredWorkspaces.map((workspaceName) => (
+              <button
+                key={workspaceName}
+                type="button"
+                className="modal-close-btn"
+                onClick={() => {
+                  const accessToken = localStorage.getItem('simplanner-access-token')
+
+                  if (accessToken) {
+                    fetch('https://api.simonegentili.com/quadrato/workspace/current', {
+                      method: 'POST',
+                      headers: {
+                        authorization: accessToken,
+                        'Content-Type': 'application/json',
+                      },
+                      body: JSON.stringify({ name: workspaceName }),
+                    })
+                      .then(() => {
+                        setWs(workspaceName)
+                        setWorkspaceFilter('')
+                        setShowChangeWorkspace(false)
+                      })
+                      .catch(() => {
+                        setWs(workspaceName)
+                        setWorkspaceFilter('')
+                        setShowChangeWorkspace(false)
+                      })
+                  } else {
+                    setWs(workspaceName)
+                    setWorkspaceFilter('')
+                    setShowChangeWorkspace(false)
+                  }
+                }}
+              >
+                {workspaceName}
+              </button>
+            ))}
+            {filteredWorkspaces.length === 0 && workspaceFilter.trim().length > 0 && (
+              <button
+                type="button"
+                className="modal-close-btn"
+                onClick={() => {
+                  const newWorkspaceName = workspaceFilter.trim()
+                  const accessToken = localStorage.getItem('simplanner-access-token')
+
+                  const finalize = () => {
+                    setWs(newWorkspaceName)
+                    setWorkspaces((prev) =>
+                      prev.includes(newWorkspaceName)
+                        ? prev
+                        : [...prev, newWorkspaceName]
+                    )
+                    setWorkspaceFilter('')
+                    setShowChangeWorkspace(false)
+                  }
+
+                  if (!accessToken) {
+                    finalize()
+                    return
+                  }
+
+                  fetch('https://api.simonegentili.com/quadrato/workspaces', {
+                    method: 'POST',
+                    headers: {
+                      authorization: accessToken,
+                      'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ name: newWorkspaceName }),
+                  })
+                    .then(() => {
+                      // Set as current workspace
+                      return fetch('https://api.simonegentili.com/quadrato/workspace/current', {
+                        method: 'POST',
+                        headers: {
+                          authorization: accessToken,
+                          'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ name: newWorkspaceName }),
+                      })
+                    })
+                    .then(() => finalize())
+                    .catch(() => finalize())
+                }}
+              >
+                salva nuovo workspace
+              </button>
+            )}
+          </div>
+        </Modal>
+      )
+    })()
+  )
+
   const visibleTasks = (() => {
     let filtered =
       projectFilter === 'ALL'
@@ -937,6 +1104,7 @@ function App() {
     <div className="foo">
       <div className="app-container">
         {HeaderView}
+        <div className="workspaces-container clickable  " onClick={() => setShowChangeWorkspace(true)}>workspace: {ws}</div>
         {projectGroupable && DefinedTaskProject}
         <TaskList
           tasks={visibleTasks}
@@ -951,6 +1119,7 @@ function App() {
         {showHelp && HelpModalView}
         {showPopup && NewTaskModalView}
         {showCleanConfirm && ConfirmModalView}
+        {showChangeWorkspace && ChangeWorkspaceModalView}
         {token === null && !loginCancelled && (
           <LoginModal
             onClose={handleCancelLogin}

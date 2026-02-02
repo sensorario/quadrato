@@ -87,7 +87,7 @@ class AjaxRepository implements Repository {
         this.onAuthenticatedCallback = callback;
     }
 
-    public fetchData(): void {
+    public fetchData(callback?: (tasks: any[]) => void): void {
         const headers: HeadersInit = {
             'Content-Type': 'application/json',
         };
@@ -121,6 +121,9 @@ class AjaxRepository implements Repository {
                     "simplanner-project-groupable": apiData["simplanner-project-groupable"] ?? apiData.projectGroupable ?? this.data["simplanner-project-groupable"],
                     "simplanner-config-tab": apiData["simplanner-config-tab"] ?? apiData.activeTab ?? this.data["simplanner-config-tab"]
                 };
+
+                if (callback)
+                    callback(this.data["simplanner-tasks"]);
 
                 console.log(' >>> apiData:', apiData);
                 console.log(' >>> this.data:', this.data);
