@@ -5,6 +5,7 @@
 
 
 ### Features
+- feat(workspaces): manage workspaces ([5ef2b1f](https://github.com/sensorario/quadrato/commit/5ef2b1f), 2026-02-02)
 - feat(api): add missing PUT request ([392141b](https://github.com/sensorario/quadrato/commit/392141b), 2026-01-30)
 - feat(config): store configuration in database ([3c95745](https://github.com/sensorario/quadrato/commit/3c95745), 2026-01-19)
 - feat(config): update api whenever zen mode settings change ([1dc1ac1](https://github.com/sensorario/quadrato/commit/1dc1ac1), 2025-12-30)

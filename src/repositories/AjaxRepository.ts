@@ -340,6 +340,8 @@ class AjaxRepository implements Repository {
             ...this.data["simplanner-project-colors"],
             [String(project)]: color
         };
+        // Force sync by resetting the last synced hash
+        this.lastSyncedHash = "";
         this.syncToServer();
     }
 

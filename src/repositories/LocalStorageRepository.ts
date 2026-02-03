@@ -44,10 +44,10 @@ class LocalStorageRepository implements Repository {
     getProjectColors() {
         try {
             const saved = localStorage.getItem(LocalStorageRepository.PROJECT_COLORS_KEY);
-            return saved ? JSON.parse(saved) : "{}";
+            return saved ? JSON.parse(saved) : {};
         } catch (e) {
             console.error("Failed to parse project colors from localStorage", e);
-            return "{}";
+            return {};
         }
     }
 
@@ -81,7 +81,7 @@ class LocalStorageRepository implements Repository {
             return saved ? JSON.parse(saved) : false;
         } catch (e) {
             console.error("Failed to parse project editability from localStorage", e);
-            return "{}";
+            return false;
         }
     }
 
