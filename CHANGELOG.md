@@ -15,6 +15,7 @@
 
 
 ### Fixes
+- fix(projects): project colors are lost ([8946591](https://github.com/sensorario/quadrato/commit/8946591), 2026-02-03)
 - fix(token): remove hardcoded token XD ([71dcc32](https://github.com/sensorario/quadrato/commit/71dcc32), 2026-01-22)
 - fix(auth): move logout button ([7d769ca](https://github.com/sensorario/quadrato/commit/7d769ca), 2026-01-19)
 - fix(auth): user cant logout ([064da26](https://github.com/sensorario/quadrato/commit/064da26), 2026-01-19)
