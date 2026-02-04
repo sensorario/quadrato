@@ -324,4 +324,25 @@ h2 {
     padding: 6px;
     border: 1px solid #eee;
     color: #333;
+    flex: 1 1 auto;
+    min-width: 0;
+}
+
+.workspace-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.workspace-members {
+    width: 32px;
+    height: 32px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 auto;
+    border-radius: 8px;
+    background-color: #d3d3d3;
+    border: 1px solid #eee;
+    color: #333;
 }

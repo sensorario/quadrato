@@ -18,6 +18,7 @@ import { handleAddAnotherModal } from './utils/handleAddAnotherModal'
 import { archiveCompletedAndSkippedTasks } from './functions/archiveCompletedAndSkippedTasks'
 import { getConfigRepository } from './repositories'
 import { Link } from './Router'
+import UsersIcon from './components/UsersIcon'
 function App() {
   // Stato per il token di autenticazione - recupera dal localStorage se presente
   const [token, setToken] = useState(() => {
@@ -545,6 +546,7 @@ function App() {
   )
 
   const [showChangeWorkspace, setShowChangeWorkspace] = useState(false)
+  const [showWorkspaceMembers, setShowWorkspaceMembers] = useState(false)
 
   const NewTaskModalView = (
     <Modal
@@ -1081,6 +1083,55 @@ function App() {
     })()
   )
 
+  const addMemberHandler = () => {
+    const emailInput = document.querySelector('.modal-input[type="email"]')
+    const email = emailInput ? emailInput.value.trim() : ''
+    const accessToken = localStorage.getItem('simplanner-access-token')
+    if (!email || !accessToken) {
+      return
+    }
+
+    fetch('https://api.simonegentili.com/quadrato/workspace/members', {
+      method: 'POST',
+      headers: {
+        authorization: accessToken,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ workspace: ws, email }),
+    })
+      .then(() => {
+        if (emailInput) {
+          emailInput.value = ''
+        }
+        setShowWorkspaceMembers(false)
+      })
+      .catch(() => {
+        if (emailInput) {
+          emailInput.value = ''
+        }
+        setShowWorkspaceMembers(false)
+      })
+  }
+
+  const WorkspaceMembersModalView = (
+    <Modal
+      title="Membri workspace"
+      onClick={() => setShowWorkspaceMembers(false)}
+      buttons={[
+        { label: 'invita', onClick: () => addMemberHandler() },
+        { label: 'chiudi', onClick: () => setShowWorkspaceMembers(false) },
+      ]}
+    >
+      <div className="modal-input-wrapper">
+        <input
+          type="email"
+          placeholder="email membro"
+          className="modal-input"
+        />
+      </div>
+    </Modal>
+  )
+
   const visibleTasks = (() => {
     let filtered =
       projectFilter === 'ALL'
@@ -1104,7 +1155,22 @@ function App() {
     <div className="foo">
       <div className="app-container">
         {HeaderView}
-        <div className="workspaces-container clickable  " onClick={() => setShowChangeWorkspace(true)}>workspace: {ws}</div>
+        <div className="workspace-wrapper">
+          <div className="workspaces-container clickable  " onClick={() => setShowChangeWorkspace(true)}>workspace: {ws}</div>
+          <div
+            className="workspace-members"
+            onClick={() => setShowWorkspaceMembers(true)}
+            role="button"
+            tabIndex={0}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                setShowWorkspaceMembers(true)
+              }
+            }}
+          >
+            <UsersIcon />
+          </div>
+        </div>
         {projectGroupable && DefinedTaskProject}
         <TaskList
           tasks={visibleTasks}
@@ -1120,6 +1186,7 @@ function App() {
         {showPopup && NewTaskModalView}
         {showCleanConfirm && ConfirmModalView}
         {showChangeWorkspace && ChangeWorkspaceModalView}
+        {showWorkspaceMembers && WorkspaceMembersModalView}
         {token === null && !loginCancelled && (
           <LoginModal
             onClose={handleCancelLogin}

@@ -25,8 +25,19 @@ export const RegisterPage = () => {
                     setModalMessage('Ci sono stati problemi con la registrazione. La funzionalità non è al momento disponibile.');
                     setShowModal(true);
                 } else if (response.ok) {
-                    setModalMessage('Registrazione avviata con successo! Controlla la tua email.');
-                    setShowModal(true);
+                    setTimeout(() => {
+                        window.location.href = '/';
+                    }, 10000);
+
+                    let secondsLeft = 10;
+                    const intervalId = setInterval(() => {
+                        secondsLeft -= 1;
+                        setModalMessage(`Registrazione avviata con successo! Controlla la tua email. Verrai reindirizzato alla home page tra ${secondsLeft} secondi.`);
+                        setShowModal(true);
+                        if (secondsLeft <= 0) {
+                            clearInterval(intervalId);
+                        }
+                    }, 1000);
                 } else {
                     try {
                         const data = await response.json();
@@ -134,7 +145,11 @@ export const RegisterPage = () => {
                     title="Registrazione"
                     onClick={() => setShowModal(false)}
                     buttons={[
-                        { label: 'Chiudi', onClick: () => setShowModal(false) }
+                        {
+                            label: 'Chiudi', onClick: () => {
+                                document.location.href = '/';
+                            }
+                        }
                     ]}
                 >
                     <p style={{ fontSize: '16px', color: '#666', margin: '0' }}>
