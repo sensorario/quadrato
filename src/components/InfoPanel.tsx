@@ -1,8 +1,10 @@
 import React from "react";
+import { useVersionNumber } from "./VersionNumber";
 
 export const InfoPanel = () => {
+    const versionNumber: string = useVersionNumber();
     return <div style={{ fontSize: '12px', color: '#666', textAlign: 'center', marginTop: '16px' }}>
-        <strong>Versione:</strong> v1.2.1
+        <strong>Versione:</strong> v{versionNumber}
         <br />
         <strong>Creato da:</strong> sensorario
         <br />
