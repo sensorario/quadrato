@@ -4,13 +4,6 @@
 ## Unreleased (??/??/????)
 
 
-### Fixes
-- fix(task): cant remove expiration date ([8fc8215](https://github.com/sensorario/quadrato/commit/8fc8215), 2026-02-06)
-
-
-## v1.2.0 (2026-02-04)
-
-
 ### Features
 - feat(workspaces): manage workspaces ([5ef2b1f](https://github.com/sensorario/quadrato/commit/5ef2b1f), 2026-02-02)
 - feat(api): add missing PUT request ([392141b](https://github.com/sensorario/quadrato/commit/392141b), 2026-01-30)
@@ -22,6 +15,8 @@
 
 
 ### Fixes
+- fix(mobile): sticky header and footer ([e339848](https://github.com/sensorario/quadrato/commit/e339848), 2026-02-06)
+- fix(task): cant remove expiration date ([8fc8215](https://github.com/sensorario/quadrato/commit/8fc8215), 2026-02-06)
 - fix(version): update to the right version ([350ec0c](https://github.com/sensorario/quadrato/commit/350ec0c), 2026-02-04)
 - fix(projects): project colors are lost ([8946591](https://github.com/sensorario/quadrato/commit/8946591), 2026-02-03)
 - fix(token): remove hardcoded token XD ([71dcc32](https://github.com/sensorario/quadrato/commit/71dcc32), 2026-01-22)

@@ -76,16 +76,8 @@ export const RegisterPage = () => {
                 width: '400px',
                 maxWidth: '90%'
             }}>
+                <div style={{ marginBottom: '10px', fontSize: '12px', color: '#666' }}>(la tua email sarà la tua username)</div>
                 <div style={{ marginBottom: '20px' }}>
-                    <label htmlFor="email" style={{
-                        display: 'block',
-                        marginBottom: '8px',
-                        fontSize: '14px',
-                        fontWeight: 'bold',
-                        color: '#333'
-                    }}>
-                        Email
-                    </label>
                     <input
                         id="email"
                         type="email"
