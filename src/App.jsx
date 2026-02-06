@@ -1154,24 +1154,28 @@ function App() {
   return (
     <div className="foo">
       <div className="app-container">
-        {HeaderView}
-        <div className="workspace-wrapper">
-          <div className="workspaces-container clickable  " onClick={() => setShowChangeWorkspace(true)}>workspace: {ws}</div>
-          <div
-            className="workspace-members"
-            onClick={() => setShowWorkspaceMembers(true)}
-            role="button"
-            tabIndex={0}
-            onKeyDown={(e) => {
-              if (e.key === 'Enter' || e.key === ' ') {
-                setShowWorkspaceMembers(true)
-              }
-            }}
-          >
-            <UsersIcon />
+
+        <div className="sticky-header" style={{ position: 'sticky', top: 0, zIndex: 100, backgroundColor: 'white' }}>
+          {HeaderView}
+          <div className="workspace-wrapper">
+            <div className="workspaces-container clickable  " onClick={() => setShowChangeWorkspace(true)}>workspace: {ws}</div>
+            <div
+              className="workspace-members"
+              onClick={() => setShowWorkspaceMembers(true)}
+              role="button"
+              tabIndex={0}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  setShowWorkspaceMembers(true)
+                }
+              }}
+            >
+              <UsersIcon />
+            </div>
           </div>
+          {projectGroupable && DefinedTaskProject}
         </div>
-        {projectGroupable && DefinedTaskProject}
+
         <TaskList
           tasks={visibleTasks}
           onTaskClick={handleClick}

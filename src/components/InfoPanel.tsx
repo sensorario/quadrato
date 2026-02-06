@@ -2,7 +2,7 @@ import React from "react";
 
 export const InfoPanel = () => {
     return <div style={{ fontSize: '12px', color: '#666', textAlign: 'center', marginTop: '16px' }}>
-        <strong>Versione:</strong> v1.2.0
+        <strong>Versione:</strong> v1.2.1
         <br />
         <strong>Creato da:</strong> sensorario
         <br />
