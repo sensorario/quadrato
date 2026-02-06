@@ -1,6 +1,13 @@
 # CHANGELOG
 
 
+## Unreleased (??/??/????)
+
+
+### Fixes
+- fix(task): cant remove expiration date ([8fc8215](https://github.com/sensorario/quadrato/commit/8fc8215), 2026-02-06)
+
+
 ## v1.2.0 (2026-02-04)
 
 
