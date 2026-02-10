@@ -5,6 +5,13 @@ import TabbedContent from "./TabbedContent";
 import { Footer } from "./Footer/index";
 import { getConfigRepository } from "../repositories";
 
+const formatDateTimeLocal = (value) => {
+    if (!value) return '';
+    const date = typeof value === 'number' ? new Date(value) : new Date(value);
+    const pad = (n) => String(n).padStart(2, '0');
+    return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}T${pad(date.getHours())}:${pad(date.getMinutes())}`;
+};
+
 const EditTaskModal = ({ value, setValue, longValue, setLongValue, projectValue, setProjectValue, timestampValue, setTimestampValue, periodicityValue, setPeriodicityValue, onClose, onSave, projectEditable, dateTimeEnabled }) => {
     React.useEffect(() => {
         const handleEsc = (e) => {
@@ -15,8 +22,6 @@ const EditTaskModal = ({ value, setValue, longValue, setLongValue, projectValue,
         window.addEventListener("keydown", handleEsc);
         return () => window.removeEventListener("keydown", handleEsc);
     }, [onClose]);
-
-    setTimestampValue(timestampValue || '');
 
     return <Modal title="Modifica task" icon={<HelpIcon />} onClick={onClose} >
         <TabbedContent panels={[
@@ -73,7 +78,7 @@ const EditTaskModal = ({ value, setValue, longValue, setLongValue, projectValue,
                         <label style={{ fontWeight: 500, marginBottom: 4, display: 'block' }}>Scadenza</label>
                         <input
                             type="datetime-local"
-                            value={typeof timestampValue === 'number' ? new Date(timestampValue).toISOString().slice(0, 16) : timestampValue}
+                            value={formatDateTimeLocal(timestampValue)}
                             onChange={e => setTimestampValue(new Date(e.target.value).getTime())}
                             style={{ width: '90%', marginBottom: '0.5rem', padding: '0.75rem 1rem', borderRadius: '8px', fontSize: '1rem', border: '1px solid #d1d1d1' }}
                         />

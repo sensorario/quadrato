@@ -1,6 +1,6 @@
 import React from 'react';
 
-export const useVersionNumber = () => '1.2.2';
+export const useVersionNumber = () => '1.2.3';
 
 export const VersionNumber: React.FC = () => {
     const version = useVersionNumber();

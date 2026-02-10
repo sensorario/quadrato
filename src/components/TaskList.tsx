@@ -82,7 +82,10 @@ export const TaskList = ({ tasks, onTaskClick, updateTaskTitle, editable, projec
                 className="task-item"
                 onMouseEnter={() => setHoveredId(typeof task.id === 'number' ? task.id : null)}
                 onMouseLeave={() => setHoveredId(null)}
-                style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}
+                style={{
+                    display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                    marginLeft: '20px', marginRight: '20px', padding: '8px', borderBottom: '1px solid #eee', cursor: 'pointer'
+                }}
 
             >
                 {/* Quadrato di stato (presente) */}
@@ -96,7 +99,7 @@ export const TaskList = ({ tasks, onTaskClick, updateTaskTitle, editable, projec
                         minWidth: 0,
                         color: isExpired ? 'red' : undefined,
                         display: 'flex',
-                        gap: '2px',
+                        gap: '4px',
                         alignItems: 'center',
                     }}
                     onClick={() => onTaskClick(task.id)}>

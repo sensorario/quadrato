@@ -740,9 +740,8 @@ function App() {
                 height: 32,
                 background: color,
                 border: '2px solid #fff',
-                borderRadius: '50%',
                 cursor: 'pointer',
-                boxShadow: '0 0 2px #0002',
+                boxShadow: 'rgb(8 3 3 ) 0px 4px 20px',
               }}
               title={name}
               onClick={() => {
@@ -1155,7 +1154,11 @@ function App() {
     <div className="foo">
       <div className="app-container">
 
-        <div className="sticky-header" style={{ position: 'sticky', top: 0, zIndex: 100, backgroundColor: 'white' }}>
+        <div className="sticky-header" style={{
+          marginBottom: '8px',
+          borderBottom: '1px solid #ddd',
+          position: 'sticky', top: 0, zIndex: 100, backgroundColor: 'white'
+        }}>
           {HeaderView}
           <div className="workspace-wrapper">
             <div className="workspaces-container clickable  " onClick={() => setShowChangeWorkspace(true)}>workspace: {ws}</div>

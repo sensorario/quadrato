@@ -172,9 +172,8 @@ input, textarea {
 
 .app-container {
     width: 100%;
-    max-width: 600px;
     margin: 8px     auto;
-    padding: 0 1rem;
+    padding: 0;
     box-sizing: border-box;
 }
 
@@ -248,8 +247,8 @@ input, textarea {
 /* Responsive styles */
 @media (max-width: 600px) {
     .app-container {
-        max-width: 100vw;
-        padding: 0 0.5rem;
+    padding: 0;
+    box-sizing: border-box;
     }
     .modal {
         max-width: 95vw;
@@ -264,7 +263,8 @@ input, textarea {
 
 @media (min-width: 1200px) {
     .app-container {
-        max-width: 900px;
+    padding: 0;
+    box-sizing: border-box;
     }
     .modal {
         max-width: 400px;
