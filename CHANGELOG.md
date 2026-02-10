@@ -16,6 +16,7 @@
 
 
 ### Fixes
+- fix(timepicker): wrong date format ([18be254](https://github.com/sensorario/quadrato/commit/18be254), 2026-02-10)
 - fix(mobile): sticky header and footer ([e339848](https://github.com/sensorario/quadrato/commit/e339848), 2026-02-06)
 - fix(task): cant remove expiration date ([8fc8215](https://github.com/sensorario/quadrato/commit/8fc8215), 2026-02-06)
 - fix(version): update to the right version ([350ec0c](https://github.com/sensorario/quadrato/commit/350ec0c), 2026-02-04)

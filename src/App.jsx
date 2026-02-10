@@ -1159,7 +1159,6 @@ function App() {
           borderBottom: '1px solid #ddd',
           position: 'sticky', top: 0, zIndex: 100, backgroundColor: 'white'
         }}>
-          {HeaderView}
           <div className="workspace-wrapper">
             <div className="workspaces-container clickable  " onClick={() => setShowChangeWorkspace(true)}>workspace: {ws}</div>
             <div
@@ -1175,6 +1174,7 @@ function App() {
             >
               <UsersIcon />
             </div>
+            {HeaderView}
           </div>
           {projectGroupable && DefinedTaskProject}
         </div>
