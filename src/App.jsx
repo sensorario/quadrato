@@ -1161,7 +1161,7 @@ function App() {
         }}>
           <div className="workspace-wrapper">
             <div className="workspaces-container clickable  " onClick={() => setShowChangeWorkspace(true)}>workspace: {ws}</div>
-            <div
+            {ws != 'default' && <div
               className="workspace-members"
               onClick={() => setShowWorkspaceMembers(true)}
               role="button"
@@ -1173,7 +1173,7 @@ function App() {
               }}
             >
               <UsersIcon />
-            </div>
+            </div>}
             {HeaderView}
           </div>
           {projectGroupable && DefinedTaskProject}
