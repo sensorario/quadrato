@@ -84,7 +84,7 @@ export const TaskList = ({ tasks, onTaskClick, updateTaskTitle, editable, projec
                 onMouseLeave={() => setHoveredId(null)}
                 style={{
                     display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-                    marginLeft: '20px', marginRight: '20px', padding: '8px', borderBottom: '1px solid #eee', cursor: 'pointer'
+                    marginLeft: '20px', marginRight: '20px', padding: '4px', borderBottom: '1px solid #eee', cursor: 'pointer'
                 }}
 
             >
@@ -99,15 +99,15 @@ export const TaskList = ({ tasks, onTaskClick, updateTaskTitle, editable, projec
                         minWidth: 0,
                         color: isExpired ? 'red' : undefined,
                         display: 'flex',
-                        gap: '4px',
+                        gap: '6px',
                         alignItems: 'center',
-                    }}
-                    onClick={() => onTaskClick(task.id)}>
+                    }}>
                     {projectEditable && <svg width="18" height="18" style={{ flexShrink: 0, verticalAlign: 'middle' }}>
                         <rect width="18" height="18" rx="3" fill={task.project && projectColors[task.project] ? projectColors[task.project] : '#ccc'} />
                     </svg>}
 
-                    <span style={{ flexShrink: 0, verticalAlign: 'middle', display: 'inline-flex', alignItems: 'center' }}>{STATUS[task.status]}</span>{!dateTimeEnabled && !projectEditable && " "}
+
+                    <span onClick={() => onTaskClick(task.id)} style={{ flexShrink: 0, verticalAlign: 'middle', display: 'inline-flex', alignItems: 'center' }}>{STATUS[task.status]}</span>{!dateTimeEnabled && !projectEditable && " "}
 
                     {dateTimeEnabled && task.timestamp && (
                         <span style={{ margin: '0', color: '#666' }}>
@@ -117,6 +117,8 @@ export const TaskList = ({ tasks, onTaskClick, updateTaskTitle, editable, projec
                     {projectEditable && task.project && (
                         <span style={{ margin: '0', color: '#666' }}>({task.project})</span>
                     )}
+
+
                     <span dangerouslySetInnerHTML={{ __html: title }} />
                 </span>
                 {editable && (
