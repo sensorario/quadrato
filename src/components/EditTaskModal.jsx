@@ -9,7 +9,15 @@ const formatDateTimeLocal = (value) => {
     if (!value) return '';
     const date = typeof value === 'number' ? new Date(value) : new Date(value);
     const pad = (n) => String(n).padStart(2, '0');
+    // Usa getHours() locale per mostrare quello che l'utente ha immesso
     return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}T${pad(date.getHours())}:${pad(date.getMinutes())}`;
+};
+
+const parseLocalDateTimeToUTC = (dateTimeString) => {
+    if (!dateTimeString) return '';
+    // La stringa datetime-local rappresenta il tempo LOCALE dell'utente
+    // Creando un Date direttamente, JS lo interpreta come locale
+    return new Date(dateTimeString).getTime();
 };
 
 const EditTaskModal = ({ value, setValue, longValue, setLongValue, projectValue, setProjectValue, timestampValue, setTimestampValue, periodicityValue, setPeriodicityValue, onClose, onSave, projectEditable, dateTimeEnabled }) => {
@@ -79,7 +87,7 @@ const EditTaskModal = ({ value, setValue, longValue, setLongValue, projectValue,
                         <input
                             type="datetime-local"
                             value={formatDateTimeLocal(timestampValue)}
-                            onChange={e => setTimestampValue(new Date(e.target.value).getTime())}
+                            onChange={e => setTimestampValue(parseLocalDateTimeToUTC(e.target.value))}
                             style={{ width: '90%', marginBottom: '0.5rem', padding: '0.75rem 1rem', borderRadius: '8px', fontSize: '1rem', border: '1px solid #d1d1d1' }}
                         />
                         <div style={{ display: 'flex', gap: '8px', marginBottom: '1rem' }}>

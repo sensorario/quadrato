@@ -438,6 +438,8 @@ function App() {
     let timestamp = '';
 
     if (typeof newTaskDateTime === 'string' && newTaskDateTime.length > 0) {
+      // La stringa datetime-local rappresenta il tempo LOCALE dell'utente
+      // new Date() lo interpreta correttamente come locale
       timestamp = new Date(newTaskDateTime).getTime()
     }
 
@@ -1155,9 +1157,12 @@ function App() {
       <div className="app-container">
 
         <div className="sticky-header" style={{
-          marginBottom: '8px',
+          marginBottom: '24px',
           borderBottom: '1px solid #ddd',
-          position: 'sticky', top: 0, zIndex: 100, backgroundColor: 'white'
+          position: 'sticky',
+          top: 0,
+          zIndex: 100,
+          backgroundColor: 'white'
         }}>
           <div className="workspace-wrapper">
             <div className="workspaces-container clickable  " onClick={() => setShowChangeWorkspace(true)}>workspace: {ws}</div>
