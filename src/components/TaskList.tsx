@@ -84,7 +84,7 @@ export const TaskList = ({ tasks, onTaskClick, updateTaskTitle, editable, projec
                 onMouseLeave={() => setHoveredId(null)}
                 style={{
                     display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-                    marginLeft: '20px', marginRight: '20px', padding: '4px', borderBottom: '1px solid #eee', cursor: 'pointer'
+                    padding: '4px', borderBottom: '1px solid #eee', cursor: 'pointer'
                 }}
 
             >
@@ -111,7 +111,7 @@ export const TaskList = ({ tasks, onTaskClick, updateTaskTitle, editable, projec
 
                     {dateTimeEnabled && task.timestamp && (
                         <span style={{ margin: '0', color: '#666' }}>
-                            <FormatDate date={typeof task.timestamp === 'number' ? new Date(task.timestamp).toISOString() : (task.timestamp || '')} />
+                            <FormatDate date={typeof task.timestamp === 'number' ? task.timestamp : (task.timestamp || '')} />
                         </span>
                     )}
                     {projectEditable && task.project && (

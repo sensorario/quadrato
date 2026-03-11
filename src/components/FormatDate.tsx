@@ -2,9 +2,9 @@
 
 import React from 'react';
 
-export const FormatDate = ({ date, systemDate }: { date: string, systemDate?: string }) => {
+export const FormatDate = ({ date, systemDate }: { date: string | number, systemDate?: string }) => {
     if (date === undefined || date === null || date === '') return null;
-    // Se la data è un numero, è un timestamp
+    // Se la data è un numero, è un timestamp in millisecondi
     const d = typeof date === 'number' ? new Date(date) : new Date(date);
     let sys: Date;
     if (systemDate) {
