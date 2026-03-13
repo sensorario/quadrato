@@ -191,6 +191,11 @@ function App() {
   const [ws, setWs] = useState('default');
   const [workspaces, setWorkspaces] = useState(['default'])
   const [workspaceFilter, setWorkspaceFilter] = useState('')
+  const filteredWorkspaces = workspaces.filter((workspaceName) =>
+    workspaceName
+      .toLowerCase()
+      .includes(workspaceFilter.trim().toLowerCase())
+  )
 
   const [showPopup, setShowPopup] = useState(false)
   const [newTaskTitle, setNewTaskTitle] = useState('')
@@ -211,6 +216,11 @@ function App() {
     const accessToken = localStorage.getItem('simplanner-access-token')
     if (!accessToken) {
       setWorkspaces(['default'])
+      try {
+        localStorage.setItem('simplanner-workspaces', JSON.stringify(['default']))
+      } catch (e) {
+        console.error('Failed to persist workspaces', e)
+      }
       return
     }
 
@@ -227,7 +237,13 @@ function App() {
         const names = list
           .map((workspace) => workspace?.name)
           .filter((name) => typeof name === 'string' && name.trim().length > 0)
-        setWorkspaces(names.length ? names : ['default'])
+        const normalized = names.length ? names : ['default']
+        setWorkspaces(normalized)
+        try {
+          localStorage.setItem('simplanner-workspaces', JSON.stringify(normalized))
+        } catch (e) {
+          console.error('Failed to persist workspaces', e)
+        }
 
 
         // scorri tutti i workspace e quello che ha come chave current, a true setta ws
@@ -240,6 +256,11 @@ function App() {
       })
       .catch(() => {
         setWorkspaces(['default'])
+        try {
+          localStorage.setItem('simplanner-workspaces', JSON.stringify(['default']))
+        } catch (e) {
+          console.error('Failed to persist workspaces', e)
+        }
       })
   }, [token])
 
@@ -255,8 +276,6 @@ function App() {
     let putSent = false
     setTasks((tasks) => {
       const updated = tasks.map((task) => {
-        console.log({ task })
-
         let newTimestamp = timestampValue ?? task.timestamp
 
         if (typeof newTimestamp === 'string' && newTimestamp.length > 0) {
@@ -325,39 +344,27 @@ function App() {
         // Aggiorna showText
         const loadedShowText = repository.getShowText()
         setShowText(loadedShowText)
-        console.log('Show text aggiornato con dati API:', loadedShowText)
 
         // Aggiorna showExpired
         const loadedShowExpired = repository.getShowExpired()
         setShowExpiredFeature(loadedShowExpired)
-        console.log('Show expired aggiornato con dati API:', loadedShowExpired)
 
         // Aggiorna dateTimeEnabled
         const loadedDateTimeEnabled = repository.getDateTimeEnabled()
         setDateTimeEnabledState(loadedDateTimeEnabled)
-        console.log('Date time enabled aggiornato con dati API:', loadedDateTimeEnabled)
 
         // Aggiorna projectGroupable
         const loadedProjectGroupable = repository.getProjectGroupable()
         setProjectGroupableState(loadedProjectGroupable)
         setEditableState(loadedProjectGroupable)
-        console.log('Project groupable aggiornato con dati API:', loadedProjectGroupable)
 
         // Aggiorna projectFilter
         const loadedProjectFilter = repository.getProjectFilter()
         setProjectFilterState(loadedProjectFilter)
-        console.log('Project filter aggiornato con dati API:', loadedProjectFilter)
 
         // Aggiorna zenMode
         const loadedZenMode = repository.getZenMode()
         setZenMode(loadedZenMode)
-        console.log('Zen mode aggiornato con dati API:', loadedZenMode)
-
-        console.log('Interfaccia aggiornata con dati API:', {
-          iconTheme: loadedIconTheme,
-          showText: loadedShowText,
-          tasks: loadedTasks.length
-        })
       })
     }
   }, [])
@@ -438,8 +445,6 @@ function App() {
     let timestamp = '';
 
     if (typeof newTaskDateTime === 'string' && newTaskDateTime.length > 0) {
-      // La stringa datetime-local rappresenta il tempo LOCALE dell'utente
-      // new Date() lo interpreta correttamente come locale
       timestamp = new Date(newTaskDateTime).getTime()
     }
 
@@ -468,8 +473,7 @@ function App() {
 
     fetch(url, options)
       .then(res => res.json())
-      .then(json => {
-        console.log({ json })
+      .then(() => {
         getConfigRepository().fetchData()
       });
 
@@ -544,6 +548,7 @@ function App() {
       projectEditable={projectGroupable}
       dateTimeEnabled={dateTimeEnabled}
       iconTheme={iconTheme}
+      workspaces={filteredWorkspaces}
     />
   )
 
@@ -755,6 +760,10 @@ function App() {
         </div>
       </Modal>
     )
+
+    const WorkspacePanel = () => {
+      return <>...</>
+    }
 
     const ProjectPanel = () => {
       return (
@@ -970,12 +979,6 @@ function App() {
 
   const ChangeWorkspaceModalView = (
     (() => {
-      const filteredWorkspaces = workspaces.filter((workspaceName) =>
-        workspaceName
-          .toLowerCase()
-          .includes(workspaceFilter.trim().toLowerCase())
-      )
-
       return (
         <Modal
           title="Change Workspace"
@@ -1192,6 +1195,7 @@ function App() {
           projectEditable={projectGroupable}
           dateTimeEnabled={dateTimeEnabled}
           iconTheme={iconTheme}
+          workspaces={filteredWorkspaces}
         />
         {FooterView}
         {showHelp && HelpModalView}

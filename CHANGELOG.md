@@ -16,6 +16,7 @@
 
 
 ### Fixes
+- fix(date): fix format ([2d8efe5](https://github.com/sensorario/quadrato/commit/2d8efe5), 2026-03-11)
 - fix(workspace): is possibile adding member to default workspace ([3607a06](https://github.com/sensorario/quadrato/commit/3607a06), 2026-02-11)
 - fix(app-container): limit width ([4d395ad](https://github.com/sensorario/quadrato/commit/4d395ad), 2026-02-10)
 - fix(timepicker): wrong date format ([18be254](https://github.com/sensorario/quadrato/commit/18be254), 2026-02-10)

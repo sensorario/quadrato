@@ -184,7 +184,9 @@ input, textarea {
 
 .task-list {
     list-style-type: none;
-    padding-left: 0;
+    padding: 20px;
+    border: #ccc 1px solid;
+    border-radius: 20px;
 }
 
 .task-item:first-of-type{

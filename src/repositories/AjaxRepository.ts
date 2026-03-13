@@ -122,11 +122,9 @@ class AjaxRepository implements Repository {
                     "simplanner-config-tab": apiData["simplanner-config-tab"] ?? apiData.activeTab ?? this.data["simplanner-config-tab"]
                 };
 
-                if (callback)
+                if (callback) {
                     callback(this.data["simplanner-tasks"]);
-
-                console.log(' >>> apiData:', apiData);
-                console.log(' >>> this.data:', this.data);
+                }
 
                 // Aggiorna l'hash dopo il caricamento
                 this.lastSyncedHash = this.calculateHash();
@@ -135,7 +133,6 @@ class AjaxRepository implements Repository {
                 // oer ogni chiave di data, salva il valore nel localStorage per caching
                 Object.keys(this.data).forEach(key => {
                     const value = (this.data as any)[key];
-                    console.log("Salvo il local storage key:", key, "con valore:", value);
                     // Salva oggetti e array con JSON.stringify, stringhe e primitivi così come sono
                     if (typeof value === 'object' && value !== null) {
                         localStorage.setItem(key, JSON.stringify(value));
@@ -146,8 +143,6 @@ class AjaxRepository implements Repository {
                     }
                 });
 
-                console.log('Data loaded from API:', this.data);
-
                 // Chiama il callback se registrato
                 if (this.onDataLoadedCallback) {
                     this.onDataLoadedCallback();
@@ -155,7 +150,6 @@ class AjaxRepository implements Repository {
             })
             .catch(err => {
                 console.error('Error fetching from api.simonegentili.com:', err);
-                console.log('Using default values');
                 this.isDataLoaded = true;
             });
     }
@@ -163,16 +157,12 @@ class AjaxRepository implements Repository {
     private syncToServer(): void {
         // Sincronizza solo se i dati sono stati modificati
         if (!this.hasDataChanged()) {
-            console.log("Server is up-to-date, no sync needed.");
             return;
         }
 
         if (!this.isDataLoaded) {
-            console.log("Data not loaded yet, skipping sync");
             return;
         }
-
-        console.log("Changes detected, syncing data to server...");
 
         const headers: HeadersInit = {
             'Content-Type': 'application/json',
@@ -181,12 +171,6 @@ class AjaxRepository implements Repository {
         if (this.accessToken) {
             headers['Authorization'] = `${this.accessToken}`;
         }
-
-        // Debug: verifica il contenuto prima di inviare
-        console.log(">>> DATA BEFORE SYNC:");
-        console.log("simplanner-tasks count:", this.data["simplanner-tasks"].length);
-        console.log("simplanner-project-colors:", this.data["simplanner-project-colors"]);
-        console.log("Full data object:", JSON.stringify(this.data, null, 2));
 
         // fare una PUT a /quadrato/settings cui passare tutti i valori delle configurazini
         fetch('https://api.simonegentili.com/quadrato/config', {
@@ -273,7 +257,6 @@ class AjaxRepository implements Repository {
     }
 
     setShowText(value: boolean): void {
-        console.log("Setting show text to", value);
         this.data["simplanner-show-text"] = value;
         this.syncToServer();
     }
@@ -283,7 +266,6 @@ class AjaxRepository implements Repository {
     }
 
     setShowExpired(value: boolean): void {
-        console.log("Setting show expired to", value);
         this.data["simplanner-show-expired"] = value;
         this.syncToServer();
     }
@@ -293,7 +275,6 @@ class AjaxRepository implements Repository {
     }
 
     setDateTimeEnabled(value: boolean): void {
-        console.log("Setting dateTime enabled to", value);
         this.data["simplanner-dateTime-enabled"] = value;
         this.syncToServer();
     }
@@ -303,7 +284,6 @@ class AjaxRepository implements Repository {
     }
 
     setZenMode(value: boolean): void {
-        console.log("Setting zen mode to", value);
         this.data["simplanner-zen-mode"] = value;
         this.syncToServer();
     }
@@ -335,7 +315,6 @@ class AjaxRepository implements Repository {
     }
 
     setProjectColor(project: string | number, color: string): void {
-        console.log("Setting project color for", project, "to", color);
         this.data["simplanner-project-colors"] = {
             ...this.data["simplanner-project-colors"],
             [String(project)]: color
@@ -355,7 +334,6 @@ class AjaxRepository implements Repository {
     }
 
     setProjectFilter(value: string | null): void {
-        console.log("Setting project filter to", value);
         this.data["simplanner-project-filter"] = value;
         this.syncToServer();
     }
@@ -367,7 +345,6 @@ class AjaxRepository implements Repository {
     }
 
     setIconTheme(theme: string): void {
-        console.log("Setting icon theme to", theme);
         this.data["simplanner-icon-theme"] = theme;
         this.syncToServer();
     }
@@ -379,7 +356,6 @@ class AjaxRepository implements Repository {
     }
 
     setActiveTab(index: number): void {
-        console.log("Setting active tab to", index);
         this.data["simplanner-config-tab"] = String(index);
         this.syncToServer();
     }
@@ -391,11 +367,7 @@ class AjaxRepository implements Repository {
     }
 
     async setTasks(tasks: any[]): Promise<void> {
-        console.log(">>> setTasks called with", tasks.length, "tasks");
-        console.log(">>> BEFORE setTasks - project-colors:", this.data["simplanner-project-colors"]);
         this.data["simplanner-tasks"] = tasks;
-        console.log(">>> AFTER setTasks - project-colors:", this.data["simplanner-project-colors"]);
-        console.log(">>> AFTER setTasks - tasks:", this.data["simplanner-tasks"].length);
         this.syncToServer();
     }
 
