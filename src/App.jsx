@@ -17,8 +17,9 @@ import InfoPanel from './components/InfoPanel'
 import { handleAddAnotherModal } from './utils/handleAddAnotherModal'
 import { archiveCompletedAndSkippedTasks } from './functions/archiveCompletedAndSkippedTasks'
 import { getConfigRepository } from './repositories'
-import { Link } from './Router'
 import UsersIcon from './components/UsersIcon'
+import LoginForm from './components/LoginForm'
+
 function App() {
   // Stato per il token di autenticazione - recupera dal localStorage se presente
   const [token, setToken] = useState(() => {
@@ -191,11 +192,6 @@ function App() {
   const [ws, setWs] = useState('default');
   const [workspaces, setWorkspaces] = useState(['default'])
   const [workspaceFilter, setWorkspaceFilter] = useState('')
-  const filteredWorkspaces = workspaces.filter((workspaceName) =>
-    workspaceName
-      .toLowerCase()
-      .includes(workspaceFilter.trim().toLowerCase())
-  )
 
   const [showPopup, setShowPopup] = useState(false)
   const [newTaskTitle, setNewTaskTitle] = useState('')
@@ -216,11 +212,6 @@ function App() {
     const accessToken = localStorage.getItem('simplanner-access-token')
     if (!accessToken) {
       setWorkspaces(['default'])
-      try {
-        localStorage.setItem('simplanner-workspaces', JSON.stringify(['default']))
-      } catch (e) {
-        console.error('Failed to persist workspaces', e)
-      }
       return
     }
 
@@ -237,13 +228,7 @@ function App() {
         const names = list
           .map((workspace) => workspace?.name)
           .filter((name) => typeof name === 'string' && name.trim().length > 0)
-        const normalized = names.length ? names : ['default']
-        setWorkspaces(normalized)
-        try {
-          localStorage.setItem('simplanner-workspaces', JSON.stringify(normalized))
-        } catch (e) {
-          console.error('Failed to persist workspaces', e)
-        }
+        setWorkspaces(names.length ? names : ['default'])
 
 
         // scorri tutti i workspace e quello che ha come chave current, a true setta ws
@@ -256,11 +241,6 @@ function App() {
       })
       .catch(() => {
         setWorkspaces(['default'])
-        try {
-          localStorage.setItem('simplanner-workspaces', JSON.stringify(['default']))
-        } catch (e) {
-          console.error('Failed to persist workspaces', e)
-        }
       })
   }, [token])
 
@@ -548,7 +528,6 @@ function App() {
       projectEditable={projectGroupable}
       dateTimeEnabled={dateTimeEnabled}
       iconTheme={iconTheme}
-      workspaces={filteredWorkspaces}
     />
   )
 
@@ -979,6 +958,12 @@ function App() {
 
   const ChangeWorkspaceModalView = (
     (() => {
+      const filteredWorkspaces = workspaces.filter((workspaceName) =>
+        workspaceName
+          .toLowerCase()
+          .includes(workspaceFilter.trim().toLowerCase())
+      )
+
       return (
         <Modal
           title="Change Workspace"
@@ -1195,7 +1180,6 @@ function App() {
           projectEditable={projectGroupable}
           dateTimeEnabled={dateTimeEnabled}
           iconTheme={iconTheme}
-          workspaces={filteredWorkspaces}
         />
         {FooterView}
         {showHelp && HelpModalView}
@@ -1210,57 +1194,11 @@ function App() {
           />
         )}
         {token === null && loginCancelled && (
-          <div style={{
-            position: 'fixed',
-            top: 0,
-            left: 0,
-            width: '100vw',
-            height: '100vh',
-            backgroundColor: 'white',
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            justifyContent: 'center',
-            gap: '30px',
-            zIndex: 10000
-          }}>
-            <h1 style={{ fontSize: '48px', color: '#333' }}>Quadrato</h1>
-            <div style={{ display: 'flex', gap: '20px' }}>
-              <button
-                onClick={() => setLoginCancelled(false)}
-                style={{
-                  padding: '12px 24px',
-                  backgroundColor: '#007bff',
-                  color: 'white',
-                  border: 'none',
-                  borderRadius: '4px',
-                  cursor: 'pointer',
-                  fontSize: '16px',
-                  fontWeight: 'bold'
-                }}
-                onMouseOver={(e) => e.target.style.backgroundColor = '#0056b3'}
-                onMouseOut={(e) => e.target.style.backgroundColor = '#007bff'}
-              >
-                Login
-              </button>
-              <Link
-                to="/register"
-                style={{
-                  padding: '12px 24px',
-                  backgroundColor: '#28a745',
-                  color: 'white',
-                  textDecoration: 'none',
-                  borderRadius: '4px',
-                  cursor: 'pointer',
-                  fontSize: '16px',
-                  fontWeight: 'bold',
-                  display: 'inline-block'
-                }}
-              >
-                Registrati
-              </Link>
-            </div>
-          </div>
+          <LoginForm
+            onClick={() => setLoginCancelled(false)}
+            onMouseOver={(e) => e.target.style.backgroundColor = '#0056b3'}
+            onMouseOut={(e) => e.target.style.backgroundColor = '#007bff'}
+          />
         )}
       </div>
     </div>

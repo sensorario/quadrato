@@ -5,6 +5,7 @@
 
 
 ### Features
+- feat(LoginForm): add new component ([f5bc1fe](https://github.com/sensorario/quadrato/commit/f5bc1fe), 2026-03-13)
 - feat(login): add label to explain that email will be the username ([56420ad](https://github.com/sensorario/quadrato/commit/56420ad), 2026-02-06)
 - feat(workspaces): manage workspaces ([5ef2b1f](https://github.com/sensorario/quadrato/commit/5ef2b1f), 2026-02-02)
 - feat(api): add missing PUT request ([392141b](https://github.com/sensorario/quadrato/commit/392141b), 2026-01-30)
