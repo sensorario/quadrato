@@ -13,6 +13,22 @@ interface QuadratoData {
     "simplanner-config-tab": string;
 }
 
+// definisci un hook vuoto ma che si chiama router 
+const patchHistory = () => {
+    const uri = document.location.href.replace('http://', '');
+    const segments = uri.split('/');
+
+    // segments [ suddivisa in ... il primo [ il dominio ], il secondo
+    // è il worspace, il terzo è il progetto ]
+    const worspace = segments[1] || null;
+    const project = segments[2] || null;
+
+
+
+    console.log({ worspace, project });
+}
+
+
 class AjaxRepository implements Repository {
     private lastSyncedHash: string = "";
     private accessToken: string | null = null;
@@ -34,6 +50,10 @@ class AjaxRepository implements Repository {
     };
 
     constructor() {
+
+        // richiamapathHistory per patchare le funzioni di pushState e replaceState
+        patchHistory();
+
         this.lastSyncedHash = this.calculateHash();
         // Recupera il token dal localStorage se presente
         const savedToken = localStorage.getItem('simplanner-access-token');

@@ -1145,8 +1145,7 @@ function App() {
       <div className="app-container">
 
         <div className="sticky-header" style={{
-          marginBottom: '24px',
-          borderBottom: '1px solid #ddd',
+          marginBottom: '8px',
           position: 'sticky',
           top: 0,
           zIndex: 100,

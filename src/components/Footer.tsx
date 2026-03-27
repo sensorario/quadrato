@@ -7,7 +7,7 @@ type FooterProps = {
 };
 
 const Footer = ({ setShowPopup, setShowCleanConfirm, showText }: FooterProps) => {
-    return <div className="sticky-footer" style={{ width: '100%', display: 'flex', justifyContent: 'center', gap: '8px', margin: '24px 0', position: 'sticky', bottom: 0, background: '#fff', padding: '8px 0', borderTop: '1px solid #ddd' }}>
+    return <div className="sticky-footer" style={{ width: '100%', display: 'flex', justifyContent: 'center', gap: '8px', margin: '8px 0', position: 'sticky', bottom: 0, background: '#fff', padding: '8px 0' }}>
         <button
             className="plus-icon"
             aria-label="Aggiungi nuovo task"
