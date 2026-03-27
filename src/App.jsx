@@ -193,6 +193,35 @@ function App() {
   const [workspaces, setWorkspaces] = useState(['default'])
   const [workspaceFilter, setWorkspaceFilter] = useState('')
 
+  useEffect(() => {
+    if (!ws || typeof window === 'undefined') {
+      return
+    }
+
+    const segments = window.location.pathname
+      .split('/')
+      .filter(Boolean)
+      .map((part) => decodeURIComponent(part))
+
+    let nextSegments = [...segments]
+
+    if (nextSegments.length === 0) {
+      nextSegments = [ws]
+    } else if (nextSegments.length === 1) {
+      nextSegments = [nextSegments[0], ws]
+    } else {
+      nextSegments[1] = ws
+    }
+
+    const nextPathname = `/${nextSegments.map((part) => encodeURIComponent(part)).join('/')}`
+    const nextUrl = `${nextPathname}${window.location.search}${window.location.hash}`
+    const currentUrl = `${window.location.pathname}${window.location.search}${window.location.hash}`
+
+    if (nextUrl !== currentUrl) {
+      window.history.replaceState({}, '', nextUrl)
+    }
+  }, [ws])
+
   const [showPopup, setShowPopup] = useState(false)
   const [newTaskTitle, setNewTaskTitle] = useState('')
   const [newTaskProject, setNewTaskProject] = useState()
