@@ -193,34 +193,51 @@ function App() {
   const [workspaces, setWorkspaces] = useState(['default'])
   const [workspaceFilter, setWorkspaceFilter] = useState('')
 
-  useEffect(() => {
-    if (!ws || typeof window === 'undefined') {
-      return
-    }
+  const syncRouteSegment = (index, value) => {
+    if (typeof window === 'undefined') return
 
     const segments = window.location.pathname
       .split('/')
       .filter(Boolean)
       .map((part) => decodeURIComponent(part))
 
-    let nextSegments = [...segments]
+    // Usa un array di almeno (index+1) slot, riempiendo con i valori esistenti
+    const next = Array.from({ length: Math.max(segments.length, index + 1) }, (_, i) => segments[i] ?? null)
 
-    if (nextSegments.length === 0) {
-      nextSegments = [ws]
-    } else if (nextSegments.length === 1) {
-      nextSegments = [nextSegments[0], ws]
+    if (value === null || value === undefined) {
+      next[index] = null
     } else {
-      nextSegments[1] = ws
+      next[index] = value
     }
 
-    const nextPathname = `/${nextSegments.map((part) => encodeURIComponent(part)).join('/')}`
+    // Rimuovi i null dalla fine, poi filtra i null restanti
+    while (next.length > 0 && next[next.length - 1] === null) {
+      next.pop()
+    }
+
+    const cleanSegments = next.filter((s) => s !== null)
+
+    if (cleanSegments.length === 0) {
+      return
+    }
+
+    const nextPathname = `/${cleanSegments.map((part) => encodeURIComponent(part)).join('/')}`
     const nextUrl = `${nextPathname}${window.location.search}${window.location.hash}`
     const currentUrl = `${window.location.pathname}${window.location.search}${window.location.hash}`
 
     if (nextUrl !== currentUrl) {
       window.history.replaceState({}, '', nextUrl)
     }
+  }
+
+  useEffect(() => {
+    if (!ws) return
+    syncRouteSegment(1, ws)
   }, [ws])
+
+  useEffect(() => {
+    syncRouteSegment(2, projectFilter && projectFilter !== 'ALL' ? projectFilter : null)
+  }, [projectFilter])
 
   const [showPopup, setShowPopup] = useState(false)
   const [newTaskTitle, setNewTaskTitle] = useState('')

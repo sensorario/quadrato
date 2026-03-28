@@ -5,6 +5,7 @@
 
 
 ### Features
+- feat(layout): always show project selector ([430bde1](https://github.com/sensorario/quadrato/commit/430bde1), 2026-03-28)
 - feat(LoginForm): add new component ([27a8bae](https://github.com/sensorario/quadrato/commit/27a8bae), 2026-03-13)
 - feat(login): add label to explain that email will be the username ([56420ad](https://github.com/sensorario/quadrato/commit/56420ad), 2026-02-06)
 - feat(workspaces): manage workspaces ([5ef2b1f](https://github.com/sensorario/quadrato/commit/5ef2b1f), 2026-02-02)
