@@ -1044,16 +1044,19 @@ function App() {
                     })
                       .then(() => {
                         setWs(workspaceName)
+                        setProjectFilter('ALL')
                         setWorkspaceFilter('')
                         setShowChangeWorkspace(false)
                       })
                       .catch(() => {
                         setWs(workspaceName)
+                        setProjectFilter('ALL')
                         setWorkspaceFilter('')
                         setShowChangeWorkspace(false)
                       })
                   } else {
                     setWs(workspaceName)
+                    setProjectFilter('ALL')
                     setWorkspaceFilter('')
                     setShowChangeWorkspace(false)
                   }
@@ -1072,6 +1075,7 @@ function App() {
 
                   const finalize = () => {
                     setWs(newWorkspaceName)
+                    setProjectFilter('ALL')
                     setWorkspaces((prev) =>
                       prev.includes(newWorkspaceName)
                         ? prev
