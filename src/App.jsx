@@ -232,11 +232,11 @@ function App() {
 
   useEffect(() => {
     if (!ws) return
-    syncRouteSegment(1, ws)
+    syncRouteSegment(0, ws)
   }, [ws])
 
   useEffect(() => {
-    syncRouteSegment(2, projectFilter && projectFilter !== 'ALL' ? projectFilter : null)
+    syncRouteSegment(1, projectFilter && projectFilter !== 'ALL' ? projectFilter : null)
   }, [projectFilter])
 
   const [showPopup, setShowPopup] = useState(false)

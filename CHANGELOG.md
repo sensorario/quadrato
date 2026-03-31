@@ -5,6 +5,7 @@
 
 
 ### Features
+- feat(path): reset project whenever workspace change ([20abb49](https://github.com/sensorario/quadrato/commit/20abb49), 2026-03-31)
 - feat(routing): also project must be in the path ([3a11438](https://github.com/sensorario/quadrato/commit/3a11438), 2026-03-28)
 - feat(layout): always show project selector ([430bde1](https://github.com/sensorario/quadrato/commit/430bde1), 2026-03-28)
 - feat(LoginForm): add new component ([27a8bae](https://github.com/sensorario/quadrato/commit/27a8bae), 2026-03-13)
