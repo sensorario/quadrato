@@ -99,33 +99,33 @@ export const TaskList = ({ tasks, onTaskClick, updateTaskTitle, editable, projec
                         minWidth: 0,
                         color: isExpired ? 'red' : undefined,
                         display: 'flex',
-                        gap: '6px',
                         alignItems: 'center',
+                        gap: '4px'
                     }}>
-                    {projectEditable && <svg width="18" height="18" style={{ flexShrink: 0, verticalAlign: 'middle' }}>
-                        <rect width="18" height="18" rx="3" fill={task.project && projectColors[task.project] ? projectColors[task.project] : '#ccc'} />
-                    </svg>}
 
+                    <span onClick={() => onTaskClick(task.id)} style={{ flexShrink: 0, verticalAlign: 'middle', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                        {projectEditable && <svg width="18" height="18" style={{ flexShrink: 0, verticalAlign: 'middle' }}>
+                            <rect width="18" height="18" rx="3" fill={task.project && projectColors[task.project] ? projectColors[task.project] : '#ccc'} />
+                        </svg>}
 
-                    <span onClick={() => onTaskClick(task.id)} style={{ flexShrink: 0, verticalAlign: 'middle', display: 'inline-flex', alignItems: 'center' }}>{STATUS[task.status]}</span>{!dateTimeEnabled && !projectEditable && " "}
+                        {STATUS[task.status]}
 
-                    {dateTimeEnabled && task.timestamp && (
-                        <span style={{ margin: '0', color: '#666' }}>
-                            <FormatDate date={typeof task.timestamp === 'number' ? task.timestamp : (task.timestamp || '')} />
-                        </span>
-                    )}
-                    {projectEditable && task.project && (
-                        <span style={{ margin: '0', color: '#666' }}>({task.project})</span>
-                    )}
-
-
-                    <span dangerouslySetInnerHTML={{ __html: title }} />
-                </span>
-                {editable && (
-                    <span style={{ marginLeft: '1rem', cursor: 'pointer' }} title="Modifica" onClick={e => { e.stopPropagation(); handleEditClick(task); }}>
-                        <EditIcon />
+                        {dateTimeEnabled && task.timestamp && (
+                            <span style={{ margin: '0', color: '#666' }}>
+                                <FormatDate date={typeof task.timestamp === 'number' ? task.timestamp : (task.timestamp || '')} />
+                            </span>
+                        )}
+                        {projectEditable && task.project && (
+                            <span style={{ margin: '0', color: '#666' }}>({task.project})</span>
+                        )}
                     </span>
-                )}
+
+                    <span style={{ cursor: 'pointer' }} title="Modifica" onClick={e => { e.stopPropagation(); handleEditClick(task); }}>
+                        <span dangerouslySetInnerHTML={{ __html: title }} />
+                    </span>
+
+
+                </span>
             </li>
         );
     };

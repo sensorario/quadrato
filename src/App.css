@@ -217,7 +217,7 @@ input, textarea {
     border-radius: 8px;
     box-shadow: 0 2px 8px rgba(0,0,0,0.2);
     width: 100%;
-    max-width: 450px;
+    max-width: calc(100% - 40px);
     box-sizing: border-box;
 }
 
@@ -254,9 +254,6 @@ input, textarea {
     box-sizing: border-box;
     max-width: 100%;
     }
-    .modal {
-        max-width: 95vw;
-    }
     .task-title {
         font-size: 1.2rem;
     }
@@ -267,12 +264,9 @@ input, textarea {
 
 @media (min-width: 1200px) {
     .app-container {
-    padding: 0;
-    box-sizing: border-box;
-    max-width: 960px;
-    }
-    .modal {
-        max-width: 400px;
+        padding: 0;
+        box-sizing: border-box;
+        max-width: 960px;
     }
 }
 

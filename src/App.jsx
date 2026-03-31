@@ -128,7 +128,7 @@ function App() {
       "simplanner-zen-mode": repository.getZenMode(),
       "simplanner-project-filter": repository.getProjectFilter(),
       "simplanner-project-groupable": repository.getProjectGroupable(),
-      "simplanner-config-tab": repository.getConfigTab()
+      //"simplanner-config-tab": repository.getActiveTab()
     };
 
     // Invia PUT con tutte le configurazioni
