@@ -5,6 +5,7 @@
 
 
 ### Features
+- feat(routing): also project must be in the path ([3a11438](https://github.com/sensorario/quadrato/commit/3a11438), 2026-03-28)
 - feat(layout): always show project selector ([430bde1](https://github.com/sensorario/quadrato/commit/430bde1), 2026-03-28)
 - feat(LoginForm): add new component ([27a8bae](https://github.com/sensorario/quadrato/commit/27a8bae), 2026-03-13)
 - feat(login): add label to explain that email will be the username ([56420ad](https://github.com/sensorario/quadrato/commit/56420ad), 2026-02-06)
