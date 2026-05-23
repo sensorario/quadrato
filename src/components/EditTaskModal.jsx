@@ -90,6 +90,17 @@ const EditTaskModal = ({ value, setValue, longValue, setLongValue, projectValue,
                             onChange={e => setTimestampValue(parseLocalDateTimeToUTC(e.target.value))}
                             style={{ width: '90%', marginBottom: '0.5rem', padding: '0.75rem 1rem', borderRadius: '8px', fontSize: '1rem', border: '1px solid #d1d1d1' }}
                         />
+                        <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', marginBottom: '0.5rem' }}>
+                            {[1, 2, 3, 5, 8, 13, 21].map(days => (
+                                <button key={days} type="button" style={{ fontSize: '0.85em', padding: '4px 10px', borderRadius: 6, border: '1px solid #bbb', background: '#eef2ff', cursor: 'pointer' }} onClick={e => {
+                                    e.preventDefault();
+                                    const d = new Date();
+                                    d.setUTCDate(d.getUTCDate() + days);
+                                    d.setUTCHours(8, 0, 0, 0);
+                                    setTimestampValue(d.getTime());
+                                }}>+{days}g</button>
+                            ))}
+                        </div>
                         <div style={{ display: 'flex', gap: '8px', marginBottom: '1rem' }}>
                             <button type="button" style={{ fontSize: '0.95em', padding: '6px 14px', borderRadius: 6, border: '1px solid #ccc', background: '#f5f5f5', cursor: 'pointer' }} onClick={e => {
                                 e.preventDefault();
