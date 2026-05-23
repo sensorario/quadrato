@@ -19,6 +19,7 @@ import { archiveCompletedAndSkippedTasks } from './functions/archiveCompletedAnd
 import { getConfigRepository } from './repositories'
 import UsersIcon from './components/UsersIcon'
 import LoginForm from './components/LoginForm'
+import { SGFooter } from '@sensorario/sg-components'
 
 function App() {
   // Stato per il token di autenticazione - recupera dal localStorage se presente
@@ -1250,6 +1251,7 @@ function App() {
           />
         )}
       </div>
+      <SGFooter />
     </div>
   )
 }
