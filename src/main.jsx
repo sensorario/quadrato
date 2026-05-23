@@ -5,6 +5,7 @@ import RegisterPage from './pages/RegisterPage.jsx'
 import { Router } from './Router.jsx'
 import './App.css'
 import { Modal } from './components/Modal.js'
+import '../node_modules/@sensorario/sg-components/dist/sg-components.css';
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
