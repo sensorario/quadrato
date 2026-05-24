@@ -54,6 +54,10 @@
     box-sizing: border-box;
 }
 
+.foo {
+    margin-bottom: calc(var(--unit) * 7);
+}
+
 html, body {
     margin: 0;
     padding: 0;
