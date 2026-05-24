@@ -330,6 +330,17 @@ class AjaxRepository implements Repository {
         return projects;
     }
 
+    getAllFullProjects(): { project: string }[] {
+        const tasks = this.data["simplanner-tasks"];
+        const projects: { project: string }[] = [];
+        tasks.forEach((task: any) => {
+            if (task.project && !projects.some(p => p.project === task.project)) {
+                projects.push({ project: task.project });
+            }
+        });
+        return projects;
+    }
+
     getProjectColors(): Record<string, string> {
         return this.data["simplanner-project-colors"];
     }
