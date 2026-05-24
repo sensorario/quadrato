@@ -1,19 +1,19 @@
 {
   "name": "simplanner",
   "private": true,
-  "version": "1.1-alpha",
+  "version": "1.1.2",
   "type": "module",
   "homepage": "https://sensorario.github.io/quadrato",
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
+    "build": "npm version patch --no-git-tag-version && vite build",
     "lint": "eslint .",
     "preview": "vite preview",
     "test": "jest",
     "test:watch": "jest --watch"
   },
   "dependencies": {
-    "@sensorario/sg-components": "^0.0.24",
+    "@sensorario/sg-components": "^0.0.31",
     "react": "^19.1.1",
     "react-dom": "^19.1.1"
   },
