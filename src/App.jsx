@@ -191,7 +191,8 @@ function App() {
 
 
   const [ws, setWs] = useState('default');
-  const [workspaces, setWorkspaces] = useState(['default'])
+  // workspaces ora è un array di oggetti workspace (non solo nomi)
+  const [workspaces, setWorkspaces] = useState([])
   const [workspaceFilter, setWorkspaceFilter] = useState('')
 
   const syncRouteSegment = (index, value) => {
@@ -272,12 +273,7 @@ function App() {
       .then((res) => res.json())
       .then((json) => {
         const list = Array.isArray(json?.workspaces) ? json.workspaces : []
-        const names = list
-          .map((workspace) => workspace?.name)
-          .filter((name) => typeof name === 'string' && name.trim().length > 0)
-        setWorkspaces(names.length ? names : ['default'])
-
-
+        setWorkspaces(list)
         // scorri tutti i workspace e quello che ha come chave current, a true setta ws
         const currentWorkspace = list.find(
           (workspace) => workspace?.current === true
@@ -287,7 +283,7 @@ function App() {
         }
       })
       .catch(() => {
-        setWorkspaces(['default'])
+        setWorkspaces([])
       })
   }, [token])
 
@@ -1005,10 +1001,8 @@ function App() {
 
   const ChangeWorkspaceModalView = (
     (() => {
-      const filteredWorkspaces = workspaces.filter((workspaceName) =>
-        workspaceName
-          .toLowerCase()
-          .includes(workspaceFilter.trim().toLowerCase())
+      const filteredWorkspaces = workspaces.filter((workspace) =>
+        (workspace?.name || '').toLowerCase().includes(workspaceFilter.trim().toLowerCase())
       )
 
       return (
@@ -1026,45 +1020,56 @@ function App() {
             />
           </div>
           <div className="modal-input-wrapper workspace-buttons">
-            {filteredWorkspaces.map((workspaceName) => (
-              <button
-                key={workspaceName}
-                type="button"
-                className="modal-close-btn"
-                onClick={() => {
-                  const accessToken = localStorage.getItem('simplanner-access-token')
-
-                  if (accessToken) {
-                    fetch('https://api.simonegentili.com/quadrato/workspace/current', {
-                      method: 'POST',
-                      headers: {
-                        authorization: accessToken,
-                        'Content-Type': 'application/json',
-                      },
-                      body: JSON.stringify({ name: workspaceName }),
-                    })
-                      .then(() => {
-                        setWs(workspaceName)
-                        setProjectFilter('ALL')
-                        setWorkspaceFilter('')
-                        setShowChangeWorkspace(false)
+            {filteredWorkspaces.map((workspace) => (
+              <div key={workspace.id || workspace.name} style={{ marginBottom: 8 }}>
+                <button
+                  type="button"
+                  className="modal-close-btn"
+                  style={{ marginBottom: 4 }}
+                  onClick={() => {
+                    const accessToken = localStorage.getItem('simplanner-access-token')
+                    if (accessToken) {
+                      fetch('https://api.simonegentili.com/quadrato/workspace/current', {
+                        method: 'POST',
+                        headers: {
+                          authorization: accessToken,
+                          'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ name: workspace.name }),
                       })
-                      .catch(() => {
-                        setWs(workspaceName)
-                        setProjectFilter('ALL')
-                        setWorkspaceFilter('')
-                        setShowChangeWorkspace(false)
-                      })
-                  } else {
-                    setWs(workspaceName)
-                    setProjectFilter('ALL')
-                    setWorkspaceFilter('')
-                    setShowChangeWorkspace(false)
-                  }
-                }}
-              >
-                {workspaceName}
-              </button>
+                        .then(() => {
+                          setWs(workspace.name)
+                          setProjectFilter('ALL')
+                          setWorkspaceFilter('')
+                          setShowChangeWorkspace(false)
+                        })
+                        .catch(() => {
+                          setWs(workspace.name)
+                          setProjectFilter('ALL')
+                          setWorkspaceFilter('')
+                          setShowChangeWorkspace(false)
+                        })
+                    } else {
+                      setWs(workspace.name)
+                      setProjectFilter('ALL')
+                      setWorkspaceFilter('')
+                      setShowChangeWorkspace(false)
+                    }
+                  }}
+                >
+                  {workspace.name}
+                </button>
+                <div style={{ fontSize: '12px', color: '#444', marginLeft: 8 }}>
+                  <span>Totale: {workspace.tasks_count ?? 0}</span>
+                  {workspace.tasks_by_status && (
+                    <span style={{ marginLeft: 8 }}>
+                      {Object.entries(workspace.tasks_by_status).map(([status, count]) => (
+                        <span key={status} style={{ marginRight: 8 }}>{status}: {count}</span>
+                      ))}
+                    </span>
+                  )}
+                </div>
+              </div>
             ))}
             {filteredWorkspaces.length === 0 && workspaceFilter.trim().length > 0 && (
               <button
@@ -1078,9 +1083,9 @@ function App() {
                     setWs(newWorkspaceName)
                     setProjectFilter('ALL')
                     setWorkspaces((prev) =>
-                      prev.includes(newWorkspaceName)
+                      prev.some(w => w.name === newWorkspaceName)
                         ? prev
-                        : [...prev, newWorkspaceName]
+                        : [...prev, { name: newWorkspaceName }]
                     )
                     setWorkspaceFilter('')
                     setShowChangeWorkspace(false)
