@@ -149,9 +149,9 @@ const EditTaskModal = ({ value, setValue, longValue, setLongValue, projectValue,
                             {(() => {
                                 // Use configRepository to get all unique projects
                                 const configRepository = getConfigRepository();
-                                const uniqueProjects = configRepository.getAllProjects();
+                                const uniqueProjects = configRepository.getAllFullProjects();
                                 return uniqueProjects.length > 0
-                                    ? uniqueProjects.map(project => <div style={{ padding: '4px 8px', borderBottom: '1px solid #eee', cursor: 'pointer' }} key={project} onClick={() => setProjectValue(project)}>{project}</div>)
+                                    ? uniqueProjects.map(project => <div style={{ padding: '4px 8px', borderBottom: '1px solid #eee', cursor: 'pointer' }} key={project.project} onClick={() => setProjectValue(project.project)}>{project.project}</div>)
                                     : <div style={{ color: '#888' }}>Nessun progetto trovato</div>;
                             })()}
                         </div>
