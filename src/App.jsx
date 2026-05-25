@@ -1001,7 +1001,20 @@ function App() {
 
   const ChangeWorkspaceModalView = (
     (() => {
-      const filteredWorkspaces = workspaces.filter((workspace) =>
+
+      // Ordina i workspace prima per IN_PROGRESS decrescente, poi per TODO decrescente
+      const sortedWorkspaces = [...workspaces].sort((a, b) => {
+        const aInProgress = a.tasks_by_status && a.tasks_by_status['IN_PROGRESS'] ? a.tasks_by_status['IN_PROGRESS'] : 0;
+        const bInProgress = b.tasks_by_status && b.tasks_by_status['IN_PROGRESS'] ? b.tasks_by_status['IN_PROGRESS'] : 0;
+        if (aInProgress !== bInProgress) {
+          return bInProgress - aInProgress;
+        }
+        const aTodo = a.tasks_by_status && a.tasks_by_status['TODO'] ? a.tasks_by_status['TODO'] : 0;
+        const bTodo = b.tasks_by_status && b.tasks_by_status['TODO'] ? b.tasks_by_status['TODO'] : 0;
+        return bTodo - aTodo;
+      });
+
+      const filteredWorkspaces = sortedWorkspaces.filter((workspace) =>
         (workspace?.name || '').toLowerCase().includes(workspaceFilter.trim().toLowerCase())
       )
 
@@ -1020,57 +1033,63 @@ function App() {
             />
           </div>
           <div className="modal-input-wrapper workspace-buttons">
-            {filteredWorkspaces.map((workspace) => (
-              <div key={workspace.id || workspace.name} style={{ marginBottom: 8 }}>
-                <button
-                  type="button"
-                  className="modal-close-btn"
-                  style={{ marginBottom: 4 }}
-                  onClick={() => {
-                    const accessToken = localStorage.getItem('simplanner-access-token')
-                    if (accessToken) {
-                      fetch('https://api.simonegentili.com/quadrato/workspace/current', {
-                        method: 'POST',
-                        headers: {
-                          authorization: accessToken,
-                          'Content-Type': 'application/json',
-                        },
-                        body: JSON.stringify({ name: workspace.name }),
-                      })
-                        .then(() => {
-                          setWs(workspace.name)
-                          setProjectFilter('ALL')
-                          setWorkspaceFilter('')
-                          setShowChangeWorkspace(false)
+            {filteredWorkspaces.map((workspace) => {
+              // Stati da mostrare sempre, anche se 0
+              const allStates = ['TODO', 'IN_PROGRESS', 'DONE', 'SKIPPED'];
+              const stats = allStates.map(state => ({
+                state,
+                count: workspace.tasks_by_status && workspace.tasks_by_status[state] ? workspace.tasks_by_status[state] : 0
+              }));
+              return (
+                <div key={workspace.id || workspace.name} style={{ marginBottom: 8, display: 'flex', alignItems: 'center' }}>
+                  <button
+                    type="button"
+                    className="modal-close-btn"
+                    style={{ marginBottom: 0, minWidth: 120 }}
+                    onClick={() => {
+                      const accessToken = localStorage.getItem('simplanner-access-token')
+                      if (accessToken) {
+                        fetch('https://api.simonegentili.com/quadrato/workspace/current', {
+                          method: 'POST',
+                          headers: {
+                            authorization: accessToken,
+                            'Content-Type': 'application/json',
+                          },
+                          body: JSON.stringify({ name: workspace.name }),
                         })
-                        .catch(() => {
-                          setWs(workspace.name)
-                          setProjectFilter('ALL')
-                          setWorkspaceFilter('')
-                          setShowChangeWorkspace(false)
-                        })
-                    } else {
-                      setWs(workspace.name)
-                      setProjectFilter('ALL')
-                      setWorkspaceFilter('')
-                      setShowChangeWorkspace(false)
-                    }
-                  }}
-                >
-                  {workspace.name}
-                </button>
-                <div style={{ fontSize: '12px', color: '#444', marginLeft: 8 }}>
-                  <span>Totale: {workspace.tasks_count ?? 0}</span>
-                  {workspace.tasks_by_status && (
-                    <span style={{ marginLeft: 8 }}>
-                      {Object.entries(workspace.tasks_by_status).map(([status, count]) => (
-                        <span key={status} style={{ marginRight: 8 }}>{status}: {count}</span>
-                      ))}
-                    </span>
-                  )}
+                          .then(() => {
+                            setWs(workspace.name)
+                            setProjectFilter('ALL')
+                            setWorkspaceFilter('')
+                            setShowChangeWorkspace(false)
+                          })
+                          .catch(() => {
+                            setWs(workspace.name)
+                            setProjectFilter('ALL')
+                            setWorkspaceFilter('')
+                            setShowChangeWorkspace(false)
+                          })
+                      } else {
+                        setWs(workspace.name)
+                        setProjectFilter('ALL')
+                        setWorkspaceFilter('')
+                        setShowChangeWorkspace(false)
+                      }
+                    }}
+                  >
+                    {workspace.name} ({workspace.tasks_count ?? 0})
+                  </button>
+                  <div style={{ fontSize: '13px', color: '#444', marginLeft: 16, display: 'flex', alignItems: 'flex-end', gap: 16 }}>
+                    {stats.map(({ state, count }) => (
+                      <span key={state} style={{ minWidth: 60, textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                        <span style={{ fontSize: '11px', color: '#888', marginBottom: 2 }}>{state}</span>
+                        <span style={{ fontWeight: 'bold', fontSize: '15px' }}>{count}</span>
+                      </span>
+                    ))}
+                  </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
             {filteredWorkspaces.length === 0 && workspaceFilter.trim().length > 0 && (
               <button
                 type="button"
