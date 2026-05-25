@@ -5,6 +5,7 @@
 
 
 ### Features
+- feat(suicide): keep just green tests ([7f22fe1](https://github.com/sensorario/quadrato/commit/7f22fe1), 2026-05-25)
 - feat(vendor): update components ([94bb043](https://github.com/sensorario/quadrato/commit/94bb043), 2026-05-24)
 - feat(footer): add footer ([52b5d91](https://github.com/sensorario/quadrato/commit/52b5d91), 2026-05-23)
 - feat(path): reset project whenever workspace change ([20abb49](https://github.com/sensorario/quadrato/commit/20abb49), 2026-03-31)
