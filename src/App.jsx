@@ -20,6 +20,7 @@ import { getConfigRepository } from './repositories'
 import UsersIcon from './components/UsersIcon'
 import LoginForm from './components/LoginForm'
 import { SGFooter } from '@sensorario/sg-components'
+import ExpiredTasks from './components/ExpiredTasks'
 
 function App() {
   // Stato per il token di autenticazione - recupera dal localStorage se presente
@@ -1245,6 +1246,8 @@ function App() {
           </div>
           {projectGroupable && DefinedTaskProject}
         </div>
+
+        <ExpiredTasks />
 
         <TaskList
           tasks={visibleTasks}
