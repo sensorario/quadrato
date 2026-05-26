@@ -41,7 +41,7 @@ const ExpiredTasks = () => {
                 {expiredTasks.map((task, idx) => (
                     <li key={task.id || task.uuid || idx}>
                         <span
-                            style={{ color: 'blue', textDecoration: 'underline', cursor: 'pointer' }}
+                            style={{ cursor: 'pointer' }}
                             onClick={() => {
                                 window.location.href = `https://quadrato.simonegentili.com/${encodeURIComponent(task.workspace)}`;
                             }}
