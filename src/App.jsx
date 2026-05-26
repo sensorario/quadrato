@@ -1034,8 +1034,8 @@ function App() {
           </div>
           <div className="modal-input-wrapper workspace-buttons">
             {filteredWorkspaces.map((workspace) => {
-              // Stati da mostrare sempre, anche se 0
-              const allStates = ['TODO', 'IN_PROGRESS', 'DONE', 'SKIPPED'];
+              // Stati da mostrare sempre, anche se 0, inclusi ARCHIVED
+              const allStates = ['TODO', 'IN_PROGRESS', 'DONE', 'SKIPPED', 'ARCHIVED'];
               const stats = allStates.map(state => ({
                 state,
                 count: workspace.tasks_by_status && workspace.tasks_by_status[state] ? workspace.tasks_by_status[state] : 0
