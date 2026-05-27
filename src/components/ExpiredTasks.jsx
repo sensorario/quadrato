@@ -46,7 +46,7 @@ const ExpiredTasks = () => {
 
     if (loading) return <div>Caricamento task scaduti...</div>;
     if (error) return <div>{error}</div>;
-    if (!expiredTasks || expiredTasks.length === 0) return <div>Nessun task scaduto</div>;
+    if (!expiredTasks || expiredTasks.length === 0) return <><div>Nessun task scaduto</div><div>&nbsp;</div></>;
 
     return (
         <div>

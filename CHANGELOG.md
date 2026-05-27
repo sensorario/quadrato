@@ -5,6 +5,7 @@
 
 
 ### Features
+- feat(tasks): show expired on top ([0517481](https://github.com/sensorario/quadrato/commit/0517481), 2026-05-27)
 - feat(workspaces): show statistics in modal ([f169088](https://github.com/sensorario/quadrato/commit/f169088), 2026-05-26)
 - feat(workspaces): display statistics ([228d5ec](https://github.com/sensorario/quadrato/commit/228d5ec), 2026-05-25)
 - feat(suicide): keep just green tests ([7f22fe1](https://github.com/sensorario/quadrato/commit/7f22fe1), 2026-05-25)
