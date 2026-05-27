@@ -536,6 +536,7 @@ function App() {
     setTasks(updatedTasks)
     getConfigRepository().setTasks(updatedTasks)
     setShowCleanConfirm(false)
+    window.location.reload();
   }
 
   const unarchivedTasks = tasks
