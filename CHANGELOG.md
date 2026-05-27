@@ -5,6 +5,7 @@
 
 
 ### Features
+- feat(tasks): reload page after tasks are archived ([e777f73](https://github.com/sensorario/quadrato/commit/e777f73), 2026-05-27)
 - feat(tasks): show expired on top ([3e3fdfb](https://github.com/sensorario/quadrato/commit/3e3fdfb), 2026-05-27)
 - feat(tasks): show expired on top ([0517481](https://github.com/sensorario/quadrato/commit/0517481), 2026-05-27)
 - feat(workspaces): show statistics in modal ([f169088](https://github.com/sensorario/quadrato/commit/f169088), 2026-05-26)
