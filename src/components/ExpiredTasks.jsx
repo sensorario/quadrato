@@ -1,7 +1,5 @@
+
 import React, { useEffect, useState } from 'react';
-import { getStatusIcons } from '../utils';
-
-
 
 const ExpiredTasks = () => {
     const [expiredTasks, setExpiredTasks] = useState([]);
@@ -24,11 +22,27 @@ const ExpiredTasks = () => {
                 }
                 setLoading(false);
             })
-            .catch(err => {
+            .catch(() => {
                 setError('Errore nella fetch /quadrato/workspaces');
                 setLoading(false);
             });
     }, []);
+
+    const handleWorkspaceClick = (workspaceName) => {
+        const token = localStorage.getItem('simplanner-access-token');
+        if (!token) return;
+        fetch('https://api.simonegentili.com/quadrato/workspace/current', {
+            method: 'POST',
+            headers: {
+                authorization: token,
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ name: workspaceName }),
+        })
+            .then(() => {
+                window.location.reload();
+            });
+    };
 
     if (loading) return <div>Caricamento task scaduti...</div>;
     if (error) return <div>{error}</div>;
@@ -42,9 +56,7 @@ const ExpiredTasks = () => {
                     <li key={task.id || task.uuid || idx}>
                         <span
                             style={{ cursor: 'pointer' }}
-                            onClick={() => {
-                                window.location.href = `https://quadrato.simonegentili.com/${encodeURIComponent(task.workspace)}`;
-                            }}
+                            onClick={() => handleWorkspaceClick(task.workspace)}
                         >
                             {task.workspace}
                         </span>
@@ -53,6 +65,7 @@ const ExpiredTasks = () => {
                     </li>
                 ))}
             </ul>
+            <div>&nbsp;</div>
         </div>
     );
 }
