@@ -25,7 +25,7 @@ import ExpiredTasks from './components/ExpiredTasks'
 function App() {
   // Stato per il token di autenticazione - recupera dal localStorage se presente
   const [token, setToken] = useState(() => {
-    return localStorage.getItem('simplanner-access-token')
+    return localStorage.getItem('simonegentili.com-access-token')
   })
 
   // Stato per gestire la cancellazione del login
@@ -112,7 +112,7 @@ function App() {
 
   // Funzione per sincronizzare le configurazioni con l'API
   const syncConfigToAPI = () => {
-    const token = localStorage.getItem('simplanner-access-token');
+    const token = localStorage.getItem('simonegentili.com-access-token');
     if (!token) {
       return; // Non sincronizzare se non c'è token
     }
@@ -258,7 +258,7 @@ function App() {
   }, [zenMode])
 
   useEffect(() => {
-    const accessToken = localStorage.getItem('simplanner-access-token')
+    const accessToken = localStorage.getItem('simonegentili.com-access-token')
     if (!accessToken) {
       setWorkspaces(['default'])
       return
@@ -426,7 +426,7 @@ function App() {
   }, [])
 
   useEffect(() => {
-    const accessToken = localStorage.getItem('simplanner-access-token')
+    const accessToken = localStorage.getItem('simonegentili.com-access-token')
     if (!accessToken) return
 
     // Ricarica i dati quando cambia il workspace
@@ -1049,7 +1049,7 @@ function App() {
                     className="modal-close-btn"
                     style={{ marginBottom: 0, minWidth: 120 }}
                     onClick={() => {
-                      const accessToken = localStorage.getItem('simplanner-access-token')
+                      const accessToken = localStorage.getItem('simonegentili.com-access-token')
                       if (accessToken) {
                         fetch('https://api.simonegentili.com/quadrato/workspace/current', {
                           method: 'POST',
@@ -1098,7 +1098,7 @@ function App() {
                 className="modal-close-btn"
                 onClick={() => {
                   const newWorkspaceName = workspaceFilter.trim()
-                  const accessToken = localStorage.getItem('simplanner-access-token')
+                  const accessToken = localStorage.getItem('simonegentili.com-access-token')
 
                   const finalize = () => {
                     setWs(newWorkspaceName)
@@ -1152,7 +1152,7 @@ function App() {
   const addMemberHandler = () => {
     const emailInput = document.querySelector('.modal-input[type="email"]')
     const email = emailInput ? emailInput.value.trim() : ''
-    const accessToken = localStorage.getItem('simplanner-access-token')
+    const accessToken = localStorage.getItem('simonegentili.com-access-token')
     if (!email || !accessToken) {
       return
     }

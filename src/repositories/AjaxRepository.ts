@@ -56,7 +56,7 @@ class AjaxRepository implements Repository {
 
         this.lastSyncedHash = this.calculateHash();
         // Recupera il token dal localStorage se presente
-        const savedToken = localStorage.getItem('simplanner-access-token');
+        const savedToken = localStorage.getItem('simonegentili.com-access-token');
         if (savedToken) {
             this.accessToken = savedToken;
             this.fetchData();
@@ -225,11 +225,13 @@ class AjaxRepository implements Repository {
 
     setAccessToken(token: string | null): void {
         this.accessToken = token;
-        // Salva il token nel localStorage
+        // Salva il token nel localStorage e come cookie di dominio
         if (token) {
-            localStorage.setItem('simplanner-access-token', token);
+            localStorage.setItem('simonegentili.com-access-token', token);
+            document.cookie = `simonegentili.com-access-token=${token}; path=/; domain=.simonegentili.com; secure; samesite=strict`;
         } else {
-            localStorage.removeItem('simplanner-access-token');
+            localStorage.removeItem('simonegentili.com-access-token');
+            document.cookie = 'simonegentili.com-access-token=; path=/; domain=.simonegentili.com; expires=Thu, 01 Jan 1970 00:00:00 GMT; secure; samesite=strict';
         }
         // Ricarica i dati con il nuovo token
         this.fetchData();
@@ -408,7 +410,7 @@ class AjaxRepository implements Repository {
     logout(): void {
         console.log("Logging out...");
         this.accessToken = null;
-        localStorage.removeItem('simplanner-access-token');
+        localStorage.removeItem('simonegentili.com-access-token');
 
         // Pulisci tutti i dati locali
         Object.keys(localStorage).forEach(key => {
