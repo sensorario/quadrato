@@ -29,7 +29,7 @@ const ExpiredTasks = () => {
     }, []);
 
     const handleWorkspaceClick = (workspaceName) => {
-        const token = localStorage.getItem('simplanner-access-token');
+        const token = localStorage.getItem('simonegentili.com-access-token');
         if (!token) return;
         fetch('https://api.simonegentili.com/quadrato/workspace/current', {
             method: 'POST',
