@@ -6,32 +6,6 @@ const ExpiredTasks = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const token = localStorage.getItem('simonegentili.com-access-token');
-        
-    useEffect(() => {
-        fetch('https://api.simonegentili.com/quadrato/workspaces', {
-            method: 'GET',
-            headers: {
-            authorization: token,
-            'Content-Type': 'application/json',
-        },
-    })
-        .then(res => res.json())
-        .then(json => {
-            console.log('check expired tasks')
-            console.log({ArrayIsArray: Array.isArray(json.expired_tasks)})
-            console.log({json})
-            if (Array.isArray(json.expired_tasks)) {
-                setExpiredTasks(json.expired_tasks);
-            } else {
-                setExpiredTasks([]);
-            }
-            setLoading(false);
-        })
-        .catch(() => {
-            setError('Errore nella fetch /quadrato/workspaces');
-            setLoading(false);
-        });
-    }, []);
 
     const handleWorkspaceClick = (workspaceName) => {
         const token = localStorage.getItem('simonegentili.com-access-token');
@@ -49,8 +23,32 @@ const ExpiredTasks = () => {
             });
     };
 
-    console.log(expiredTasks);
-    
+    if (token) {
+        fetch('https://api.simonegentili.com/quadrato/workspaces', {
+            method: 'GET',
+            headers: {
+                authorization: token,
+                'Content-Type': 'application/json',
+            },
+        })
+            .then(res => res.json())
+            .then(json => {
+                console.log('check expired tasks')
+                console.log({ ArrayIsArray: Array.isArray(json.expired_tasks) })
+                console.log({ json })
+                if (Array.isArray(json.expired_tasks)) {
+                    setExpiredTasks(json.expired_tasks);
+                } else {
+                    setExpiredTasks([]);
+                }
+                setLoading(false);
+            })
+            .catch(() => {
+                document.location.reload();
+                setError('Errore nella fetch /quadrato/workspaces');
+                setLoading(false);
+            });
+    }
 
     if (loading) return <div>Caricamento task scaduti...</div>;
     if (error) return <div>{error}</div>;

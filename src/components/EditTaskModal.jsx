@@ -4,6 +4,7 @@ import HelpIcon from "./HelpIcon";
 import TabbedContent from "./TabbedContent";
 import { Footer } from "./Footer/index";
 import { getConfigRepository } from "../repositories";
+import PlayIcon from "./PlayIcon";
 
 const formatDateTimeLocal = (value) => {
     if (!value) return '';
@@ -32,6 +33,8 @@ const EditTaskModal = ({ value, setValue, longValue, setLongValue, projectValue,
     }, [onClose]);
 
     return <Modal title="Modifica task" icon={<HelpIcon />} onClick={onClose} >
+        <PlayIcon /> inizia
+        <div style={{ marginBottom: '1rem', fontSize: '0.9rem', color: '#555' }}>&nbsp;</div>
         <TabbedContent panels={[
             {
                 title: 'Cosa', content: <>
