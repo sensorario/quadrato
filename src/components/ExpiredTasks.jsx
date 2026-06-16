@@ -23,31 +23,33 @@ const ExpiredTasks = () => {
             });
     };
 
-    if (token) {
-        fetch('https://api.simonegentili.com/quadrato/workspaces', {
-            method: 'GET',
-            headers: {
-                authorization: token,
-                'Content-Type': 'application/json',
-            },
-        })
-            .then(res => res.json())
-            .then(json => {
-                console.log('check expired tasks')
-                console.log({ ArrayIsArray: Array.isArray(json.expired_tasks) })
-                console.log({ json })
-                if (Array.isArray(json.expired_tasks)) {
-                    setExpiredTasks(json.expired_tasks);
-                } else {
-                    setExpiredTasks([]);
-                }
-                setLoading(false);
+    if (token && loading) {
+        setTimeout(() => {
+            fetch('https://api.simonegentili.com/quadrato/workspaces', {
+                method: 'GET',
+                headers: {
+                    authorization: token,
+                    'Content-Type': 'application/json',
+                },
             })
-            .catch(() => {
-                document.location.reload();
-                setError('Errore nella fetch /quadrato/workspaces');
-                setLoading(false);
-            });
+                .then(res => res.json())
+                .then(json => {
+                    console.log('check expired tasks')
+                    console.log({ ArrayIsArray: Array.isArray(json.expired_tasks) })
+                    console.log({ json })
+                    if (Array.isArray(json.expired_tasks)) {
+                        setExpiredTasks(json.expired_tasks);
+                    } else {
+                        setExpiredTasks([]);
+                    }
+                    setLoading(false);
+                })
+                .catch(() => {
+                    document.location.reload();
+                    setError('Errore nella fetch /quadrato/workspaces');
+                    setLoading(false);
+                });
+        }, 1000);
     }
 
     if (loading) return <div>Caricamento task scaduti...</div>;
