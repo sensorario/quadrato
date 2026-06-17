@@ -1,0 +1,444 @@
+openapi: 3.0.3
+info:
+  title: Quadrato / Simplanner API
+  description: REST API consumed by the Simplanner frontend application for task management, workspace management, and user authentication.
+  version: 1.0.0
+  contact:
+    email: simone.gentili@performer.it
+
+servers:
+  - url: https://api.simonegentili.com/quadrato
+    description: Production server
+
+security:
+  - tokenAuth: []
+
+components:
+  securitySchemes:
+    tokenAuth:
+      type: apiKey
+      in: header
+      name: Authorization
+      description: Token returned by the /authenticate endpoint
+
+  schemas:
+    Periodicity:
+      type: object
+      properties:
+        number:
+          type: string
+          example: "3"
+        unit:
+          type: string
+          enum: [minuti, giorni, settimane, mesi, anni]
+      required:
+        - number
+        - unit
+
+    Task:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        title:
+          type: string
+          example: "Fix login bug"
+        longDescription:
+          type: string
+          example: "Detailed description of the task"
+        project:
+          type: string
+          example: "backend"
+        timestamp:
+          oneOf:
+            - type: string
+            - type: integer
+          example: 1718000000
+        status:
+          type: integer
+          description: "0=TODO, 1=IN_PROGRESS, 2=DONE, 3=SKIPPED"
+          enum: [0, 1, 2, 3]
+          example: 0
+        archived:
+          type: boolean
+          example: false
+        periodicity:
+          $ref: '#/components/schemas/Periodicity'
+      required:
+        - id
+        - title
+        - status
+
+    QuadratoData:
+      type: object
+      properties:
+        simplanner-tasks:
+          type: array
+          items:
+            $ref: '#/components/schemas/Task'
+        simplanner-project-colors:
+          type: object
+          additionalProperties:
+            type: string
+          example:
+            backend: "#ff5733"
+            frontend: "#33c1ff"
+        simplanner-show-text:
+          type: boolean
+        simplanner-icon-theme:
+          type: string
+        simplanner-show-expired:
+          type: boolean
+        simplanner-dateTime-enabled:
+          type: boolean
+        simplanner-zen-mode:
+          type: boolean
+        simplanner-project-filter:
+          type: string
+          nullable: true
+        simplanner-project-groupable:
+          type: boolean
+        simplanner-config-tab:
+          type: string
+
+    Workspace:
+      type: object
+      properties:
+        name:
+          type: string
+          example: "my-workspace"
+        current:
+          type: boolean
+          example: true
+
+    ErrorResponse:
+      type: object
+      properties:
+        message:
+          type: string
+
+paths:
+  /authenticate:
+    post:
+      tags:
+        - Authentication
+      summary: Login
+      description: Authenticate with username and password, returns a session token.
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                  example: "simone"
+                password:
+                  type: string
+                  format: password
+                  example: "secret"
+              required:
+                - username
+                - password
+      responses:
+        "200":
+          description: Authentication successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  token:
+                    type: string
+                  access_token:
+                    type: string
+        "401":
+          description: Invalid credentials
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /register:
+    post:
+      tags:
+        - Authentication
+      summary: Register
+      description: Register a new user by email address.
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  format: email
+                  example: "user@example.com"
+              required:
+                - email
+      responses:
+        "200":
+          description: Registration successful
+        "405":
+          description: Registration failed or method not allowed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /data:
+    get:
+      tags:
+        - Data
+      summary: Fetch all user data
+      description: Returns all tasks, project colors, and configuration settings for the authenticated user.
+      responses:
+        "200":
+          description: User data retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/QuadratoData'
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    put:
+      tags:
+        - Data
+      summary: Sync all user data
+      description: Replaces all user data (tasks + configuration) on the server.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/QuadratoData'
+      responses:
+        "200":
+          description: Data synced successfully
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /config:
+    put:
+      tags:
+        - Data
+      summary: Sync configuration
+      description: Replaces configuration settings only (no tasks).
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              description: Configuration key-value pairs (same keys as QuadratoData excluding tasks)
+      responses:
+        "200":
+          description: Configuration synced successfully
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /task:
+    post:
+      tags:
+        - Tasks
+      summary: Create a task
+      description: Creates a new task for the authenticated user.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Task'
+      responses:
+        "200":
+          description: Task created successfully
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /task/{taskId}:
+    put:
+      tags:
+        - Tasks
+      summary: Update a task
+      description: Updates an existing task by its ID. Can be a full or partial update.
+      parameters:
+        - name: taskId
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: The ID of the task to update
+          example: 42
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Task'
+      responses:
+        "200":
+          description: Task updated successfully
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "404":
+          description: Task not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /workspaces:
+    get:
+      tags:
+        - Workspaces
+      summary: List workspaces
+      description: Returns all workspaces for the authenticated user, including which one is currently active.
+      responses:
+        "200":
+          description: Workspaces retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  workspaces:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Workspace'
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    post:
+      tags:
+        - Workspaces
+      summary: Create a workspace
+      description: Creates a new workspace.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  example: "my-new-workspace"
+              required:
+                - name
+      responses:
+        "200":
+          description: Workspace created successfully
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /workspace/current:
+    post:
+      tags:
+        - Workspaces
+      summary: Set current workspace
+      description: Sets the currently active workspace for the authenticated user.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  example: "my-workspace"
+              required:
+                - name
+      responses:
+        "200":
+          description: Current workspace updated successfully
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /workspace/members:
+    post:
+      tags:
+        - Workspaces
+      summary: Add a workspace member
+      description: Adds a user (by email) to an existing workspace.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                workspace:
+                  type: string
+                  example: "my-workspace"
+                email:
+                  type: string
+                  format: email
+                  example: "colleague@example.com"
+              required:
+                - workspace
+                - email
+      responses:
+        "200":
+          description: Member added successfully
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "404":
+          description: Workspace not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+tags:
+  - name: Authentication
+    description: User registration and login
+  - name: Data
+    description: Full data and configuration sync
+  - name: Tasks
+    description: Individual task creation and updates
+  - name: Workspaces
+    description: Workspace management and membership
