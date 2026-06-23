@@ -22,6 +22,15 @@ const parseLocalDateTimeToUTC = (dateTimeString) => {
 };
 
 const EditTaskModal = ({ value, setValue, longValue, setLongValue, projectValue, setProjectValue, timestampValue, setTimestampValue, periodicityValue, setPeriodicityValue, onClose, onSave, projectEditable, dateTimeEnabled }) => {
+    const textareaRef = React.useRef(null);
+
+    React.useEffect(() => {
+        if (textareaRef.current) {
+            textareaRef.current.style.height = 'auto';
+            textareaRef.current.style.height = textareaRef.current.scrollHeight + 'px';
+        }
+    }, []);
+
     React.useEffect(() => {
         const handleEsc = (e) => {
             if (e.key === "Escape") {
@@ -52,9 +61,14 @@ const EditTaskModal = ({ value, setValue, longValue, setLongValue, projectValue,
                     />
                     <label style={{ fontWeight: 500, marginBottom: 4, display: 'block' }}>Descrizione lunga</label>
                     <textarea
+                        ref={textareaRef}
                         value={longValue}
-                        onChange={e => setLongValue(e.target.value)}
-                        style={{ width: '90%', minHeight: '60px', marginBottom: '1rem', padding: '0.75rem 1rem', borderRadius: '8px', fontSize: '1rem', border: '1px solid #d1d1d1', resize: 'vertical' }}
+                        onChange={e => {
+                            setLongValue(e.target.value);
+                            e.target.style.height = 'auto';
+                            e.target.style.height = e.target.scrollHeight + 'px';
+                        }}
+                        style={{ width: '100%', boxSizing: 'border-box', marginBottom: '1rem', padding: '0.75rem 1rem', borderRadius: '8px', fontSize: '1rem', border: '1px solid #d1d1d1', resize: 'none', overflow: 'hidden' }}
                     />
                 </>
             },
