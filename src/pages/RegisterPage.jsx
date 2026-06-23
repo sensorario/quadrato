@@ -1,14 +1,12 @@
 import React, { useState } from 'react';
 import { Link } from '../Router';
 import { Modal } from '../components/Modal';
-import { useVersionNumber, VersionNumber } from '../components/VersionNumber';
 
 export const RegisterPage = () => {
     const [email, setEmail] = useState('');
     const [showModal, setShowModal] = useState(false);
     const [modalMessage, setModalMessage] = useState('');
     const [isLoading, setIsLoading] = useState(false);
-    const version = useVersionNumber();
 
     const handleSubmit = async (e) => {
         e.preventDefault();
