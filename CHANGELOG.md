@@ -5,6 +5,7 @@
 
 
 ### Features
+- feat(swagger): add swagger for app integrations ([4468ede](https://github.com/sensorario/quadrato/commit/4468ede), 2026-06-17)
 - feat(auth): new local storage ([91c042e](https://github.com/sensorario/quadrato/commit/91c042e), 2026-05-29)
 - feat(tasks): reload page after tasks are archived ([e777f73](https://github.com/sensorario/quadrato/commit/e777f73), 2026-05-27)
 - feat(tasks): show expired on top ([3e3fdfb](https://github.com/sensorario/quadrato/commit/3e3fdfb), 2026-05-27)
@@ -29,6 +30,7 @@
 
 
 ### Fixes
+- fix(expired): load in right moment ([26c7c6d](https://github.com/sensorario/quadrato/commit/26c7c6d), 2026-06-16)
 - fix(expired): looad expired after token is provided ([392e33c](https://github.com/sensorario/quadrato/commit/392e33c), 2026-06-16)
 - fix(date): fix format ([2d8efe5](https://github.com/sensorario/quadrato/commit/2d8efe5), 2026-03-11)
 - fix(workspace): is possibile adding member to default workspace ([3607a06](https://github.com/sensorario/quadrato/commit/3607a06), 2026-02-11)
