@@ -5,6 +5,7 @@
 
 
 ### Features
+- feat(TaskDetailPage): show task detail ([63ab50e](https://github.com/sensorario/quadrato/commit/63ab50e), 2026-07-02)
 - feat(swagger): add swagger for app integrations ([4468ede](https://github.com/sensorario/quadrato/commit/4468ede), 2026-06-17)
 - feat(auth): new local storage ([91c042e](https://github.com/sensorario/quadrato/commit/91c042e), 2026-05-29)
 - feat(tasks): reload page after tasks are archived ([e777f73](https://github.com/sensorario/quadrato/commit/e777f73), 2026-05-27)
