@@ -2,6 +2,7 @@ import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import App from './App.jsx'
 import RegisterPage from './pages/RegisterPage.jsx'
+import TaskDetailPage from './pages/TaskDetailPage.tsx'
 import { Router } from './Router.jsx'
 import './App.css'
 import { Modal } from './components/Modal.js'
@@ -13,6 +14,11 @@ createRoot(document.getElementById('root')).render(
       {(currentPath) => {
         if (currentPath === '/register') {
           return <RegisterPage />
+        }
+
+        const taskDetailMatch = currentPath.match(/^\/task\/([\w-]+)$/)
+        if (taskDetailMatch) {
+          return <TaskDetailPage taskId={taskDetailMatch[1]} />
         }
 
         if (currentPath === '/registered') {
