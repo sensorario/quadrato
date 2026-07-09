@@ -5,6 +5,8 @@
 
 
 ### Features
+- feat: update React and React DOM dependencies to 19.2.7 ([04cfc3f](https://github.com/sensorario/quadrato/commit/04cfc3f), 2026-07-09)
+- feat(docs): add copilot analisys ([fc17b85](https://github.com/sensorario/quadrato/commit/fc17b85), 2026-07-03)
 - feat(TaskDetailPage): show task detail ([63ab50e](https://github.com/sensorario/quadrato/commit/63ab50e), 2026-07-02)
 - feat(swagger): add swagger for app integrations ([4468ede](https://github.com/sensorario/quadrato/commit/4468ede), 2026-06-17)
 - feat(auth): new local storage ([91c042e](https://github.com/sensorario/quadrato/commit/91c042e), 2026-05-29)

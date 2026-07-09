@@ -1,7 +1,7 @@
 {
   "name": "simplanner",
   "private": true,
-  "version": "1.1.48",
+  "version": "1.1.55",
   "type": "module",
   "homepage": "https://sensorario.github.io/quadrato",
   "scripts": {
@@ -14,8 +14,8 @@
   },
   "dependencies": {
     "@sensorario/sg-components": "^0.0.47",
-    "react": "^19.2.7", // Updated to the latest version
-    "react-dom": "^19.2.7" // Updated to the latest version
+    "react": "^19.2.7",
+    "react-dom": "^19.2.7"
   },
   "devDependencies": {
     "@babel/preset-env": "^7.29.7",
@@ -33,7 +33,7 @@
     "globals": "^16.5.0",
     "jest": "^29.7.0",
     "@sensorario/sg-components": "^0.0.57",
-    "react": "^19.2.7", // Updated to the latest version
-    "react-dom": "^19.2.7" // Updated to the latest version
+    "react": "^19.2.7",
+    "react-dom": "^19.2.7"
   }
 }
