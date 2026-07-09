@@ -25,3 +25,6 @@ dist-ssr
 
 # tools
 gocommit.conf.json
+
+# AI
+.aider.*

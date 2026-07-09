@@ -60,7 +60,6 @@ const LoginForm = ({
                 Registrati
             </Link>
         </div>
-        <h2><VersionNumber /></h2>
     </div>
 }
 
