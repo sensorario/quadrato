@@ -33,6 +33,7 @@
 
 
 ### Fixes
+- fix(tests): all test are failing ([8e707d2](https://github.com/sensorario/quadrato/commit/8e707d2), 2026-07-10)
 - fix(expired): load in right moment ([26c7c6d](https://github.com/sensorario/quadrato/commit/26c7c6d), 2026-06-16)
 - fix(expired): looad expired after token is provided ([392e33c](https://github.com/sensorario/quadrato/commit/392e33c), 2026-06-16)
 - fix(date): fix format ([2d8efe5](https://github.com/sensorario/quadrato/commit/2d8efe5), 2026-03-11)
