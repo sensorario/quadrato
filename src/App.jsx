@@ -19,7 +19,7 @@ import { archiveCompletedAndSkippedTasks } from './functions/archiveCompletedAnd
 import { getConfigRepository } from './repositories'
 import UsersIcon from './components/UsersIcon'
 import LoginForm from './components/LoginForm'
-import { SGFooter } from '@sensorario/sg-components'
+import { SGFooter, SetPasswordModal } from '@sensorario/sg-components'
 import ExpiredTasks from './components/ExpiredTasks'
 
 function App() {
@@ -30,6 +30,9 @@ function App() {
 
   // Stato per gestire la cancellazione del login
   const [loginCancelled, setLoginCancelled] = useState(false)
+
+  // Stato per mostrare il modale di impostazione nuova password
+  const [showSetPasswordModal, setShowSetPasswordModal] = useState(false)
 
   // Registra callback per gestire 401 Unauthorized e autenticazione
   useEffect(() => {
@@ -46,8 +49,26 @@ function App() {
   const handleLogin = (username, password) => {
     getConfigRepository()
       .authenticate(username, password)
+      .then(({ isTemporaryPassword }) => {
+        if (isTemporaryPassword) {
+          setShowSetPasswordModal(true)
+        }
+      })
       .catch((err) => {
         alert('Login fallito: ' + err.message)
+      })
+  }
+
+  // Handler per l'impostazione della nuova password
+  const handleSetNewPassword = (newPassword) => {
+    getConfigRepository()
+      .updatePassword(newPassword)
+      .then(() => {
+        getConfigRepository().logout()
+        window.location.href = '/'
+      })
+      .catch((err) => {
+        alert('Aggiornamento password fallito: ' + err.message)
       })
   }
 
@@ -1265,10 +1286,17 @@ function App() {
         {showCleanConfirm && ConfirmModalView}
         {showChangeWorkspace && ChangeWorkspaceModalView}
         {showWorkspaceMembers && WorkspaceMembersModalView}
-        {token === null && !loginCancelled && (
+        {token === null && !loginCancelled && !showSetPasswordModal && (
           <LoginModal
             onClose={handleCancelLogin}
             onLogin={handleLogin}
+          />
+        )}
+        {showSetPasswordModal && (
+          <SetPasswordModal
+            open
+            onClose={() => setShowSetPasswordModal(false)}
+            onSubmit={handleSetNewPassword}
           />
         )}
         {token === null && loginCancelled && (

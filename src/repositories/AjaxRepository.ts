@@ -244,7 +244,7 @@ class AjaxRepository implements Repository {
     /**
      * Effettua l'autenticazione con username e password
      */
-    authenticate(username: string, password: string): Promise<void> {
+    authenticate(username: string, password: string): Promise<{ isTemporaryPassword: boolean }> {
         return fetch('https://api.simonegentili.com/quadrato/authenticate', {
             method: 'POST',
             headers: {
@@ -266,10 +266,37 @@ class AjaxRepository implements Repository {
                     if (this.onAuthenticatedCallback) {
                         this.onAuthenticatedCallback(token);
                     }
+                    return { isTemporaryPassword: Boolean(data.is_temporary_password) };
                 } else {
                     throw new Error('No token in response');
                 }
             });
+    }
+
+    /**
+     * Imposta una nuova password per l'utente autenticato
+     */
+    updatePassword(newPassword: string): Promise<void> {
+        const headers: HeadersInit = {
+            'Content-Type': 'application/json',
+        };
+
+        if (this.accessToken) {
+            headers['Authorization'] = `${this.accessToken}`;
+        }
+
+        return fetch('https://api.simonegentili.com/quadrato/update-password', {
+            method: 'POST',
+            headers: headers,
+            body: JSON.stringify({ newPassword })
+        })
+            .then(res => {
+                if (!res.ok) {
+                    throw new Error(`Update password failed: ${res.status}`);
+                }
+                return res.json();
+            })
+            .then(() => undefined);
     }
 
     // ========== UI Settings ==========
