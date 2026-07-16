@@ -5,6 +5,7 @@
 
 
 ### Features
+- feat(deploy): add ssh deployment ([e3f4abe](https://github.com/sensorario/quadrato/commit/e3f4abe), 2026-07-16)
 - feat(auth): prompt for a new password on temporary-password login ([8478637](https://github.com/sensorario/quadrato/commit/8478637), 2026-07-16)
 - feat: update React and React DOM dependencies to 19.2.7 ([04cfc3f](https://github.com/sensorario/quadrato/commit/04cfc3f), 2026-07-09)
 - feat(docs): add copilot analisys ([fc17b85](https://github.com/sensorario/quadrato/commit/fc17b85), 2026-07-03)
