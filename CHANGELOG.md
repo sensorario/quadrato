@@ -5,6 +5,7 @@
 
 
 ### Features
+- feat(auth): prompt for a new password on temporary-password login ([8478637](https://github.com/sensorario/quadrato/commit/8478637), 2026-07-16)
 - feat: update React and React DOM dependencies to 19.2.7 ([04cfc3f](https://github.com/sensorario/quadrato/commit/04cfc3f), 2026-07-09)
 - feat(docs): add copilot analisys ([fc17b85](https://github.com/sensorario/quadrato/commit/fc17b85), 2026-07-03)
 - feat(TaskDetailPage): show task detail ([63ab50e](https://github.com/sensorario/quadrato/commit/63ab50e), 2026-07-02)
@@ -33,6 +34,7 @@
 
 
 ### Fixes
+- fix(tests): Cannot find module @rollup/rollup-linux-x64-gnu. ([e35d765](https://github.com/sensorario/quadrato/commit/e35d765), 2026-07-10)
 - fix(tests): all test are failing ([8e707d2](https://github.com/sensorario/quadrato/commit/8e707d2), 2026-07-10)
 - fix(expired): load in right moment ([26c7c6d](https://github.com/sensorario/quadrato/commit/26c7c6d), 2026-06-16)
 - fix(expired): looad expired after token is provided ([392e33c](https://github.com/sensorario/quadrato/commit/392e33c), 2026-06-16)
