@@ -1,6 +1,7 @@
 // Importa la versione da package.json (Vite/webpack supporta import json)
 // @ts-ignore
 import pkg from '../../package.json';
+import { useTranslation } from 'react-i18next';
 
 interface TaskProjectSelectorProps {
     tasks: any[],
@@ -9,7 +10,8 @@ interface TaskProjectSelectorProps {
 }
 
 const TaskProjectSelector = ({ tasks, projectFilter, setProjectFilter }: TaskProjectSelectorProps) => {
-    tasks = tasks.filter(t => !t.archived);
+    const { t } = useTranslation();
+    tasks = tasks.filter(task => !task.archived);
 
     return <div>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '8px', flexWrap: 'wrap' }}>
@@ -18,13 +20,13 @@ const TaskProjectSelector = ({ tasks, projectFilter, setProjectFilter }: TaskPro
                     style={{ textDecoration: projectFilter === 'ALL' ? 'underline' : 'none', cursor: 'pointer', color: '#444' }}
                     onClick={() => setProjectFilter('ALL')}
                 >
-                    tutti i task
+                    {t('taskProjectSelector.allTasks')}
                 </span>
                 <span
                     style={{ textDecoration: projectFilter === null ? 'underline' : 'none', cursor: 'pointer', color: '#444' }}
                     onClick={() => setProjectFilter(null)}
                 >
-                    nessun progetto
+                    {t('taskProjectSelector.noProject')}
                 </span>
             </div>
             <span style={{ fontSize: '0.8em', color: '#888' }}>v{pkg.version}</span>

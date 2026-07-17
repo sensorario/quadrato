@@ -1,8 +1,10 @@
 import React, { } from "react";
+import { useTranslation } from "react-i18next";
 import { Link } from "../Router";
 import { Modal } from "../components/Modal";
 
 export const LostPasswordPage = () => {
+    const { t } = useTranslation();
     return (
         <div
             style={{
@@ -15,7 +17,7 @@ export const LostPasswordPage = () => {
             }}
         >
             <h1 style={{ fontSize: "32px", marginBottom: "20px" }}>
-                Recupera password
+                {t('lostPasswordPage.title')}
             </h1>
 
             {/* Crea un form con email per recuperare la password */}
@@ -36,13 +38,13 @@ export const LostPasswordPage = () => {
                         color: "#666",
                     }}
                 >
-                    (la tua email sarà la tua username)
+                    {t('lostPasswordPage.emailHint')}
                 </div>
                 <div style={{ marginBottom: "20px" }}>
                     <input
                         id="email"
                         type="email"
-                        placeholder="Inserisci la tua email"
+                        placeholder={t('lostPasswordPage.emailPlaceholder')}
                         required
                         style={{
                             width: "100%",
@@ -70,20 +72,14 @@ export const LostPasswordPage = () => {
                             .then((response) => response.json())
                             .then((data) => {
                                 if (data.success) {
-                                    alert(
-                                        "Se l'email è registrata, riceverai un'email con le istruzioni per recuperare la password."
-                                    );
+                                    alert(t('lostPasswordPage.successAlert'));
                                 } else {
-                                    alert(
-                                        "Si è verificato un errore. Riprova più tardi."
-                                    );
+                                    alert(t('lostPasswordPage.errorAlert'));
                                 }
                             })
                             .catch((error) => {
                                 console.error("Errore:", error);
-                                alert(
-                                    "Si è verificato un errore. Riprova più tardi."
-                                );
+                                alert(t('lostPasswordPage.errorAlert'));
                             });
                     }}
 
@@ -98,7 +94,7 @@ export const LostPasswordPage = () => {
                         cursor: "pointer",
                     }}
                 >
-                    Recupera password
+                    {t('lostPasswordPage.submitButton')}
                 </button>
             </form>
         </div>

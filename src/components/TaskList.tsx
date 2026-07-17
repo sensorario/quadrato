@@ -1,4 +1,5 @@
 import React, { SetStateAction, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { getStatusIcons } from "../utils";
 import EditIcon from "./EditIcon";
 import EditTaskModal from "./EditTaskModal";
@@ -18,6 +19,7 @@ export const TaskList = ({ tasks, onTaskClick, updateTaskTitle, editable, projec
     dateTimeEnabled: boolean;
     iconTheme: 'default' | 'checked' | 'panda';
 }) => {
+    const { t } = useTranslation();
     // Aggiorno la tipizzazione per timestamp
     // tasks: Array<{ id: number; title: string; status: number; longDescription?: string; project?: string; timestamp?: number | string; archived?: boolean; }>
     const STATUS = getStatusIcons(iconTheme);
@@ -121,15 +123,15 @@ export const TaskList = ({ tasks, onTaskClick, updateTaskTitle, editable, projec
                         )}
                     </span>
 
-                    <span style={{ cursor: 'pointer' }} title="Modifica" onClick={e => { e.stopPropagation(); handleEditClick(task); }}>
+                    <span style={{ cursor: 'pointer' }} title={t('taskList.edit')} onClick={e => { e.stopPropagation(); handleEditClick(task); }}>
                         <span dangerouslySetInnerHTML={{ __html: title }} />
                     </span>
 
                     <button
-                        title="Vedi dettaglio"
+                        title={t('taskList.viewDetail')}
                         onClick={e => { e.stopPropagation(); navigate(`/task/${task.id}`); }}
                         style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '0 4px', display: 'flex', alignItems: 'center', flexShrink: 0, color: '#888' }}
-                        aria-label="Vedi dettaglio task"
+                        aria-label={t('taskList.viewDetailAria')}
                     >
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                             <circle cx="11" cy="11" r="8" />

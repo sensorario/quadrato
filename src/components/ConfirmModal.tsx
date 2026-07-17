@@ -1,5 +1,6 @@
 
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { Modal } from "./Modal";
 import HelpIcon from './HelpIcon';
 
@@ -10,11 +11,12 @@ type ConfirmModalProps = {
 };
 
 const ConfirmModal = ({ setShowCleanConfirm, handleCleanTasks, onClick }: ConfirmModalProps) => {
-    return <Modal onClick={onClick} title={"Conferma pulizia"} icon={<HelpIcon />} buttons={[
-        { label: "Annulla", onClick: () => setShowCleanConfirm(false) },
-        { label: "Conferma", onClick: handleCleanTasks }
+    const { t } = useTranslation();
+    return <Modal onClick={onClick} title={t('confirmModal.title')} icon={<HelpIcon />} buttons={[
+        { label: t('common.cancel'), onClick: () => setShowCleanConfirm(false) },
+        { label: t('common.confirm'), onClick: handleCleanTasks }
     ]}>
-        <p>Vuoi davvero archiviare tutti i task completati o skippati?</p>
+        <p>{t('confirmModal.message')}</p>
     </Modal>;
 
 }

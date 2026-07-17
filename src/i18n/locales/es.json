@@ -1,0 +1,214 @@
+{
+  "common": {
+    "cancel": "Cancelar",
+    "save": "Guardar",
+    "close": "Cerrar",
+    "confirm": "Confirmar"
+  },
+  "app": {
+    "logoutConfirm": "¿Seguro que quieres cerrar sesión? Se eliminarán todos los datos locales.",
+    "logout": "Cerrar sesión.",
+    "zenMode": "modo zen",
+    "help": "ayuda",
+    "config": "config",
+    "newTaskModalTitle": "Nueva tarea",
+    "newTaskTitlePlaceholder": "Título de la tarea",
+    "newTaskDescriptionPlaceholder": "Descripción de la tarea",
+    "newTaskProjectPlaceholder": "Proyecto (opcional)",
+    "addAnotherTask": "Añadir otra tarea",
+    "saveTask": "guardar tarea",
+    "settingsTitle": "Configuración",
+    "generalTab": "General",
+    "projectsTab": "Proyectos",
+    "themesTab": "Temas",
+    "groupToggle": "Agrupar",
+    "dueDateToggle": "Con vencimiento",
+    "showExpiredToggle": "Mostrar vencidas",
+    "showTextToggle": "Mostrar texto",
+    "chooseColorTitle": "Elegir un color",
+    "chooseColorButton": "Elegir color",
+    "iconThemeLabel": "Tema de iconos:",
+    "defaultTheme": "Tema predeterminado",
+    "checkedTheme": "Estilo con marca",
+    "pandaTheme": "Panda",
+    "workspaceLabel": "espacio de trabajo: {{name}}",
+    "changeWorkspaceTitle": "Cambiar espacio de trabajo",
+    "workspaceNamePlaceholder": "Nombre del espacio de trabajo",
+    "saveNewWorkspace": "guardar nuevo espacio de trabajo",
+    "sharedWorkspace": "Espacio de trabajo compartido",
+    "defaultWorkspaceNoNotifications": "El espacio de trabajo predeterminado no tiene configuración de notificaciones",
+    "notificationSettings": "Configuración de notificaciones",
+    "workspaceNotificationsTitle": "Notificaciones: {{name}}",
+    "from": "Desde",
+    "to": "Hasta",
+    "workspaceMembersTitle": "Miembros del espacio de trabajo",
+    "inviteButton": "invitar",
+    "memberEmailPlaceholder": "email del miembro"
+  },
+  "formatDate": {
+    "tomorrow": "mañana"
+  },
+  "editTask": {
+    "title": "Editar tarea",
+    "start": "iniciar",
+    "whatTab": "Qué",
+    "shortTitleLabel": "Título breve",
+    "longDescriptionLabel": "Descripción larga",
+    "whenTab": "Cuándo",
+    "periodicityLabel": "Periodicidad",
+    "repeatEvery": "repetir cada",
+    "units": {
+      "minutes": "minutos",
+      "days": "días",
+      "weeks": "semanas",
+      "months": "meses",
+      "years": "años"
+    },
+    "noDeadlineHint": "Dejar vacío para no tener vencimiento",
+    "deadlineLabel": "Vencimiento",
+    "inDays": "+{{count}}d",
+    "tomorrow": "mañana",
+    "nextWeek": "la próxima semana",
+    "nextMonth": "el próximo mes",
+    "projectTab": "Proyecto",
+    "projectLabel": "Proyecto",
+    "editProjectPlaceholder": "Editar proyecto...",
+    "noProjectsFound": "No se encontraron proyectos"
+  },
+  "confirmModal": {
+    "title": "Confirmar limpieza",
+    "message": "¿Realmente quieres archivar todas las tareas completadas u omitidas?"
+  },
+  "loginModal": {
+    "title": "Autenticación",
+    "loginButton": "Iniciar sesión",
+    "username": "Usuario",
+    "usernamePlaceholder": "Introduce el usuario",
+    "password": "Contraseña",
+    "passwordPlaceholder": "Introduce la contraseña",
+    "noAccount": "¿No tienes una cuenta? Regístrate"
+  },
+  "pandaLegend": {
+    "clickToTry": "Haz clic para probar",
+    "tryQuadrato": "Probar Quadrato",
+    "todo": "Tarea por hacer",
+    "inProgress": "Tarea iniciada",
+    "done": "Tarea completada",
+    "skipped": "Tarea omitida"
+  },
+  "taskList": {
+    "edit": "Editar",
+    "viewDetail": "Ver detalle",
+    "viewDetailAria": "Ver detalle de la tarea"
+  },
+  "footer": {
+    "addAria": "Añadir nueva tarea",
+    "addLabel": "añadir",
+    "cleanAria": "Limpiar tareas",
+    "cleanLabel": "archivar"
+  },
+  "loginForm": {
+    "loginButton": "Iniciar sesión",
+    "registerButton": "Registrarse",
+    "freeTitle": "Gratis",
+    "freeSubtitle": "Todas las funciones, sin coste",
+    "features": [
+      "Tareas ilimitadas: crea, edita y elimina sin límites",
+      "Tareas periódicas y recurrentes",
+      "Gestión de proyectos con filtros y colores personalizados",
+      "Múltiples espacios de trabajo, compartibles con otros usuarios",
+      "Notificaciones configurables por espacio de trabajo",
+      "Modo zen para la concentración",
+      "Temas de iconos personalizables",
+      "Atajos de teclado"
+    ]
+  },
+  "loginPage": {
+    "loginFailed": "Error al iniciar sesión: {{message}}",
+    "passwordUpdateFailed": "Error al actualizar la contraseña: {{message}}"
+  },
+  "lostPasswordPage": {
+    "title": "Recuperar contraseña",
+    "emailHint": "(tu email será tu nombre de usuario)",
+    "emailPlaceholder": "Introduce tu email",
+    "submitButton": "Recuperar contraseña",
+    "successAlert": "Si el email está registrado, recibirás un correo con las instrucciones para recuperar tu contraseña.",
+    "errorAlert": "Se ha producido un error. Inténtalo de nuevo más tarde."
+  },
+  "registerPage": {
+    "title": "Registro",
+    "emailHint": "(tu email será tu nombre de usuario)",
+    "emailPlaceholder": "Introduce tu email",
+    "submitButton": "Registrarse",
+    "submitting": "Enviando...",
+    "haveAccount": "¿Ya tienes una cuenta? Inicia sesión",
+    "forgotPassword": "¿Olvidaste tu contraseña?",
+    "modalTitle": "Registro",
+    "closeButton": "Cerrar",
+    "registrationUnavailable": "Hubo problemas con el registro. Esta función no está disponible en este momento.",
+    "registrationSuccess": "¡Registro iniciado con éxito! Revisa tu email. Serás redirigido a la página de inicio en {{seconds}} segundos.",
+    "genericError": "Se ha producido un error durante el registro.",
+    "errorWithStatus": "Error {{status}}: {{text}}",
+    "connectionError": "Error de conexión. Inténtalo de nuevo más tarde."
+  },
+  "taskDetailPage": {
+    "back": "← Volver",
+    "notFound": "Tarea no encontrada.",
+    "loading": "Cargando...",
+    "home": "Inicio",
+    "status": "Estado",
+    "statusTodo": "Por hacer",
+    "statusInProgress": "En curso",
+    "statusDone": "Completada",
+    "statusSkipped": "Omitida",
+    "project": "Proyecto",
+    "deadline": "Vencimiento",
+    "periodicity": "Periodicidad",
+    "every": "Cada {{number}} {{unit}}",
+    "description": "Descripción",
+    "taskId": "ID de tarea: {{id}}"
+  },
+  "expiredTasks": {
+    "loading": "Cargando tareas vencidas...",
+    "fetchError": "Error al obtener /quadrato/workspaces",
+    "none": "No hay tareas vencidas",
+    "title": "Tareas vencidas",
+    "viewDetail": "Ver detalle de la tarea"
+  },
+  "helpModal": {
+    "title": "Ayuda",
+    "colorsTab": "Colores",
+    "shortcutsTab": "Atajos",
+    "legendTab": "Leyenda",
+    "blackLabel": "negro",
+    "blackDesc": "Tareas normales",
+    "redLabel": "rojo",
+    "redDesc": "Tareas vencidas",
+    "shortcutNewTask": "Nueva tarea",
+    "shortcutArchive": "Archivar completadas y omitidas",
+    "shortcutHelp": "Mostrar ayuda",
+    "shortcutClose": "Cerrar modal de ayuda o nueva tarea",
+    "legendIntro": "Los pandas representan el estado de la tarea.",
+    "todo": "Tarea por hacer",
+    "inProgress": "Tarea iniciada",
+    "done": "Tarea completada",
+    "skipped": "Tarea omitida"
+  },
+  "infoPanel": {
+    "version": "Versión:",
+    "createdBy": "Creado por:",
+    "repository": "Repositorio:"
+  },
+  "registeredModal": {
+    "title": "¡Registro exitoso!",
+    "goHome": "Ir al inicio",
+    "body": "¡El registro se ha completado con éxito! Revisa tu email para más instrucciones. Serás redirigido automáticamente a la página de inicio en {{seconds}} segundos."
+  },
+  "languageSwitcher": {
+    "label": "Idioma"
+  },
+  "taskProjectSelector": {
+    "allTasks": "todas las tareas",
+    "noProject": "sin proyecto"
+  }
+}

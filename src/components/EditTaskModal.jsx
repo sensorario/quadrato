@@ -1,10 +1,13 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 import { Modal } from "./Modal";
 import HelpIcon from "./HelpIcon";
 import TabbedContent from "./TabbedContent";
 import { Footer } from "./Footer/index";
 import { getConfigRepository } from "../repositories";
 import PlayIcon from "./PlayIcon";
+
+const UNIT_KEYS = { minuti: 'minutes', giorni: 'days', settimane: 'weeks', mesi: 'months', anni: 'years' };
 
 const formatDateTimeLocal = (value) => {
     if (!value) return '';
@@ -22,6 +25,7 @@ const parseLocalDateTimeToUTC = (dateTimeString) => {
 };
 
 const EditTaskModal = ({ value, setValue, longValue, setLongValue, projectValue, setProjectValue, timestampValue, setTimestampValue, periodicityValue, setPeriodicityValue, onClose, onSave, projectEditable, dateTimeEnabled }) => {
+    const { t } = useTranslation();
     const textareaRef = React.useRef(null);
 
     React.useEffect(() => {
@@ -41,13 +45,13 @@ const EditTaskModal = ({ value, setValue, longValue, setLongValue, projectValue,
         return () => window.removeEventListener("keydown", handleEsc);
     }, [onClose]);
 
-    return <Modal title="Modifica task" icon={<HelpIcon />} onClick={onClose} >
-        <PlayIcon /> inizia
+    return <Modal title={t('editTask.title')} icon={<HelpIcon />} onClick={onClose} >
+        <PlayIcon /> {t('editTask.start')}
         <div style={{ marginBottom: '1rem', fontSize: '0.9rem', color: '#555' }}>&nbsp;</div>
         <TabbedContent panels={[
             {
-                title: 'Cosa', content: <>
-                    <label style={{ fontWeight: 500, marginBottom: 4, display: 'block' }}>Titolo breve</label>
+                title: t('editTask.whatTab'), content: <>
+                    <label style={{ fontWeight: 500, marginBottom: 4, display: 'block' }}>{t('editTask.shortTitleLabel')}</label>
                     <input
                         type="text"
                         value={value}
@@ -59,7 +63,7 @@ const EditTaskModal = ({ value, setValue, longValue, setLongValue, projectValue,
                             if (e.key === 'Escape') onClose();
                         }}
                     />
-                    <label style={{ fontWeight: 500, marginBottom: 4, display: 'block' }}>Descrizione lunga</label>
+                    <label style={{ fontWeight: 500, marginBottom: 4, display: 'block' }}>{t('editTask.longDescriptionLabel')}</label>
                     <textarea
                         ref={textareaRef}
                         value={longValue}
@@ -73,11 +77,11 @@ const EditTaskModal = ({ value, setValue, longValue, setLongValue, projectValue,
                 </>
             },
             {
-                title: 'Quando', content: dateTimeEnabled && (
+                title: t('editTask.whenTab'), content: dateTimeEnabled && (
                     <>
-                        <label style={{ fontWeight: 500, marginBottom: 4, display: 'block' }}>Periodicità</label>
+                        <label style={{ fontWeight: 500, marginBottom: 4, display: 'block' }}>{t('editTask.periodicityLabel')}</label>
                         <div className="periodo">
-                            ripeti ogni <input
+                            {t('editTask.repeatEvery')} <input
                                 type="number"
                                 min="1"
                                 value={periodicityValue.number}
@@ -88,19 +92,17 @@ const EditTaskModal = ({ value, setValue, longValue, setLongValue, projectValue,
                                 value={periodicityValue.unit}
                                 onChange={e => setPeriodicityValue({ ...periodicityValue, unit: e.target.value })}
                                 style={{ padding: '0.25rem 0.5rem', borderRadius: '8px', fontSize: '1rem', border: '1px solid #d1d1d1' }}>
-                                <option value="minuti">minuti</option>
-                                <option value="giorni">giorni</option>
-                                <option value="settimane">settimane</option>
-                                <option value="mesi">mesi</option>
-                                <option value="anni">anni</option>
+                                {Object.entries(UNIT_KEYS).map(([value, key]) => (
+                                    <option key={value} value={value}>{t(`editTask.units.${key}`)}</option>
+                                ))}
                             </select>
                         </div>
                         <div style={{ height: '1rem' }}></div>
-                        <div style={{ fontSize: '0.85rem', color: '#666', marginBottom: '0.5rem' }}>Lascia vuoto per nessuna scadenza</div>
+                        <div style={{ fontSize: '0.85rem', color: '#666', marginBottom: '0.5rem' }}>{t('editTask.noDeadlineHint')}</div>
                         <div style={{ height: '0.5rem' }}>
                         </div>
                         <hr />
-                        <label style={{ fontWeight: 500, marginBottom: 4, display: 'block' }}>Scadenza</label>
+                        <label style={{ fontWeight: 500, marginBottom: 4, display: 'block' }}>{t('editTask.deadlineLabel')}</label>
                         <input
                             type="datetime-local"
                             value={formatDateTimeLocal(timestampValue)}
@@ -115,7 +117,7 @@ const EditTaskModal = ({ value, setValue, longValue, setLongValue, projectValue,
                                     d.setUTCDate(d.getUTCDate() + days);
                                     d.setUTCHours(8, 0, 0, 0);
                                     setTimestampValue(d.getTime());
-                                }}>+{days}g</button>
+                                }}>{t('editTask.inDays', { count: days })}</button>
                             ))}
                         </div>
                         <div style={{ display: 'flex', gap: '8px', marginBottom: '1rem' }}>
@@ -125,7 +127,7 @@ const EditTaskModal = ({ value, setValue, longValue, setLongValue, projectValue,
                                 d.setUTCDate(d.getUTCDate() + 1);
                                 d.setUTCHours(8, 0, 0, 0);
                                 setTimestampValue(d.getTime());
-                            }}>domani</button>
+                            }}>{t('editTask.tomorrow')}</button>
                             <button type="button" style={{ fontSize: '0.95em', padding: '6px 14px', borderRadius: 6, border: '1px solid #ccc', background: '#f5f5f5', cursor: 'pointer' }} onClick={e => {
                                 e.preventDefault();
                                 const d = new Date();
@@ -134,7 +136,7 @@ const EditTaskModal = ({ value, setValue, longValue, setLongValue, projectValue,
                                 d.setUTCDate(d.getUTCDate() + daysToMonday);
                                 d.setUTCHours(8, 0, 0, 0);
                                 setTimestampValue(d.getTime());
-                            }}>settimana prossima</button>
+                            }}>{t('editTask.nextWeek')}</button>
                             <button type="button" style={{ fontSize: '0.95em', padding: '6px 14px', borderRadius: 6, border: '1px solid #ccc', background: '#f5f5f5', cursor: 'pointer' }} onClick={e => {
                                 e.preventDefault();
                                 const d = new Date();
@@ -145,21 +147,21 @@ const EditTaskModal = ({ value, setValue, longValue, setLongValue, projectValue,
                                 }
                                 d.setUTCHours(8, 0, 0, 0);
                                 setTimestampValue(d.getTime());
-                            }}>mese prossimo</button>
+                            }}>{t('editTask.nextMonth')}</button>
                         </div>
                     </>
                 )
             },
             {
-                title: 'Progetto', content: projectEditable && (
+                title: t('editTask.projectTab'), content: projectEditable && (
                     <>
-                        <label style={{ fontWeight: 500, marginBottom: 4, display: 'block' }}>Progetto</label>
+                        <label style={{ fontWeight: 500, marginBottom: 4, display: 'block' }}>{t('editTask.projectLabel')}</label>
                         <input
                             type="text"
                             value={projectValue}
                             onChange={e => setProjectValue(e.target.value)}
                             style={{ width: '90%', marginBottom: '1rem', padding: '0.75rem 1rem', borderRadius: '8px', fontSize: '1rem', border: '1px solid #d1d1d1' }}
-                            placeholder="Modifica progetto..."
+                            placeholder={t('editTask.editProjectPlaceholder')}
                         />
                         {/** estrai dal local storage simplanner-tasks tutti i progetti di tutti i task e stampali qui sotto */}
                         <div>
@@ -169,7 +171,7 @@ const EditTaskModal = ({ value, setValue, longValue, setLongValue, projectValue,
                                 const uniqueProjects = configRepository.getAllFullProjects();
                                 return uniqueProjects.length > 0
                                     ? uniqueProjects.map(project => <div style={{ padding: '4px 8px', borderBottom: '1px solid #eee', cursor: 'pointer' }} key={project.project} onClick={() => setProjectValue(project.project)}>{project.project}</div>)
-                                    : <div style={{ color: '#888' }}>Nessun progetto trovato</div>;
+                                    : <div style={{ color: '#888' }}>{t('editTask.noProjectsFound')}</div>;
                             })()}
                         </div>
                     </>
@@ -177,8 +179,8 @@ const EditTaskModal = ({ value, setValue, longValue, setLongValue, projectValue,
             }
         ]} />
         <Footer>
-            <button className="modal-close-btn" onClick={onClose}>Annulla</button>
-            <button className="modal-close-btn" style={{ background: '#666', color: '#fff' }} onClick={onSave}>Salva</button>
+            <button className="modal-close-btn" onClick={onClose}>{t('common.cancel')}</button>
+            <button className="modal-close-btn" style={{ background: '#666', color: '#fff' }} onClick={onSave}>{t('common.save')}</button>
         </Footer>
     </Modal >;
 };

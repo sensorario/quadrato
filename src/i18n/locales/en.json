@@ -1,0 +1,214 @@
+{
+  "common": {
+    "cancel": "Cancel",
+    "save": "Save",
+    "close": "Close",
+    "confirm": "Confirm"
+  },
+  "app": {
+    "logoutConfirm": "Are you sure you want to log out? All local data will be removed.",
+    "logout": "Logout.",
+    "zenMode": "zen mode",
+    "help": "help",
+    "config": "config",
+    "newTaskModalTitle": "New Task",
+    "newTaskTitlePlaceholder": "Task title",
+    "newTaskDescriptionPlaceholder": "Task description",
+    "newTaskProjectPlaceholder": "Project (optional)",
+    "addAnotherTask": "Add another task",
+    "saveTask": "save task",
+    "settingsTitle": "Settings",
+    "generalTab": "General",
+    "projectsTab": "Projects",
+    "themesTab": "Themes",
+    "groupToggle": "Group",
+    "dueDateToggle": "With due date",
+    "showExpiredToggle": "Show expired",
+    "showTextToggle": "Show text",
+    "chooseColorTitle": "Choose a color",
+    "chooseColorButton": "Choose color",
+    "iconThemeLabel": "Icon theme:",
+    "defaultTheme": "Default theme",
+    "checkedTheme": "Checkmark style",
+    "pandaTheme": "Panda",
+    "workspaceLabel": "workspace: {{name}}",
+    "changeWorkspaceTitle": "Change Workspace",
+    "workspaceNamePlaceholder": "Workspace name",
+    "saveNewWorkspace": "save new workspace",
+    "sharedWorkspace": "Shared workspace",
+    "defaultWorkspaceNoNotifications": "The default workspace has no notification settings",
+    "notificationSettings": "Notification settings",
+    "workspaceNotificationsTitle": "Notifications: {{name}}",
+    "from": "From",
+    "to": "To",
+    "workspaceMembersTitle": "Workspace members",
+    "inviteButton": "invite",
+    "memberEmailPlaceholder": "member email"
+  },
+  "formatDate": {
+    "tomorrow": "tomorrow"
+  },
+  "editTask": {
+    "title": "Edit task",
+    "start": "start",
+    "whatTab": "What",
+    "shortTitleLabel": "Short title",
+    "longDescriptionLabel": "Long description",
+    "whenTab": "When",
+    "periodicityLabel": "Recurrence",
+    "repeatEvery": "repeat every",
+    "units": {
+      "minutes": "minutes",
+      "days": "days",
+      "weeks": "weeks",
+      "months": "months",
+      "years": "years"
+    },
+    "noDeadlineHint": "Leave empty for no deadline",
+    "deadlineLabel": "Deadline",
+    "inDays": "+{{count}}d",
+    "tomorrow": "tomorrow",
+    "nextWeek": "next week",
+    "nextMonth": "next month",
+    "projectTab": "Project",
+    "projectLabel": "Project",
+    "editProjectPlaceholder": "Edit project...",
+    "noProjectsFound": "No projects found"
+  },
+  "confirmModal": {
+    "title": "Confirm cleanup",
+    "message": "Do you really want to archive all completed or skipped tasks?"
+  },
+  "loginModal": {
+    "title": "Authentication",
+    "loginButton": "Login",
+    "username": "Username",
+    "usernamePlaceholder": "Enter username",
+    "password": "Password",
+    "passwordPlaceholder": "Enter password",
+    "noAccount": "Don't have an account? Sign up"
+  },
+  "pandaLegend": {
+    "clickToTry": "Click to try",
+    "tryQuadrato": "Try Quadrato",
+    "todo": "Task to do",
+    "inProgress": "Task started",
+    "done": "Task completed",
+    "skipped": "Task skipped"
+  },
+  "taskList": {
+    "edit": "Edit",
+    "viewDetail": "View detail",
+    "viewDetailAria": "View task detail"
+  },
+  "footer": {
+    "addAria": "Add new task",
+    "addLabel": "add",
+    "cleanAria": "Clean tasks",
+    "cleanLabel": "archive"
+  },
+  "loginForm": {
+    "loginButton": "Login",
+    "registerButton": "Sign up",
+    "freeTitle": "Free",
+    "freeSubtitle": "All features, at no cost",
+    "features": [
+      "Unlimited tasks: create, edit and delete without limits",
+      "Recurring and periodic tasks",
+      "Project management with custom filters and colors",
+      "Multiple workspaces, shareable with other users",
+      "Configurable notifications per workspace",
+      "Zen mode for focus",
+      "Customizable icon themes",
+      "Keyboard shortcuts"
+    ]
+  },
+  "loginPage": {
+    "loginFailed": "Login failed: {{message}}",
+    "passwordUpdateFailed": "Password update failed: {{message}}"
+  },
+  "lostPasswordPage": {
+    "title": "Recover password",
+    "emailHint": "(your email will be your username)",
+    "emailPlaceholder": "Enter your email",
+    "submitButton": "Recover password",
+    "successAlert": "If the email is registered, you will receive an email with instructions to recover your password.",
+    "errorAlert": "An error occurred. Please try again later."
+  },
+  "registerPage": {
+    "title": "Registration",
+    "emailHint": "(your email will be your username)",
+    "emailPlaceholder": "Enter your email",
+    "submitButton": "Sign up",
+    "submitting": "Submitting...",
+    "haveAccount": "Already have an account? Sign in",
+    "forgotPassword": "Forgot your password?",
+    "modalTitle": "Registration",
+    "closeButton": "Close",
+    "registrationUnavailable": "There were problems with registration. This feature is currently unavailable.",
+    "registrationSuccess": "Registration started successfully! Check your email. You will be redirected to the home page in {{seconds}} seconds.",
+    "genericError": "An error occurred during registration.",
+    "errorWithStatus": "Error {{status}}: {{text}}",
+    "connectionError": "Connection error. Please try again later."
+  },
+  "taskDetailPage": {
+    "back": "← Go back",
+    "notFound": "Task not found.",
+    "loading": "Loading...",
+    "home": "Home",
+    "status": "Status",
+    "statusTodo": "To do",
+    "statusInProgress": "In progress",
+    "statusDone": "Completed",
+    "statusSkipped": "Skipped",
+    "project": "Project",
+    "deadline": "Deadline",
+    "periodicity": "Recurrence",
+    "every": "Every {{number}} {{unit}}",
+    "description": "Description",
+    "taskId": "Task ID: {{id}}"
+  },
+  "expiredTasks": {
+    "loading": "Loading expired tasks...",
+    "fetchError": "Error fetching /quadrato/workspaces",
+    "none": "No expired tasks",
+    "title": "Expired tasks",
+    "viewDetail": "View task detail"
+  },
+  "helpModal": {
+    "title": "Help",
+    "colorsTab": "Colors",
+    "shortcutsTab": "Shortcuts",
+    "legendTab": "Legend",
+    "blackLabel": "black",
+    "blackDesc": "Normal tasks",
+    "redLabel": "red",
+    "redDesc": "Expired tasks",
+    "shortcutNewTask": "New task",
+    "shortcutArchive": "Archive completed and skipped",
+    "shortcutHelp": "Show help",
+    "shortcutClose": "Close help or new task modal",
+    "legendIntro": "The pandas represent the task status.",
+    "todo": "Task to do",
+    "inProgress": "Task started",
+    "done": "Task completed",
+    "skipped": "Task skipped"
+  },
+  "infoPanel": {
+    "version": "Version:",
+    "createdBy": "Created by:",
+    "repository": "Repository:"
+  },
+  "registeredModal": {
+    "title": "Registration successful!",
+    "goHome": "Go to home",
+    "body": "Registration completed successfully! Check your email for further instructions. You will be automatically redirected to the home page in {{seconds}} seconds."
+  },
+  "languageSwitcher": {
+    "label": "Language"
+  },
+  "taskProjectSelector": {
+    "allTasks": "all tasks",
+    "noProject": "no project"
+  }
+}

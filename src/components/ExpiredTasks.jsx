@@ -1,7 +1,9 @@
 
 import React, { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 const ExpiredTasks = () => {
+    const { t } = useTranslation();
     const [expiredTasks, setExpiredTasks] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -46,19 +48,19 @@ const ExpiredTasks = () => {
                 })
                 .catch(() => {
                     document.location.reload();
-                    setError('Errore nella fetch /quadrato/workspaces');
+                    setError(t('expiredTasks.fetchError'));
                     setLoading(false);
                 });
         }, 1000);
     }
 
-    if (loading) return <div>Caricamento task scaduti...</div>;
+    if (loading) return <div>{t('expiredTasks.loading')}</div>;
     if (error) return <div>{error}</div>;
-    if (!expiredTasks || expiredTasks.length === 0) return <><div>Nessun task scaduto</div><div>&nbsp;</div></>;
+    if (!expiredTasks || expiredTasks.length === 0) return <><div>{t('expiredTasks.none')}</div><div>&nbsp;</div></>;
 
     return (
         <div>
-            <h3>Task scaduti</h3>
+            <h3>{t('expiredTasks.title')}</h3>
             <ul>
                 {expiredTasks.map((task, idx) => (
                     <li key={task.id || task.uuid || idx}>
@@ -75,7 +77,7 @@ const ExpiredTasks = () => {
                                 href={`${window.location.origin}/task/${task.id || task.uuid}`}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                title="Vedi dettaglio task"
+                                title={t('expiredTasks.viewDetail')}
                                 style={{ marginLeft: '8px', display: 'inline-flex', alignItems: 'center', color: '#888', verticalAlign: 'middle' }}
                             >
                                 <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">

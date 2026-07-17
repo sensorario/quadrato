@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { navigate } from '../Router'
 import { getConfigRepository } from '../repositories'
 import { LoginModal } from '../components/LoginModal'
@@ -6,6 +7,7 @@ import LoginForm from '../components/LoginForm'
 import { SetPasswordModal } from '@sensorario/sg-components'
 
 const LoginPage = () => {
+    const { t } = useTranslation()
     const [showCredentials, setShowCredentials] = useState(false)
     const [showSetPasswordModal, setShowSetPasswordModal] = useState(false)
 
@@ -28,7 +30,7 @@ const LoginPage = () => {
                 }
             })
             .catch((err) => {
-                alert('Login fallito: ' + err.message)
+                alert(t('loginPage.loginFailed', { message: err.message }))
             })
     }
 
@@ -41,7 +43,7 @@ const LoginPage = () => {
                 window.location.href = '/login'
             })
             .catch((err) => {
-                alert('Aggiornamento password fallito: ' + err.message)
+                alert(t('loginPage.passwordUpdateFailed', { message: err.message }))
             })
     }
 

@@ -1,14 +1,16 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 import { useVersionNumber } from "./VersionNumber";
 
 export const InfoPanel = () => {
+    const { t } = useTranslation();
     const versionNumber: string = useVersionNumber();
     return <div style={{ fontSize: '12px', color: '#666', textAlign: 'center', marginTop: '16px' }}>
-        <strong>Versione:</strong> v{versionNumber}
+        <strong>{t('infoPanel.version')}</strong> v{versionNumber}
         <br />
-        <strong>Creato da:</strong> sensorario
+        <strong>{t('infoPanel.createdBy')}</strong> sensorario
         <br />
-        <strong>Repository:</strong> <a href="https://github.com/sensorario/quadrato">sensorario/quadrato</a>
+        <strong>{t('infoPanel.repository')}</strong> <a href="https://github.com/sensorario/quadrato">sensorario/quadrato</a>
     </div>
 };
 

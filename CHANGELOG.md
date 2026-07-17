@@ -5,6 +5,14 @@
 
 
 ### Features
+- feat(login): use a curved red SVG arrow for the panda hint ([01dc414](https://github.com/sensorario/quadrato/commit/01dc414), 2026-07-17)
+- feat(login): default mascot panda to "da fare" and add a bouncing hint ([0eda9ac](https://github.com/sensorario/quadrato/commit/0eda9ac), 2026-07-17)
+- feat(login): make the mascot panda clickable ([e705fae](https://github.com/sensorario/quadrato/commit/e705fae), 2026-07-17)
+- feat(login): fill in the panda legend content ([75def6b](https://github.com/sensorario/quadrato/commit/75def6b), 2026-07-17)
+- feat(login): replace clickable demo tasks with a panda status legend ([92f9b51](https://github.com/sensorario/quadrato/commit/92f9b51), 2026-07-17)
+- feat(login): add an interactive demo todolist to the landing screen ([19830a5](https://github.com/sensorario/quadrato/commit/19830a5), 2026-07-17)
+- feat(modal): animate modals sliding in/out from the top ([89c881a](https://github.com/sensorario/quadrato/commit/89c881a), 2026-07-17)
+- feat(workspace): add notification window UI and dedicated login route ([eaa2e67](https://github.com/sensorario/quadrato/commit/eaa2e67), 2026-07-17)
 - feat(deploy): add ssh deployment ([e3f4abe](https://github.com/sensorario/quadrato/commit/e3f4abe), 2026-07-16)
 - feat(auth): prompt for a new password on temporary-password login ([8478637](https://github.com/sensorario/quadrato/commit/8478637), 2026-07-16)
 - feat: update React and React DOM dependencies to 19.2.7 ([04cfc3f](https://github.com/sensorario/quadrato/commit/04cfc3f), 2026-07-09)
@@ -35,6 +43,9 @@
 
 
 ### Fixes
+- fix(login): hide landing screen while the credentials modal is open ([7d8a102](https://github.com/sensorario/quadrato/commit/7d8a102), 2026-07-17)
+- fix(router): don't sync workspace route segment while unauthenticated ([c335823](https://github.com/sensorario/quadrato/commit/c335823), 2026-07-17)
+- fix(router): register path-change subscribers during render, not effect ([75c667c](https://github.com/sensorario/quadrato/commit/75c667c), 2026-07-17)
 - fix(tests): Cannot find module @rollup/rollup-linux-x64-gnu. ([e35d765](https://github.com/sensorario/quadrato/commit/e35d765), 2026-07-10)
 - fix(tests): all test are failing ([8e707d2](https://github.com/sensorario/quadrato/commit/8e707d2), 2026-07-10)
 - fix(expired): load in right moment ([26c7c6d](https://github.com/sensorario/quadrato/commit/26c7c6d), 2026-06-16)

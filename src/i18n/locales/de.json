@@ -1,0 +1,214 @@
+{
+  "common": {
+    "cancel": "Abbrechen",
+    "save": "Speichern",
+    "close": "Schließen",
+    "confirm": "Bestätigen"
+  },
+  "app": {
+    "logoutConfirm": "Möchten Sie sich wirklich abmelden? Alle lokalen Daten werden gelöscht.",
+    "logout": "Abmelden.",
+    "zenMode": "Zen-Modus",
+    "help": "Hilfe",
+    "config": "Einstellungen",
+    "newTaskModalTitle": "Neue Aufgabe",
+    "newTaskTitlePlaceholder": "Aufgabentitel",
+    "newTaskDescriptionPlaceholder": "Aufgabenbeschreibung",
+    "newTaskProjectPlaceholder": "Projekt (optional)",
+    "addAnotherTask": "Weitere Aufgabe hinzufügen",
+    "saveTask": "Aufgabe speichern",
+    "settingsTitle": "Einstellungen",
+    "generalTab": "Allgemein",
+    "projectsTab": "Projekte",
+    "themesTab": "Themen",
+    "groupToggle": "Gruppieren",
+    "dueDateToggle": "Mit Fälligkeitsdatum",
+    "showExpiredToggle": "Abgelaufene anzeigen",
+    "showTextToggle": "Text anzeigen",
+    "chooseColorTitle": "Farbe wählen",
+    "chooseColorButton": "Farbe wählen",
+    "iconThemeLabel": "Symboldesign:",
+    "defaultTheme": "Standarddesign",
+    "checkedTheme": "Häkchen-Stil",
+    "pandaTheme": "Panda",
+    "workspaceLabel": "Arbeitsbereich: {{name}}",
+    "changeWorkspaceTitle": "Arbeitsbereich wechseln",
+    "workspaceNamePlaceholder": "Name des Arbeitsbereichs",
+    "saveNewWorkspace": "neuen Arbeitsbereich speichern",
+    "sharedWorkspace": "Geteilter Arbeitsbereich",
+    "defaultWorkspaceNoNotifications": "Der Standard-Arbeitsbereich hat keine Benachrichtigungseinstellungen",
+    "notificationSettings": "Benachrichtigungseinstellungen",
+    "workspaceNotificationsTitle": "Benachrichtigungen: {{name}}",
+    "from": "Von",
+    "to": "Bis",
+    "workspaceMembersTitle": "Mitglieder des Arbeitsbereichs",
+    "inviteButton": "einladen",
+    "memberEmailPlaceholder": "E-Mail des Mitglieds"
+  },
+  "formatDate": {
+    "tomorrow": "morgen"
+  },
+  "editTask": {
+    "title": "Aufgabe bearbeiten",
+    "start": "starten",
+    "whatTab": "Was",
+    "shortTitleLabel": "Kurztitel",
+    "longDescriptionLabel": "Ausführliche Beschreibung",
+    "whenTab": "Wann",
+    "periodicityLabel": "Wiederholung",
+    "repeatEvery": "wiederholen alle",
+    "units": {
+      "minutes": "Minuten",
+      "days": "Tage",
+      "weeks": "Wochen",
+      "months": "Monate",
+      "years": "Jahre"
+    },
+    "noDeadlineHint": "Leer lassen für keine Frist",
+    "deadlineLabel": "Fälligkeitsdatum",
+    "inDays": "+{{count}}T",
+    "tomorrow": "morgen",
+    "nextWeek": "nächste Woche",
+    "nextMonth": "nächster Monat",
+    "projectTab": "Projekt",
+    "projectLabel": "Projekt",
+    "editProjectPlaceholder": "Projekt bearbeiten...",
+    "noProjectsFound": "Keine Projekte gefunden"
+  },
+  "confirmModal": {
+    "title": "Bereinigung bestätigen",
+    "message": "Möchten Sie wirklich alle abgeschlossenen oder übersprungenen Aufgaben archivieren?"
+  },
+  "loginModal": {
+    "title": "Authentifizierung",
+    "loginButton": "Anmelden",
+    "username": "Benutzername",
+    "usernamePlaceholder": "Benutzername eingeben",
+    "password": "Passwort",
+    "passwordPlaceholder": "Passwort eingeben",
+    "noAccount": "Kein Konto? Registrieren"
+  },
+  "pandaLegend": {
+    "clickToTry": "Zum Ausprobieren klicken",
+    "tryQuadrato": "Quadrato ausprobieren",
+    "todo": "Aufgabe zu erledigen",
+    "inProgress": "Aufgabe gestartet",
+    "done": "Aufgabe abgeschlossen",
+    "skipped": "Aufgabe übersprungen"
+  },
+  "taskList": {
+    "edit": "Bearbeiten",
+    "viewDetail": "Details anzeigen",
+    "viewDetailAria": "Aufgabendetails anzeigen"
+  },
+  "footer": {
+    "addAria": "Neue Aufgabe hinzufügen",
+    "addLabel": "hinzufügen",
+    "cleanAria": "Aufgaben bereinigen",
+    "cleanLabel": "archivieren"
+  },
+  "loginForm": {
+    "loginButton": "Anmelden",
+    "registerButton": "Registrieren",
+    "freeTitle": "Kostenlos",
+    "freeSubtitle": "Alle Funktionen, keine Kosten",
+    "features": [
+      "Unbegrenzte Aufgaben: erstellen, bearbeiten und löschen ohne Einschränkungen",
+      "Periodische und wiederkehrende Aufgaben",
+      "Projektverwaltung mit benutzerdefinierten Filtern und Farben",
+      "Mehrere Arbeitsbereiche, mit anderen Benutzern teilbar",
+      "Konfigurierbare Benachrichtigungen pro Arbeitsbereich",
+      "Zen-Modus zur Konzentration",
+      "Anpassbare Symboldesigns",
+      "Tastenkombinationen"
+    ]
+  },
+  "loginPage": {
+    "loginFailed": "Anmeldung fehlgeschlagen: {{message}}",
+    "passwordUpdateFailed": "Passwortaktualisierung fehlgeschlagen: {{message}}"
+  },
+  "lostPasswordPage": {
+    "title": "Passwort wiederherstellen",
+    "emailHint": "(Ihre E-Mail wird Ihr Benutzername sein)",
+    "emailPlaceholder": "Geben Sie Ihre E-Mail ein",
+    "submitButton": "Passwort wiederherstellen",
+    "successAlert": "Wenn die E-Mail registriert ist, erhalten Sie eine E-Mail mit Anweisungen zur Wiederherstellung Ihres Passworts.",
+    "errorAlert": "Ein Fehler ist aufgetreten. Bitte versuchen Sie es später erneut."
+  },
+  "registerPage": {
+    "title": "Registrierung",
+    "emailHint": "(Ihre E-Mail wird Ihr Benutzername sein)",
+    "emailPlaceholder": "Geben Sie Ihre E-Mail ein",
+    "submitButton": "Registrieren",
+    "submitting": "Wird gesendet...",
+    "haveAccount": "Haben Sie bereits ein Konto? Anmelden",
+    "forgotPassword": "Passwort vergessen?",
+    "modalTitle": "Registrierung",
+    "closeButton": "Schließen",
+    "registrationUnavailable": "Bei der Registrierung sind Probleme aufgetreten. Diese Funktion ist derzeit nicht verfügbar.",
+    "registrationSuccess": "Registrierung erfolgreich gestartet! Überprüfen Sie Ihre E-Mail. Sie werden in {{seconds}} Sekunden zur Startseite weitergeleitet.",
+    "genericError": "Bei der Registrierung ist ein Fehler aufgetreten.",
+    "errorWithStatus": "Fehler {{status}}: {{text}}",
+    "connectionError": "Verbindungsfehler. Bitte versuchen Sie es später erneut."
+  },
+  "taskDetailPage": {
+    "back": "← Zurück",
+    "notFound": "Aufgabe nicht gefunden.",
+    "loading": "Wird geladen...",
+    "home": "Startseite",
+    "status": "Status",
+    "statusTodo": "Zu erledigen",
+    "statusInProgress": "In Bearbeitung",
+    "statusDone": "Abgeschlossen",
+    "statusSkipped": "Übersprungen",
+    "project": "Projekt",
+    "deadline": "Fälligkeitsdatum",
+    "periodicity": "Wiederholung",
+    "every": "Alle {{number}} {{unit}}",
+    "description": "Beschreibung",
+    "taskId": "Aufgaben-ID: {{id}}"
+  },
+  "expiredTasks": {
+    "loading": "Abgelaufene Aufgaben werden geladen...",
+    "fetchError": "Fehler beim Abrufen von /quadrato/workspaces",
+    "none": "Keine abgelaufenen Aufgaben",
+    "title": "Abgelaufene Aufgaben",
+    "viewDetail": "Aufgabendetails anzeigen"
+  },
+  "helpModal": {
+    "title": "Hilfe",
+    "colorsTab": "Farben",
+    "shortcutsTab": "Tastenkombinationen",
+    "legendTab": "Legende",
+    "blackLabel": "schwarz",
+    "blackDesc": "Normale Aufgaben",
+    "redLabel": "rot",
+    "redDesc": "Abgelaufene Aufgaben",
+    "shortcutNewTask": "Neue Aufgabe",
+    "shortcutArchive": "Abgeschlossene und übersprungene archivieren",
+    "shortcutHelp": "Hilfe anzeigen",
+    "shortcutClose": "Hilfe- oder Neue-Aufgabe-Fenster schließen",
+    "legendIntro": "Die Pandas stellen den Status der Aufgabe dar.",
+    "todo": "Aufgabe zu erledigen",
+    "inProgress": "Aufgabe gestartet",
+    "done": "Aufgabe abgeschlossen",
+    "skipped": "Aufgabe übersprungen"
+  },
+  "infoPanel": {
+    "version": "Version:",
+    "createdBy": "Erstellt von:",
+    "repository": "Repository:"
+  },
+  "registeredModal": {
+    "title": "Registrierung erfolgreich!",
+    "goHome": "Zur Startseite",
+    "body": "Die Registrierung wurde erfolgreich abgeschlossen! Überprüfen Sie Ihre E-Mail für weitere Anweisungen. Sie werden in {{seconds}} Sekunden automatisch zur Startseite weitergeleitet."
+  },
+  "languageSwitcher": {
+    "label": "Sprache"
+  },
+  "taskProjectSelector": {
+    "allTasks": "alle Aufgaben",
+    "noProject": "kein Projekt"
+  }
+}

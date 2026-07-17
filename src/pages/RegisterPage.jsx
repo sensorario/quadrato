@@ -1,8 +1,10 @@
 import React, { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Link } from "../Router";
 import { Modal } from "../components/Modal";
 
 export const RegisterPage = () => {
+    const { t } = useTranslation();
     const [email, setEmail] = useState("");
     const [showModal, setShowModal] = useState(false);
     const [modalMessage, setModalMessage] = useState("");
@@ -25,9 +27,7 @@ export const RegisterPage = () => {
                 );
 
                 if (response.status === 405) {
-                    setModalMessage(
-                        "Ci sono stati problemi con la registrazione. La funzionalità non è al momento disponibile."
-                    );
+                    setModalMessage(t('registerPage.registrationUnavailable'));
                     setShowModal(true);
                 } else if (response.ok) {
                     setTimeout(() => {
@@ -38,7 +38,7 @@ export const RegisterPage = () => {
                     const intervalId = setInterval(() => {
                         secondsLeft -= 1;
                         setModalMessage(
-                            `Registrazione avviata con successo! Controlla la tua email. Verrai reindirizzato alla home page tra ${secondsLeft} secondi.`
+                            t('registerPage.registrationSuccess', { seconds: secondsLeft })
                         );
                         setShowModal(true);
                         if (secondsLeft <= 0) {
@@ -49,19 +49,18 @@ export const RegisterPage = () => {
                     try {
                         const data = await response.json();
                         setModalMessage(
-                            data.message ||
-                            "Si è verificato un errore durante la registrazione."
+                            data.message || t('registerPage.genericError')
                         );
                     } catch (jsonError) {
                         setModalMessage(
-                            `Errore ${response.status}: ${response.statusText || "Si è verificato un errore durante la registrazione."}`
+                            t('registerPage.errorWithStatus', { status: response.status, text: response.statusText || t('registerPage.genericError') })
                         );
                     }
                     setShowModal(true);
                 }
             } catch (error) {
                 console.error("Errore durante la registrazione:", error);
-                setModalMessage("Errore di connessione. Riprova più tardi.");
+                setModalMessage(t('registerPage.connectionError'));
                 setShowModal(true);
             } finally {
                 setIsLoading(false);
@@ -81,7 +80,7 @@ export const RegisterPage = () => {
             }}
         >
             <h1 style={{ fontSize: "32px", marginBottom: "20px" }}>
-                Registrazione
+                {t('registerPage.title')}
             </h1>
 
             <form
@@ -102,7 +101,7 @@ export const RegisterPage = () => {
                         color: "#666",
                     }}
                 >
-                    (la tua email sarà la tua username)
+                    {t('registerPage.emailHint')}
                 </div>
                 <div style={{ marginBottom: "20px" }}>
                     <input
@@ -110,7 +109,7 @@ export const RegisterPage = () => {
                         type="email"
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
-                        placeholder="Inserisci la tua email"
+                        placeholder={t('registerPage.emailPlaceholder')}
                         required
                         style={{
                             width: "100%",
@@ -147,7 +146,7 @@ export const RegisterPage = () => {
                         (e.target.style.backgroundColor = "#28a745")
                     }
                 >
-                    {isLoading ? "Invio in corso..." : "Registrati"}
+                    {isLoading ? t('registerPage.submitting') : t('registerPage.submitButton')}
                 </button>
 
                 <Link
@@ -161,7 +160,7 @@ export const RegisterPage = () => {
                         fontSize: "14px",
                     }}
                 >
-                    Hai già un account? Accedi
+                    {t('registerPage.haveAccount')}
                 </Link>
                 <br />
                 <Link
@@ -174,16 +173,16 @@ export const RegisterPage = () => {
                         textDecoration: "none",
                         fontSize: "14px",
                     }}
-                >Hai smarrito la password?</Link>
+                >{t('registerPage.forgotPassword')}</Link>
             </form>
 
             {showModal && (
                 <Modal
-                    title="Registrazione"
+                    title={t('registerPage.modalTitle')}
                     onClick={() => setShowModal(false)}
                     buttons={[
                         {
-                            label: "Chiudi",
+                            label: t('registerPage.closeButton'),
                             onClick: () => {
                                 document.location.href = "/";
                             },

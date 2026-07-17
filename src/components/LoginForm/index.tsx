@@ -1,17 +1,8 @@
+import { useTranslation } from "react-i18next";
 import { Link } from "../../Router"
 import { VersionNumber } from "../VersionNumber";
 import PandaLegend from "../PandaLegend";
-
-const FREE_FEATURES = [
-    'Task illimitati: crea, modifica ed elimina senza limiti',
-    'Task periodici e ricorrenti',
-    'Gestione progetti con filtri e colori personalizzati',
-    'Workspace multipli e condivisibili con altri utenti',
-    'Notifiche configurabili per workspace',
-    'Modalità zen per la concentrazione',
-    'Temi icone personalizzabili',
-    'Scorciatoie da tastiera',
-]
+import LanguageSwitcher from "../LanguageSwitcher";
 
 const LoginForm = ({
     onClick,
@@ -22,6 +13,8 @@ const LoginForm = ({
     onMouseOver: () => void;
     onMouseOut: () => void;
 }) => {
+    const { t } = useTranslation();
+    const FREE_FEATURES: string[] = t('loginForm.features', { returnObjects: true }) as unknown as string[];
     return <div style={{
         position: 'fixed',
         top: 0,
@@ -38,6 +31,9 @@ const LoginForm = ({
         padding: '30px 0',
         zIndex: 10000
     }}>
+        <div style={{ position: 'absolute', top: '16px', right: '16px' }}>
+            <LanguageSwitcher />
+        </div>
         <h1 style={{ fontSize: '48px', color: '#333' }}>Quadrato</h1>
         <div style={{ display: 'flex', gap: '20px' }}>
             <button
@@ -55,7 +51,7 @@ const LoginForm = ({
                 onMouseOver={onMouseOver}
                 onMouseOut={onMouseOut}
             >
-                Login
+                {t('loginForm.loginButton')}
             </button>
             <Link
                 to="/register"
@@ -71,7 +67,7 @@ const LoginForm = ({
                     display: 'inline-block'
                 }}
             >
-                Registrati
+                {t('loginForm.registerButton')}
             </Link>
         </div>
         <PandaLegend />
@@ -84,9 +80,9 @@ const LoginForm = ({
             textAlign: 'center',
             boxShadow: '0 2px 8px rgba(0, 0, 0, 0.08)'
         }}>
-            <h2 style={{ margin: 0, color: '#28a745', fontSize: '24px' }}>Free</h2>
+            <h2 style={{ margin: 0, color: '#28a745', fontSize: '24px' }}>{t('loginForm.freeTitle')}</h2>
             <p style={{ margin: '4px 0 16px', color: '#666', fontSize: '14px' }}>
-                Tutte le funzionalità, senza costi
+                {t('loginForm.freeSubtitle')}
             </p>
             <ul style={{
                 listStyle: 'none',

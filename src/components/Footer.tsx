@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 type FooterProps = {
     setShowPopup: (show: boolean) => void;
@@ -7,10 +8,11 @@ type FooterProps = {
 };
 
 const Footer = ({ setShowPopup, setShowCleanConfirm, showText }: FooterProps) => {
+    const { t } = useTranslation();
     return <div className="sticky-footer" style={{ width: '100%', display: 'flex', justifyContent: 'center', gap: '8px', margin: '8px 0', position: 'sticky', bottom: 0, background: '#fff', padding: '8px 0' }}>
         <button
             className="plus-icon"
-            aria-label="Aggiungi nuovo task"
+            aria-label={t('footer.addAria')}
             onClick={() => setShowPopup(true)}
             type="button"
             style={{ border: 'none', background: 'none', padding: 0 }}
@@ -23,11 +25,11 @@ const Footer = ({ setShowPopup, setShowCleanConfirm, showText }: FooterProps) =>
             </svg>
         </button>
         {showText && <span style={{ cursor: "pointer" }} onClick={() => setShowPopup(true)}>
-            aggiungi
+            {t('footer.addLabel')}
         </span>}
         <button
             className="clean-icon"
-            aria-label="Pulisci task"
+            aria-label={t('footer.cleanAria')}
             onClick={() => setShowCleanConfirm(true)}
             type="button"
             style={{ border: 'none', background: 'none', padding: 0 }}
@@ -40,7 +42,7 @@ const Footer = ({ setShowPopup, setShowCleanConfirm, showText }: FooterProps) =>
             </svg>
         </button>
         {showText && <span style={{ cursor: "pointer" }} onClick={() => setShowCleanConfirm(true)}>
-            archivia
+            {t('footer.cleanLabel')}
         </span>}
     </div>
 };

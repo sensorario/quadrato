@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Modal } from './Modal';
 import { Link } from '../Router';
 
@@ -8,6 +9,7 @@ type LoginModalProps = {
 };
 
 export const LoginModal = ({ onClose, onLogin }: LoginModalProps) => {
+    const { t } = useTranslation();
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
 
@@ -25,17 +27,17 @@ export const LoginModal = ({ onClose, onLogin }: LoginModalProps) => {
 
     return (
         <Modal
-            title="Autenticazione"
+            title={t('loginModal.title')}
             onClick={onClose}
             buttons={[
-                { label: 'Annulla', onClick: onClose },
-                { label: 'Login', onClick: handleLogin }
+                { label: t('common.cancel'), onClick: onClose },
+                { label: t('loginModal.loginButton'), onClick: handleLogin }
             ]}
         >
             <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
                 <div>
                     <label htmlFor="username" style={{ display: 'block', marginBottom: '8px' }}>
-                        Username
+                        {t('loginModal.username')}
                     </label>
                     <input
                         id="username"
@@ -43,14 +45,14 @@ export const LoginModal = ({ onClose, onLogin }: LoginModalProps) => {
                         value={username}
                         onChange={(e) => setUsername(e.target.value)}
                         onKeyPress={handleKeyPress}
-                        placeholder="Inserisci username"
+                        placeholder={t('loginModal.usernamePlaceholder')}
                         style={{ width: '100%', padding: '8px' }}
                         autoFocus
                     />
                 </div>
                 <div>
                     <label htmlFor="password" style={{ display: 'block', marginBottom: '8px' }}>
-                        Password
+                        {t('loginModal.password')}
                     </label>
                     <input
                         id="password"
@@ -58,7 +60,7 @@ export const LoginModal = ({ onClose, onLogin }: LoginModalProps) => {
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
                         onKeyPress={handleKeyPress}
-                        placeholder="Inserisci password"
+                        placeholder={t('loginModal.passwordPlaceholder')}
                         style={{ width: '100%', padding: '8px' }}
                     />
                 </div>
@@ -71,7 +73,7 @@ export const LoginModal = ({ onClose, onLogin }: LoginModalProps) => {
                             fontSize: '14px'
                         }}
                     >
-                        Non hai un account? Registrati
+                        {t('loginModal.noAccount')}
                     </Link>
                 </div>
             </div>

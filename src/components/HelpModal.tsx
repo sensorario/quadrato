@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import HelpIcon from "./HelpIcon";
 import { Modal } from "./Modal";
 import TabbedContent from "./TabbedContent";
@@ -5,11 +6,13 @@ import { STATUS_PANDA } from './../themes/statusPanda';
 import InfoPanel from "./InfoPanel";
 
 export const HelpModal = ({ setShowHelp }: { setShowHelp: (show: boolean) => void }) => {
+    const { t } = useTranslation();
+
     const ColorsPanel = () => (
         <div>
             <ul style={{ marginTop: '1rem', marginBottom: '1rem' }}>
-                <li><strong>nero</strong>: I task normali</li>
-                <li><strong style={{ color: 'red' }}>rosso</strong>: I task scaduti</li>
+                <li><strong>{t('helpModal.blackLabel')}</strong>: {t('helpModal.blackDesc')}</li>
+                <li><strong style={{ color: 'red' }}>{t('helpModal.redLabel')}</strong>: {t('helpModal.redDesc')}</li>
             </ul>
         </div>
     );
@@ -17,41 +20,41 @@ export const HelpModal = ({ setShowHelp }: { setShowHelp: (show: boolean) => voi
     const ShortcutsPanel = () => (
         <div>
             <ul style={{ marginTop: '1rem', marginBottom: '1rem' }}>
-                <li><strong>Ctrl + Shift + N</strong>: Nuovo task</li>
-                <li><strong>Ctrl + Shift + X</strong>: Archivia completati e skippati</li>
-                <li><strong>Ctrl + Shift + H</strong>: Mostra help</li>
-                <li><strong>Esc</strong>: Chiudi modale help o nuovo task</li>
+                <li><strong>Ctrl + Shift + N</strong>: {t('helpModal.shortcutNewTask')}</li>
+                <li><strong>Ctrl + Shift + X</strong>: {t('helpModal.shortcutArchive')}</li>
+                <li><strong>Ctrl + Shift + H</strong>: {t('helpModal.shortcutHelp')}</li>
+                <li><strong>Esc</strong>: {t('helpModal.shortcutClose')}</li>
             </ul>
         </div>
     );
 
     const LegendPanel = () => (
         <div>
-            <p>I panda rappresentano lo stato del task.</p>
+            <p>{t('helpModal.legendIntro')}</p>
             <div style={{ display: 'flex', gap: '1rem', marginTop: '1rem', alignItems: 'center' }}>
                 {STATUS_PANDA[0]}
-                <span>Task da fare</span>
+                <span>{t('helpModal.todo')}</span>
             </div>
             <div style={{ display: 'flex', gap: '1rem', marginTop: '0.5rem', alignItems: 'center' }}>
                 {STATUS_PANDA[1]}
-                <span>Task iniziato</span>
+                <span>{t('helpModal.inProgress')}</span>
             </div>
             <div style={{ display: 'flex', gap: '1rem', marginTop: '0.5rem', alignItems: 'center' }}>
                 {STATUS_PANDA[2]}
-                <span>Task completato</span>
+                <span>{t('helpModal.done')}</span>
             </div>
             <div style={{ display: 'flex', gap: '1rem', marginTop: '0.5rem', alignItems: 'center' }}>
                 {STATUS_PANDA[3]}
-                <span>Task skippato</span>
+                <span>{t('helpModal.skipped')}</span>
             </div>
         </div>
     );
 
-    return <Modal title={"Help"} icon={<HelpIcon />} onClick={() => setShowHelp(false)} >
+    return <Modal title={t('helpModal.title')} icon={<HelpIcon />} onClick={() => setShowHelp(false)} >
         <TabbedContent panels={[
-            { title: "Colori", content: <ColorsPanel /> },
-            { title: "Shortcuts", content: <ShortcutsPanel /> },
-            { title: "Legenda", content: <LegendPanel /> }
+            { title: t('helpModal.colorsTab'), content: <ColorsPanel /> },
+            { title: t('helpModal.shortcutsTab'), content: <ShortcutsPanel /> },
+            { title: t('helpModal.legendTab'), content: <LegendPanel /> }
         ]} />
         <InfoPanel />
     </Modal>
