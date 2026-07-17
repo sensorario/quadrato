@@ -1,6 +1,6 @@
 import { Link } from "../../Router"
 import { VersionNumber } from "../VersionNumber";
-import DemoTaskList from "../DemoTaskList";
+import PandaLegend from "../PandaLegend";
 
 const FREE_FEATURES = [
     'Task illimitati: crea, modifica ed elimina senza limiti',
@@ -74,7 +74,7 @@ const LoginForm = ({
                 Registrati
             </Link>
         </div>
-        <DemoTaskList />
+        <PandaLegend />
         <div style={{
             border: '2px solid #28a745',
             borderRadius: '8px',
