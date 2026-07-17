@@ -9,7 +9,7 @@ type FooterProps = {
 
 const Footer = ({ setShowPopup, setShowCleanConfirm, showText }: FooterProps) => {
     const { t } = useTranslation();
-    return <div className="sticky-footer" style={{ width: '100%', display: 'flex', justifyContent: 'center', gap: '8px', margin: '8px 0', position: 'sticky', bottom: '49px', background: '#fff', padding: '8px 0', zIndex: 1000 }}>
+    return <div className="sticky-footer" style={{ width: '100%', display: 'flex', justifyContent: 'center', gap: '8px', margin: '8px 0', position: 'sticky', bottom: '49px', background: '#fff', padding: '8px 0', zIndex: 990 }}>
         <button
             className="plus-icon"
             aria-label={t('footer.addAria')}
