@@ -1396,7 +1396,6 @@ function App() {
           dateTimeEnabled={dateTimeEnabled}
           iconTheme={iconTheme}
         />
-        {FooterView}
         {showHelp && HelpModalView}
         {showPopup && NewTaskModalView}
         {showCleanConfirm && ConfirmModalView}
@@ -1404,6 +1403,7 @@ function App() {
         {showWorkspaceMembers && WorkspaceMembersModalView}
         {editingWorkspaceNotifications && WorkspaceNotificationsModalView}
       </div>
+      {FooterView}
       <SGFooter />
     </div>
   )

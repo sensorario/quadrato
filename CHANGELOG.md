@@ -5,6 +5,7 @@
 
 
 ### Features
+- feat(i18n): translate everything ([df19cf9](https://github.com/sensorario/quadrato/commit/df19cf9), 2026-07-17)
 - feat(login): use a curved red SVG arrow for the panda hint ([01dc414](https://github.com/sensorario/quadrato/commit/01dc414), 2026-07-17)
 - feat(login): default mascot panda to "da fare" and add a bouncing hint ([0eda9ac](https://github.com/sensorario/quadrato/commit/0eda9ac), 2026-07-17)
 - feat(login): make the mascot panda clickable ([e705fae](https://github.com/sensorario/quadrato/commit/e705fae), 2026-07-17)
