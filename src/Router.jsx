@@ -1,19 +1,31 @@
 import { useState, useEffect } from 'react';
 
+// Subscriber set for path changes. Populated synchronously during render
+// (not in an effect): effects run bottom-up on mount, so a descendant's
+// mount-time effect can call navigate() before Router's own effect has
+// registered its listener. Subscribing during render avoids that race,
+// since React always renders Router before it renders its children.
+const listeners = new Set();
+
+const notify = () => {
+    const path = window.location.pathname;
+    listeners.forEach((listener) => listener(path));
+};
+
+if (typeof window !== 'undefined') {
+    // Browser back/forward
+    window.addEventListener('popstate', notify);
+}
+
 // Simple router component without external dependencies
 export const Router = ({ children }) => {
     const [currentPath, setCurrentPath] = useState(window.location.pathname);
 
+    listeners.add(setCurrentPath);
+
     useEffect(() => {
-        const onLocationChange = () => {
-            setCurrentPath(window.location.pathname);
-        };
-
-        // Listen to popstate event (browser back/forward)
-        window.addEventListener('popstate', onLocationChange);
-
         return () => {
-            window.removeEventListener('popstate', onLocationChange);
+            listeners.delete(setCurrentPath);
         };
     }, []);
 
@@ -23,8 +35,7 @@ export const Router = ({ children }) => {
 // Navigate function to change routes
 export const navigate = (path) => {
     window.history.pushState({}, '', path);
-    // Dispatch a custom event to notify the router
-    window.dispatchEvent(new PopStateEvent('popstate'));
+    notify();
 };
 
 // Link component
