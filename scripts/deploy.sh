@@ -9,7 +9,7 @@ REMOTE_PATH="~/www/quadrato.simonegentili.com/public_html/"
 
 {
     echo "[$(date '+%Y-%m-%d %H:%M:%S')] Deploying $BRANCH to siteground"
-    npm run build
+    npx vite build
     rsync -avz --delete dist/ siteground:"$REMOTE_PATH"
     echo "[$(date '+%Y-%m-%d %H:%M:%S')] Deploy finished"
 } > "$LOG_FILE" 2>&1
