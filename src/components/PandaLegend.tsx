@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { STATUS_PANDA } from '../themes/statusPanda';
+import CurvedArrowIcon from './CurvedArrowIcon';
 
 const LEGEND = [
     { icon: STATUS_PANDA[0], label: 'Task da fare' },
@@ -13,7 +14,7 @@ const PandaLegend = () => {
 
     return (
         <div style={{ maxWidth: '340px', width: '90%', textAlign: 'center' }}>
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '20px' }}>
                 <div
                     onClick={() => setStatus((prev) => (prev + 1) % 4)}
                     role="button"
@@ -39,7 +40,7 @@ const PandaLegend = () => {
                     </div>
                 </div>
                 <div className="panda-hint">
-                    <span aria-hidden="true">←</span>
+                    <CurvedArrowIcon />
                     <span>Clicca per provare</span>
                 </div>
             </div>
