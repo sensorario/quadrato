@@ -254,6 +254,21 @@ input, textarea {
     to { transform: translateY(-60px); opacity: 0; }
 }
 
+.panda-hint {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 13px;
+    color: #666;
+    white-space: nowrap;
+    animation: panda-hint-bounce 1.1s ease-in-out infinite;
+}
+
+@keyframes panda-hint-bounce {
+    0%, 100% { transform: translateX(0); }
+    50% { transform: translateX(-8px); }
+}
+
 .tabbed-content {
     height: calc(100vh - 360px);
     min-height: fit-content;

@@ -9,32 +9,38 @@ const LEGEND = [
 ];
 
 const PandaLegend = () => {
-    const [status, setStatus] = useState(2);
+    const [status, setStatus] = useState(0);
 
     return (
         <div style={{ maxWidth: '340px', width: '90%', textAlign: 'center' }}>
-            <div
-                onClick={() => setStatus((prev) => (prev + 1) % 4)}
-                role="button"
-                tabIndex={0}
-                title="Clicca per provare"
-                onKeyDown={(e) => {
-                    if (e.key === 'Enter' || e.key === ' ') {
-                        setStatus((prev) => (prev + 1) % 4);
-                    }
-                }}
-                style={{
-                    width: '72px',
-                    height: '72px',
-                    margin: '0 auto',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    cursor: 'pointer'
-                }}
-            >
-                <div style={{ transform: 'scale(4)' }}>
-                    {STATUS_PANDA[status]}
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px' }}>
+                <div
+                    onClick={() => setStatus((prev) => (prev + 1) % 4)}
+                    role="button"
+                    tabIndex={0}
+                    title="Clicca per provare"
+                    onKeyDown={(e) => {
+                        if (e.key === 'Enter' || e.key === ' ') {
+                            setStatus((prev) => (prev + 1) % 4);
+                        }
+                    }}
+                    style={{
+                        width: '72px',
+                        height: '72px',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        cursor: 'pointer',
+                        flexShrink: 0
+                    }}
+                >
+                    <div style={{ transform: 'scale(4)' }}>
+                        {STATUS_PANDA[status]}
+                    </div>
+                </div>
+                <div className="panda-hint">
+                    <span aria-hidden="true">←</span>
+                    <span>Clicca per provare</span>
                 </div>
             </div>
             <p style={{ margin: '8px 0 16px', fontSize: '18px', fontWeight: 'bold', color: '#333' }}>
