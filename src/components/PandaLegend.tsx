@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { STATUS_PANDA } from '../themes/statusPanda';
 
 const LEGEND = [
@@ -9,18 +9,32 @@ const LEGEND = [
 ];
 
 const PandaLegend = () => {
+    const [status, setStatus] = useState(2);
+
     return (
         <div style={{ maxWidth: '340px', width: '90%', textAlign: 'center' }}>
-            <div style={{
-                width: '72px',
-                height: '72px',
-                margin: '0 auto',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center'
-            }}>
+            <div
+                onClick={() => setStatus((prev) => (prev + 1) % 4)}
+                role="button"
+                tabIndex={0}
+                title="Clicca per provare"
+                onKeyDown={(e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                        setStatus((prev) => (prev + 1) % 4);
+                    }
+                }}
+                style={{
+                    width: '72px',
+                    height: '72px',
+                    margin: '0 auto',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    cursor: 'pointer'
+                }}
+            >
                 <div style={{ transform: 'scale(4)' }}>
-                    {STATUS_PANDA[2]}
+                    {STATUS_PANDA[status]}
                 </div>
             </div>
             <p style={{ margin: '8px 0 16px', fontSize: '18px', fontWeight: 'bold', color: '#333' }}>
