@@ -7,9 +7,10 @@ import TaskProjectSelector from './components/TaskProjectSelector'
 import Footer from './components/Footer'
 import ConfirmModal from './components/ConfirmModal'
 import HelpModal from './components/HelpModal'
-import { LoginModal } from './components/LoginModal'
 import GearIcon from './components/GearIcon'
 import HelpIcon from './components/HelpIcon'
+import EditIcon from './components/EditIcon'
+import LockIcon from './components/LockIcon'
 import { Modal } from './components/Modal'
 import { Palette24 } from './types/Palette24'
 import TabbedContent from './components/TabbedContent'
@@ -18,21 +19,25 @@ import { handleAddAnotherModal } from './utils/handleAddAnotherModal'
 import { archiveCompletedAndSkippedTasks } from './functions/archiveCompletedAndSkippedTasks'
 import { getConfigRepository } from './repositories'
 import UsersIcon from './components/UsersIcon'
-import LoginForm from './components/LoginForm'
-import { SGFooter, SetPasswordModal } from '@sensorario/sg-components'
+import { navigate } from './Router'
+import { SGFooter } from '@sensorario/sg-components'
 import ExpiredTasks from './components/ExpiredTasks'
+
+const NOTIFICATION_WEEKDAYS = [
+  { value: 1, label: 'Lun' },
+  { value: 2, label: 'Mar' },
+  { value: 3, label: 'Mer' },
+  { value: 4, label: 'Gio' },
+  { value: 5, label: 'Ven' },
+  { value: 6, label: 'Sab' },
+  { value: 7, label: 'Dom' },
+]
 
 function App() {
   // Stato per il token di autenticazione - recupera dal localStorage se presente
   const [token, setToken] = useState(() => {
     return localStorage.getItem('simonegentili.com-access-token')
   })
-
-  // Stato per gestire la cancellazione del login
-  const [loginCancelled, setLoginCancelled] = useState(false)
-
-  // Stato per mostrare il modale di impostazione nuova password
-  const [showSetPasswordModal, setShowSetPasswordModal] = useState(false)
 
   // Registra callback per gestire 401 Unauthorized e autenticazione
   useEffect(() => {
@@ -45,37 +50,12 @@ function App() {
     })
   }, [])
 
-  // Handler per il login
-  const handleLogin = (username, password) => {
-    getConfigRepository()
-      .authenticate(username, password)
-      .then(({ isTemporaryPassword }) => {
-        if (isTemporaryPassword) {
-          setShowSetPasswordModal(true)
-        }
-      })
-      .catch((err) => {
-        alert('Login fallito: ' + err.message)
-      })
-  }
-
-  // Handler per l'impostazione della nuova password
-  const handleSetNewPassword = (newPassword) => {
-    getConfigRepository()
-      .updatePassword(newPassword)
-      .then(() => {
-        getConfigRepository().logout()
-        window.location.href = '/'
-      })
-      .catch((err) => {
-        alert('Aggiornamento password fallito: ' + err.message)
-      })
-  }
-
-  // Handler per la cancellazione del login
-  const handleCancelLogin = () => {
-    setLoginCancelled(true)
-  }
+  // Nessun token: la schermata di login vive solo sulla rotta /login
+  useEffect(() => {
+    if (token === null) {
+      navigate('/login')
+    }
+  }, [token])
 
   // Handler per il logout
   const handleLogout = () => {
@@ -216,6 +196,10 @@ function App() {
   // workspaces ora è un array di oggetti workspace (non solo nomi)
   const [workspaces, setWorkspaces] = useState([])
   const [workspaceFilter, setWorkspaceFilter] = useState('')
+  const [editingWorkspaceNotifications, setEditingWorkspaceNotifications] = useState(null)
+  const [notifDalle, setNotifDalle] = useState('08:00')
+  const [notifAlle, setNotifAlle] = useState('17:00')
+  const [notifGiorni, setNotifGiorni] = useState([1, 2, 3, 4, 5, 6, 7])
 
   const syncRouteSegment = (index, value) => {
     if (typeof window === 'undefined') return
@@ -1022,11 +1006,106 @@ function App() {
     />
   )
 
+  const openWorkspaceNotifications = (workspace) => {
+    setEditingWorkspaceNotifications(workspace)
+    setNotifDalle(workspace.dalle || '08:00')
+    setNotifAlle(workspace.alle || '17:00')
+    setNotifGiorni(
+      Array.isArray(workspace.giorni) && workspace.giorni.length > 0
+        ? workspace.giorni
+        : [1, 2, 3, 4, 5, 6, 7]
+    )
+  }
+
+  const toggleNotifGiorno = (day) => {
+    setNotifGiorni((prev) =>
+      prev.includes(day)
+        ? prev.filter((d) => d !== day)
+        : [...prev, day].sort((a, b) => a - b)
+    )
+  }
+
+  const saveWorkspaceNotifications = () => {
+    const accessToken = localStorage.getItem('simonegentili.com-access-token')
+    if (!accessToken || !editingWorkspaceNotifications?.id) {
+      setEditingWorkspaceNotifications(null)
+      return
+    }
+
+    fetch(`https://api.simonegentili.com/quadrato/workspace/${editingWorkspaceNotifications.id}`, {
+      method: 'PUT',
+      headers: {
+        authorization: accessToken,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ dalle: notifDalle, alle: notifAlle, giorni: notifGiorni }),
+    })
+      .then((res) => res.json())
+      .then((json) => {
+        if (json?.workspace) {
+          setWorkspaces((prev) =>
+            prev.map((w) =>
+              w.id === editingWorkspaceNotifications.id ? { ...w, ...json.workspace } : w
+            )
+          )
+        }
+        setEditingWorkspaceNotifications(null)
+      })
+      .catch(() => setEditingWorkspaceNotifications(null))
+  }
+
+  const WorkspaceNotificationsModalView = editingWorkspaceNotifications && (
+    <Modal
+      title={`Notifiche: ${editingWorkspaceNotifications.name}`}
+      onClick={() => setEditingWorkspaceNotifications(null)}
+      buttons={[
+        { label: 'salva', onClick: saveWorkspaceNotifications },
+        { label: 'chiudi', onClick: () => setEditingWorkspaceNotifications(null) },
+      ]}
+    >
+      <div className="modal-input-wrapper">
+        <label style={{ display: 'block', marginBottom: 4 }}>Dalle</label>
+        <input
+          type="time"
+          value={notifDalle}
+          onChange={(e) => setNotifDalle(e.target.value)}
+          className="modal-input"
+        />
+      </div>
+      <div className="modal-input-wrapper">
+        <label style={{ display: 'block', marginBottom: 4 }}>Alle</label>
+        <input
+          type="time"
+          value={notifAlle}
+          onChange={(e) => setNotifAlle(e.target.value)}
+          className="modal-input"
+        />
+      </div>
+      <div className="modal-input-wrapper" style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
+        {NOTIFICATION_WEEKDAYS.map(({ value, label }) => (
+          <label key={value} style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+            <input
+              type="checkbox"
+              checked={notifGiorni.includes(value)}
+              onChange={() => toggleNotifGiorno(value)}
+            />
+            {label}
+          </label>
+        ))}
+      </div>
+    </Modal>
+  )
+
   const ChangeWorkspaceModalView = (
     (() => {
 
-      // Ordina i workspace prima per IN_PROGRESS decrescente, poi per TODO decrescente
+      // Il workspace default è sempre in cima, gli altri ordinati per IN_PROGRESS decrescente, poi TODO decrescente
       const sortedWorkspaces = [...workspaces].sort((a, b) => {
+        const aIsDefault = a.name === 'default';
+        const bIsDefault = b.name === 'default';
+        if (aIsDefault !== bIsDefault) {
+          return aIsDefault ? -1 : 1;
+        }
         const aInProgress = a.tasks_by_status && a.tasks_by_status['IN_PROGRESS'] ? a.tasks_by_status['IN_PROGRESS'] : 0;
         const bInProgress = b.tasks_by_status && b.tasks_by_status['IN_PROGRESS'] ? b.tasks_by_status['IN_PROGRESS'] : 0;
         if (aInProgress !== bInProgress) {
@@ -1067,7 +1146,7 @@ function App() {
                 <div key={workspace.id || workspace.name} style={{ marginBottom: 8, display: 'flex', alignItems: 'center' }}>
                   <button
                     type="button"
-                    className="modal-close-btn"
+                    className={`modal-close-btn${workspace.name === ws ? ' workspace-current' : ''}`}
                     style={{ marginBottom: 0, minWidth: 120 }}
                     onClick={() => {
                       const accessToken = localStorage.getItem('simonegentili.com-access-token')
@@ -1102,6 +1181,37 @@ function App() {
                   >
                     {workspace.name} ({workspace.tasks_count ?? 0})
                   </button>
+                  {workspace.shared && (
+                    <div title="Workspace condiviso" style={{ marginLeft: 8 }}>
+                      <UsersIcon />
+                    </div>
+                  )}
+                  {workspace.name === 'default' ? (
+                    <div
+                      title="Il workspace default non ha impostazioni di notifica"
+                      style={{ marginLeft: 8, cursor: 'not-allowed' }}
+                    >
+                      <LockIcon />
+                    </div>
+                  ) : workspace.id && (
+                    <div
+                      onClick={(e) => {
+                        e.stopPropagation()
+                        openWorkspaceNotifications(workspace)
+                      }}
+                      role="button"
+                      tabIndex={0}
+                      title="Impostazioni notifiche"
+                      style={{ marginLeft: 8, cursor: 'pointer' }}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter' || e.key === ' ') {
+                          openWorkspaceNotifications(workspace)
+                        }
+                      }}
+                    >
+                      <EditIcon />
+                    </div>
+                  )}
                   <div style={{ fontSize: '13px', color: '#444', marginLeft: 16, display: 'flex', alignItems: 'flex-end', gap: 16 }}>
                     {stats.map(({ state, count }) => (
                       <span key={state} style={{ minWidth: 60, textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
@@ -1286,26 +1396,7 @@ function App() {
         {showCleanConfirm && ConfirmModalView}
         {showChangeWorkspace && ChangeWorkspaceModalView}
         {showWorkspaceMembers && WorkspaceMembersModalView}
-        {token === null && !loginCancelled && !showSetPasswordModal && (
-          <LoginModal
-            onClose={handleCancelLogin}
-            onLogin={handleLogin}
-          />
-        )}
-        {showSetPasswordModal && (
-          <SetPasswordModal
-            open
-            onClose={() => setShowSetPasswordModal(false)}
-            onSubmit={handleSetNewPassword}
-          />
-        )}
-        {token === null && loginCancelled && (
-          <LoginForm
-            onClick={() => setLoginCancelled(false)}
-            onMouseOver={(e) => e.target.style.backgroundColor = '#0056b3'}
-            onMouseOut={(e) => e.target.style.backgroundColor = '#007bff'}
-          />
-        )}
+        {editingWorkspaceNotifications && WorkspaceNotificationsModalView}
       </div>
       <SGFooter />
     </div>
