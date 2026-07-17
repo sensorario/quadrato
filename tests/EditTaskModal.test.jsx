@@ -1,6 +1,6 @@
 /* eslint-disable no-undef */
 import React from 'react';
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, fireEvent, waitFor } from '@testing-library/react';
 import EditTaskModal from '../src/components/EditTaskModal';
 
 function mockLocalStorage(tasksByKey) {
@@ -37,7 +37,7 @@ describe('EditTaskModal project list', () => {
         expect(onClose).toHaveBeenCalled();
     });
 
-    it('closes modal on overlay click', () => {
+    it('closes modal on overlay click', async () => {
         const onClose = jest.fn();
         render(
             <EditTaskModal
@@ -59,7 +59,8 @@ describe('EditTaskModal project list', () => {
         );
         const overlay = document.querySelector('.modal-overlay');
         fireEvent.click(overlay);
-        expect(onClose).toHaveBeenCalled();
+        // La chiusura è animata (Modal ritarda la callback finché l'animazione non finisce)
+        await waitFor(() => expect(onClose).toHaveBeenCalled());
     });
 
     beforeEach(() => {

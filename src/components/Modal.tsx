@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 
 type ModalProps = {
     children: React.ReactNode;
@@ -8,19 +8,32 @@ type ModalProps = {
     buttons: { label: string; onClick: () => void }[];
 };
 
+// Deve combaciare con la durata di .modal-closing / .modal-overlay-closing in App.css
+const CLOSE_ANIMATION_MS = 220;
+
 export const Modal = ({ children, title, icon, onClick, buttons }: ModalProps) => {
+    const [closing, setClosing] = useState(false);
+
+    const closeWith = (callback: () => void) => {
+        setClosing(true);
+        setTimeout(callback, CLOSE_ANIMATION_MS);
+    };
+
     useEffect(() => {
         const handleKeyDown = (e: KeyboardEvent) => {
             if (e.key === 'Escape') {
-                onClick();
+                closeWith(onClick);
             }
         };
         window.addEventListener('keydown', handleKeyDown);
         return () => window.removeEventListener('keydown', handleKeyDown);
     }, [onClick]);
 
-    return <div className="modal-overlay" onClick={onClick}>
-        <div className="modal" onClick={e => e.stopPropagation()}>
+    return <div
+        className={`modal-overlay${closing ? ' modal-overlay-closing' : ''}`}
+        onClick={() => closeWith(onClick)}
+    >
+        <div className={`modal${closing ? ' modal-closing' : ''}`} onClick={e => e.stopPropagation()}>
             <div className="modal-header" style={{ display: "flex", alignItems: "center", gap: "8px" }}>
                 {icon && <span className="icon">{icon}</span>}
                 <h2 className="title">{title}</h2>
@@ -28,7 +41,7 @@ export const Modal = ({ children, title, icon, onClick, buttons }: ModalProps) =
             <div className="modal-content">{children}</div>
             {buttons && <div className="modal-footer">
                 {buttons.map((button, index) => (
-                    <button key={index} onClick={button.onClick} className='modal-close-btn'>
+                    <button key={index} onClick={() => closeWith(button.onClick)} className='modal-close-btn'>
                         {button.label}
                     </button>
                 ))}
