@@ -47,11 +47,13 @@ const LoginPage = () => {
 
     return (
         <>
-            <LoginForm
-                onClick={() => setShowCredentials(true)}
-                onMouseOver={(e) => e.target.style.backgroundColor = '#0056b3'}
-                onMouseOut={(e) => e.target.style.backgroundColor = '#007bff'}
-            />
+            {!showCredentials && (
+                <LoginForm
+                    onClick={() => setShowCredentials(true)}
+                    onMouseOver={(e) => e.target.style.backgroundColor = '#0056b3'}
+                    onMouseOut={(e) => e.target.style.backgroundColor = '#007bff'}
+                />
+            )}
             {showCredentials && (
                 <LoginModal
                     onClose={() => setShowCredentials(false)}
