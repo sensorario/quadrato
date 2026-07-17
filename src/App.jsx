@@ -239,13 +239,14 @@ function App() {
   }
 
   useEffect(() => {
-    if (!ws) return
+    if (!ws || token === null) return
     syncRouteSegment(0, ws)
-  }, [ws])
+  }, [ws, token])
 
   useEffect(() => {
+    if (token === null) return
     syncRouteSegment(1, projectFilter && projectFilter !== 'ALL' ? projectFilter : null)
-  }, [projectFilter])
+  }, [projectFilter, token])
 
   const [showPopup, setShowPopup] = useState(false)
   const [newTaskTitle, setNewTaskTitle] = useState('')
