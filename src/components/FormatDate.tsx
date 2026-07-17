@@ -1,8 +1,10 @@
 
 
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 export const FormatDate = ({ date, systemDate }: { date: string | number, systemDate?: string }) => {
+    const { t, i18n } = useTranslation();
     if (date === undefined || date === null || date === '') return null;
     // Se la data è un numero, è un timestamp in millisecondi
     const d = typeof date === 'number' ? new Date(date) : new Date(date);
@@ -23,21 +25,17 @@ export const FormatDate = ({ date, systemDate }: { date: string | number, system
     const isTomorrow = d.getFullYear() === tomorrow.getFullYear() && d.getMonth() === tomorrow.getMonth() && d.getDate() === tomorrow.getDate();
 
     if (isToday) {
-        const hours = d.getHours().toString().padStart(2, '0');
-        const minutes = d.getMinutes().toString().padStart(2, '0');
-        return <>{`${hours}:${minutes}`}</>;
+        return <>{new Intl.DateTimeFormat(i18n.language, { hour: '2-digit', minute: '2-digit', hour12: false }).format(d)}</>;
     }
     if (isTomorrow) {
-        return <>domani</>;
+        return <>{t('formatDate.tomorrow')}</>;
     }
     // Se la data è nell'anno successivo rispetto a systemDate, mostra anche l'anno
     const isNextYear = d.getFullYear() > sys.getFullYear();
-    const day = d.getDate().toString().padStart(2, '0');
-    const month = (d.getMonth() + 1).toString().padStart(2, '0');
     if (isNextYear) {
-        return <>{`${day}/${month}/${d.getFullYear()}`}</>;
+        return <>{new Intl.DateTimeFormat(i18n.language, { day: '2-digit', month: '2-digit', year: 'numeric' }).format(d)}</>;
     }
-    return <>{`${day}/${month}`}</>;
+    return <>{new Intl.DateTimeFormat(i18n.language, { day: '2-digit', month: '2-digit' }).format(d)}</>;
 }
 
 export default FormatDate;

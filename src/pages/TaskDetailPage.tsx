@@ -1,9 +1,12 @@
 import React, { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Task } from '../types/commonTypes';
 import { getConfigRepository } from '../repositories';
 import { navigate } from '../Router';
 import FormatDate from '../components/FormatDate';
 import { STATUS_ENUM } from '../utils';
+
+const UNIT_KEYS: Record<string, string> = { minuti: 'minutes', giorni: 'days', settimane: 'weeks', mesi: 'months', anni: 'years' };
 
 const goBack = (task: Task) => {
     const anyTask = task as any;
@@ -20,6 +23,7 @@ const goBack = (task: Task) => {
 };
 
 const Breadcrumb = ({ task }: { task: Task }) => {
+    const { t } = useTranslation();
     const anyTask = task as any;
     const repo = getConfigRepository();
     const crumbStyle: React.CSSProperties = {
@@ -38,7 +42,7 @@ const Breadcrumb = ({ task }: { task: Task }) => {
                     {anyTask.workspace}
                 </button>
             ) : (
-                <button style={crumbStyle} onClick={() => navigate('/')}>Home</button>
+                <button style={crumbStyle} onClick={() => navigate('/')}>{t('taskDetailPage.home')}</button>
             )}
             {task.project && (
                 <>
@@ -55,18 +59,18 @@ const Breadcrumb = ({ task }: { task: Task }) => {
     );
 };
 
-const statusLabel: Record<number, string> = {
-    [STATUS_ENUM.TODO]: 'Da fare',
-    [STATUS_ENUM.IN_PROGRESS]: 'In corso',
-    [STATUS_ENUM.DONE]: 'Completato',
-    [STATUS_ENUM.SKIPPED]: 'Saltato',
-};
-
 type TaskDetailPageProps = {
     taskId: string;
 };
 
 export const TaskDetailPage = ({ taskId }: TaskDetailPageProps) => {
+    const { t } = useTranslation();
+    const statusLabel: Record<number, string> = {
+        [STATUS_ENUM.TODO]: t('taskDetailPage.statusTodo'),
+        [STATUS_ENUM.IN_PROGRESS]: t('taskDetailPage.statusInProgress'),
+        [STATUS_ENUM.DONE]: t('taskDetailPage.statusDone'),
+        [STATUS_ENUM.SKIPPED]: t('taskDetailPage.statusSkipped'),
+    };
     const [task, setTask] = useState<Task | null>(null);
     const [notFound, setNotFound] = useState(false);
 
@@ -135,9 +139,9 @@ export const TaskDetailPage = ({ taskId }: TaskDetailPageProps) => {
                     onClick={() => navigate('/')}
                     style={{ marginBottom: '20px', cursor: 'pointer', background: 'none', border: 'none', color: '#007bff', fontSize: '14px' }}
                 >
-                    ← Torna indietro
+                    {t('taskDetailPage.back')}
                 </button>
-                <p>Task non trovato.</p>
+                <p>{t('taskDetailPage.notFound')}</p>
             </div>
         );
     }
@@ -145,7 +149,7 @@ export const TaskDetailPage = ({ taskId }: TaskDetailPageProps) => {
     if (!task) {
         return (
             <div style={containerStyle}>
-                <p>Caricamento...</p>
+                <p>{t('taskDetailPage.loading')}</p>
             </div>
         );
     }
@@ -156,19 +160,19 @@ export const TaskDetailPage = ({ taskId }: TaskDetailPageProps) => {
 
             <h2 style={{ margin: '0 0 8px', fontSize: '22px' }}>{task.title}</h2>
 
-            <span style={labelStyle}>Stato</span>
+            <span style={labelStyle}>{t('taskDetailPage.status')}</span>
             <span style={valueStyle}>{statusLabel[task.status] ?? task.status}</span>
 
             {task.project && (
                 <>
-                    <span style={labelStyle}>Progetto</span>
+                    <span style={labelStyle}>{t('taskDetailPage.project')}</span>
                     <span style={valueStyle}>{task.project}</span>
                 </>
             )}
 
             {task.timestamp && (
                 <>
-                    <span style={labelStyle}>Scadenza</span>
+                    <span style={labelStyle}>{t('taskDetailPage.deadline')}</span>
                     <span style={valueStyle}>
                         <FormatDate date={typeof task.timestamp === 'number' ? task.timestamp : task.timestamp} />
                     </span>
@@ -177,20 +181,20 @@ export const TaskDetailPage = ({ taskId }: TaskDetailPageProps) => {
 
             {task.periodicity && (task.periodicity.number || task.periodicity.unit) && (
                 <>
-                    <span style={labelStyle}>Periodicità</span>
-                    <span style={valueStyle}>Ogni {task.periodicity.number} {task.periodicity.unit}</span>
+                    <span style={labelStyle}>{t('taskDetailPage.periodicity')}</span>
+                    <span style={valueStyle}>{t('taskDetailPage.every', { number: task.periodicity.number, unit: t(`editTask.units.${UNIT_KEYS[task.periodicity.unit] ?? task.periodicity.unit}`) })}</span>
                 </>
             )}
 
             {task.longDescription && (
                 <>
-                    <span style={labelStyle}>Descrizione</span>
+                    <span style={labelStyle}>{t('taskDetailPage.description')}</span>
                     <p style={{ ...valueStyle, whiteSpace: 'pre-wrap', lineHeight: '1.5' }}>{task.longDescription}</p>
                 </>
             )}
 
             <div style={{ marginTop: '24px', paddingTop: '16px', borderTop: '1px solid #eee', fontSize: '12px', color: '#999' }}>
-                ID task: {task.id}
+                {t('taskDetailPage.taskId', { id: task.id })}
             </div>
         </div>
     );

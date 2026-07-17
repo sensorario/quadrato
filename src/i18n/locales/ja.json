@@ -1,0 +1,214 @@
+{
+  "common": {
+    "cancel": "キャンセル",
+    "save": "保存",
+    "close": "閉じる",
+    "confirm": "確認"
+  },
+  "app": {
+    "logoutConfirm": "本当にログアウトしますか？ローカルのデータはすべて削除されます。",
+    "logout": "ログアウト",
+    "zenMode": "禅モード",
+    "help": "ヘルプ",
+    "config": "設定",
+    "newTaskModalTitle": "新しいタスク",
+    "newTaskTitlePlaceholder": "タスクのタイトル",
+    "newTaskDescriptionPlaceholder": "タスクの説明",
+    "newTaskProjectPlaceholder": "プロジェクト（任意）",
+    "addAnotherTask": "続けてタスクを追加",
+    "saveTask": "タスクを保存",
+    "settingsTitle": "設定",
+    "generalTab": "一般",
+    "projectsTab": "プロジェクト",
+    "themesTab": "テーマ",
+    "groupToggle": "グループ化",
+    "dueDateToggle": "期限あり",
+    "showExpiredToggle": "期限切れを表示",
+    "showTextToggle": "テキストを表示",
+    "chooseColorTitle": "色を選択",
+    "chooseColorButton": "色を選択",
+    "iconThemeLabel": "アイコンテーマ:",
+    "defaultTheme": "デフォルトテーマ",
+    "checkedTheme": "チェックスタイル",
+    "pandaTheme": "パンダ",
+    "workspaceLabel": "ワークスペース: {{name}}",
+    "changeWorkspaceTitle": "ワークスペースを変更",
+    "workspaceNamePlaceholder": "ワークスペース名",
+    "saveNewWorkspace": "新しいワークスペースを保存",
+    "sharedWorkspace": "共有ワークスペース",
+    "defaultWorkspaceNoNotifications": "デフォルトのワークスペースには通知設定がありません",
+    "notificationSettings": "通知設定",
+    "workspaceNotificationsTitle": "通知: {{name}}",
+    "from": "開始",
+    "to": "終了",
+    "workspaceMembersTitle": "ワークスペースのメンバー",
+    "inviteButton": "招待",
+    "memberEmailPlaceholder": "メンバーのメール"
+  },
+  "formatDate": {
+    "tomorrow": "明日"
+  },
+  "editTask": {
+    "title": "タスクを編集",
+    "start": "開始",
+    "whatTab": "内容",
+    "shortTitleLabel": "短いタイトル",
+    "longDescriptionLabel": "詳細説明",
+    "whenTab": "期限",
+    "periodicityLabel": "繰り返し",
+    "repeatEvery": "繰り返し間隔",
+    "units": {
+      "minutes": "分",
+      "days": "日",
+      "weeks": "週",
+      "months": "ヶ月",
+      "years": "年"
+    },
+    "noDeadlineHint": "期限を設定しない場合は空欄のままにしてください",
+    "deadlineLabel": "期限",
+    "inDays": "+{{count}}日",
+    "tomorrow": "明日",
+    "nextWeek": "来週",
+    "nextMonth": "来月",
+    "projectTab": "プロジェクト",
+    "projectLabel": "プロジェクト",
+    "editProjectPlaceholder": "プロジェクトを編集...",
+    "noProjectsFound": "プロジェクトが見つかりません"
+  },
+  "confirmModal": {
+    "title": "整理の確認",
+    "message": "完了またはスキップしたタスクをすべてアーカイブしてもよろしいですか？"
+  },
+  "loginModal": {
+    "title": "認証",
+    "loginButton": "ログイン",
+    "username": "ユーザー名",
+    "usernamePlaceholder": "ユーザー名を入力",
+    "password": "パスワード",
+    "passwordPlaceholder": "パスワードを入力",
+    "noAccount": "アカウントをお持ちでないですか？ 登録する"
+  },
+  "pandaLegend": {
+    "clickToTry": "クリックして試す",
+    "tryQuadrato": "Quadratoを試す",
+    "todo": "未着手のタスク",
+    "inProgress": "進行中のタスク",
+    "done": "完了したタスク",
+    "skipped": "スキップしたタスク"
+  },
+  "taskList": {
+    "edit": "編集",
+    "viewDetail": "詳細を見る",
+    "viewDetailAria": "タスクの詳細を見る"
+  },
+  "footer": {
+    "addAria": "新しいタスクを追加",
+    "addLabel": "追加",
+    "cleanAria": "タスクを整理",
+    "cleanLabel": "アーカイブ"
+  },
+  "loginForm": {
+    "loginButton": "ログイン",
+    "registerButton": "登録する",
+    "freeTitle": "無料",
+    "freeSubtitle": "すべての機能を無料で利用可能",
+    "features": [
+      "無制限のタスク：制限なく作成・編集・削除できます",
+      "定期・繰り返しタスク",
+      "カスタムフィルターと色によるプロジェクト管理",
+      "他のユーザーと共有できる複数のワークスペース",
+      "ワークスペースごとに設定可能な通知",
+      "集中のための禅モード",
+      "カスタマイズ可能なアイコンテーマ",
+      "キーボードショートカット"
+    ]
+  },
+  "loginPage": {
+    "loginFailed": "ログインに失敗しました: {{message}}",
+    "passwordUpdateFailed": "パスワードの更新に失敗しました: {{message}}"
+  },
+  "lostPasswordPage": {
+    "title": "パスワードを再設定",
+    "emailHint": "（メールアドレスがユーザー名になります）",
+    "emailPlaceholder": "メールアドレスを入力",
+    "submitButton": "パスワードを再設定",
+    "successAlert": "登録されているメールアドレスであれば、パスワード再設定の案内メールが届きます。",
+    "errorAlert": "エラーが発生しました。しばらくしてからもう一度お試しください。"
+  },
+  "registerPage": {
+    "title": "登録",
+    "emailHint": "（メールアドレスがユーザー名になります）",
+    "emailPlaceholder": "メールアドレスを入力",
+    "submitButton": "登録する",
+    "submitting": "送信中...",
+    "haveAccount": "すでにアカウントをお持ちですか？ ログイン",
+    "forgotPassword": "パスワードをお忘れですか？",
+    "modalTitle": "登録",
+    "closeButton": "閉じる",
+    "registrationUnavailable": "登録処理に問題が発生しました。この機能は現在利用できません。",
+    "registrationSuccess": "登録処理を開始しました！メールをご確認ください。{{seconds}}秒後にホームページへ自動的にリダイレクトされます。",
+    "genericError": "登録中にエラーが発生しました。",
+    "errorWithStatus": "エラー {{status}}: {{text}}",
+    "connectionError": "接続エラーです。しばらくしてからもう一度お試しください。"
+  },
+  "taskDetailPage": {
+    "back": "← 戻る",
+    "notFound": "タスクが見つかりません。",
+    "loading": "読み込み中...",
+    "home": "ホーム",
+    "status": "ステータス",
+    "statusTodo": "未着手",
+    "statusInProgress": "進行中",
+    "statusDone": "完了",
+    "statusSkipped": "スキップ",
+    "project": "プロジェクト",
+    "deadline": "期限",
+    "periodicity": "繰り返し",
+    "every": "{{number}}{{unit}}ごと",
+    "description": "説明",
+    "taskId": "タスクID: {{id}}"
+  },
+  "expiredTasks": {
+    "loading": "期限切れタスクを読み込み中...",
+    "fetchError": "/quadrato/workspaces の取得エラー",
+    "none": "期限切れのタスクはありません",
+    "title": "期限切れのタスク",
+    "viewDetail": "タスクの詳細を見る"
+  },
+  "helpModal": {
+    "title": "ヘルプ",
+    "colorsTab": "色",
+    "shortcutsTab": "ショートカット",
+    "legendTab": "凡例",
+    "blackLabel": "黒",
+    "blackDesc": "通常のタスク",
+    "redLabel": "赤",
+    "redDesc": "期限切れのタスク",
+    "shortcutNewTask": "新しいタスク",
+    "shortcutArchive": "完了・スキップしたタスクをアーカイブ",
+    "shortcutHelp": "ヘルプを表示",
+    "shortcutClose": "ヘルプまたは新規タスクのモーダルを閉じる",
+    "legendIntro": "パンダはタスクの状態を表しています。",
+    "todo": "未着手のタスク",
+    "inProgress": "進行中のタスク",
+    "done": "完了したタスク",
+    "skipped": "スキップしたタスク"
+  },
+  "infoPanel": {
+    "version": "バージョン:",
+    "createdBy": "作成者:",
+    "repository": "リポジトリ:"
+  },
+  "registeredModal": {
+    "title": "登録が完了しました！",
+    "goHome": "ホームへ移動",
+    "body": "登録が正常に完了しました！詳しい案内はメールをご確認ください。{{seconds}}秒後に自動的にホームページへリダイレクトされます。"
+  },
+  "languageSwitcher": {
+    "label": "言語"
+  },
+  "taskProjectSelector": {
+    "allTasks": "すべてのタスク",
+    "noProject": "プロジェクトなし"
+  }
+}

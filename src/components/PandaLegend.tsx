@@ -1,16 +1,18 @@
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { STATUS_PANDA } from '../themes/statusPanda';
 import CurvedArrowIcon from './CurvedArrowIcon';
 
-const LEGEND = [
-    { icon: STATUS_PANDA[0], label: 'Task da fare' },
-    { icon: STATUS_PANDA[1], label: 'Task iniziato' },
-    { icon: STATUS_PANDA[2], label: 'Task completato' },
-    { icon: STATUS_PANDA[3], label: 'Task skippato' },
-];
-
 const PandaLegend = () => {
+    const { t } = useTranslation();
     const [status, setStatus] = useState(0);
+
+    const LEGEND = [
+        { icon: STATUS_PANDA[0], label: t('pandaLegend.todo') },
+        { icon: STATUS_PANDA[1], label: t('pandaLegend.inProgress') },
+        { icon: STATUS_PANDA[2], label: t('pandaLegend.done') },
+        { icon: STATUS_PANDA[3], label: t('pandaLegend.skipped') },
+    ];
 
     return (
         <div style={{ maxWidth: '340px', width: '90%', textAlign: 'center' }}>
@@ -19,7 +21,7 @@ const PandaLegend = () => {
                     onClick={() => setStatus((prev) => (prev + 1) % 4)}
                     role="button"
                     tabIndex={0}
-                    title="Clicca per provare"
+                    title={t('pandaLegend.clickToTry')}
                     onKeyDown={(e) => {
                         if (e.key === 'Enter' || e.key === ' ') {
                             setStatus((prev) => (prev + 1) % 4);
@@ -41,11 +43,11 @@ const PandaLegend = () => {
                 </div>
                 <div className="panda-hint">
                     <CurvedArrowIcon />
-                    <span>Clicca per provare</span>
+                    <span>{t('pandaLegend.clickToTry')}</span>
                 </div>
             </div>
             <p style={{ margin: '8px 0 16px', fontSize: '18px', fontWeight: 'bold', color: '#333' }}>
-                Provare Quadrato
+                {t('pandaLegend.tryQuadrato')}
             </p>
             <div style={{
                 display: 'flex',

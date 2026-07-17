@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react'
+import { useTranslation } from 'react-i18next'
 import './App.css'
 import TaskList from './components/TaskList'
 import { STATUS_ENUM, getStatusIcons } from './utils'
@@ -22,18 +23,19 @@ import UsersIcon from './components/UsersIcon'
 import { navigate } from './Router'
 import { SGFooter } from '@sensorario/sg-components'
 import ExpiredTasks from './components/ExpiredTasks'
+import LanguageSwitcher from './components/LanguageSwitcher'
 
-const NOTIFICATION_WEEKDAYS = [
-  { value: 1, label: 'Lun' },
-  { value: 2, label: 'Mar' },
-  { value: 3, label: 'Mer' },
-  { value: 4, label: 'Gio' },
-  { value: 5, label: 'Ven' },
-  { value: 6, label: 'Sab' },
-  { value: 7, label: 'Dom' },
-]
+// Riferimento a una settimana nota (lun 5 - dom 11 gennaio 2026) per derivare
+// le abbreviazioni dei giorni nella lingua corrente tramite Intl
+const WEEKDAY_REFERENCE_DATES = [5, 6, 7, 8, 9, 10, 11].map((day) => new Date(2026, 0, day))
 
 function App() {
+  const { t, i18n } = useTranslation()
+
+  const NOTIFICATION_WEEKDAYS = WEEKDAY_REFERENCE_DATES.map((date, idx) => ({
+    value: idx + 1,
+    label: new Intl.DateTimeFormat(i18n.language, { weekday: 'short' }).format(date),
+  }))
   // Stato per il token di autenticazione - recupera dal localStorage se presente
   const [token, setToken] = useState(() => {
     return localStorage.getItem('simonegentili.com-access-token')
@@ -59,7 +61,7 @@ function App() {
 
   // Handler per il logout
   const handleLogout = () => {
-    if (window.confirm('Sei sicuro di voler uscire? Tutti i dati locali verranno rimossi.')) {
+    if (window.confirm(t('app.logoutConfirm'))) {
       const repo = getConfigRepository()
       if (repo.logout) {
         repo.logout()
@@ -587,13 +589,13 @@ function App() {
 
   const NewTaskModalView = (
     <Modal
-      title="Nuovo Task"
+      title={t('app.newTaskModalTitle')}
       onClick={() => {
         setShowPopup(false)
       }}
       buttons={[
-        { label: 'chiudi', onClick: () => setShowPopup(false) },
-        { label: 'salva task', onClick: () => handleAddTask() },
+        { label: t('common.close'), onClick: () => setShowPopup(false) },
+        { label: t('app.saveTask'), onClick: () => handleAddTask() },
       ]}
     >
       <div className="modal-input-wrapper">
@@ -601,7 +603,7 @@ function App() {
           type="text"
           value={newTaskTitle}
           onChange={(e) => setNewTaskTitle(e.target.value)}
-          placeholder="Titolo del task"
+          placeholder={t('app.newTaskTitlePlaceholder')}
           className="modal-input"
           autoFocus
           onFocus={(e) => e.currentTarget.classList.add('input-focus')}
@@ -619,7 +621,7 @@ function App() {
         <textarea
           value={newTaskLongDescription}
           onChange={(e) => setNewTaskLongDescription(e.target.value)}
-          placeholder="Descrizione del task"
+          placeholder={t('app.newTaskDescriptionPlaceholder')}
           className="modal-input"
         />
       </div>
@@ -629,7 +631,7 @@ function App() {
             type="text"
             value={newTaskProject}
             onChange={(e) => setNewTaskProject(e.target.value)}
-            placeholder="Progetto (opzionale)"
+            placeholder={t('app.newTaskProjectPlaceholder')}
             className="modal-input"
             onKeyDown={(e) => {
               if (e.key === 'Enter') {
@@ -652,7 +654,7 @@ function App() {
       <Toggle
         checked={addAnother}
         onChange={setAddAnother}
-        label={'Aggiungi un altro task'}
+        label={t('app.addAnotherTask')}
       />
     </Modal>
   )
@@ -678,7 +680,7 @@ function App() {
                 alignItems: 'center',
               }}
             >
-              zen mode
+              {t('app.zenMode')}
             </span>
           )}
         </div>
@@ -723,23 +725,26 @@ function App() {
           <Toggle
             checked={projectGroupable}
             onChange={setProjectGroupable}
-            label={'Raggruppa'}
+            label={t('app.groupToggle')}
           />
           <Toggle
             checked={dateTimeEnabled}
             onChange={setDateTimeEnabled}
-            label={'Con scadenza'}
+            label={t('app.dueDateToggle')}
           />
           <Toggle
             checked={showExpired}
             onChange={setShowExpired}
-            label={'Mostra scaduti'}
+            label={t('app.showExpiredToggle')}
           />{' '}
           <Toggle
             checked={showText}
             onChange={handleShowTextToggle}
-            label={'Mostra testo'}
+            label={t('app.showTextToggle')}
           />
+          <div style={{ marginTop: '1rem' }}>
+            <LanguageSwitcher />
+          </div>
         </div>
       )
     }
@@ -749,7 +754,7 @@ function App() {
 
     const PaletteModal = ({ project, onClose }) => (
       <Modal
-        title="Scegli un colore"
+        title={t('app.chooseColorTitle')}
         onclick={onClose}
         icon={
           <span
@@ -829,7 +834,7 @@ function App() {
                       cursor: 'pointer',
                       boxShadow: '0 0 2px #0002',
                     }}
-                    title="Scegli colore"
+                    title={t('app.chooseColorButton')}
                     onClick={() => setPaletteModalProject(project)}
                   />
                 </li>
@@ -849,24 +854,24 @@ function App() {
     const ThemePanel = () => {
       return (
         <div>
-          <strong>Tema icone:</strong>
+          <strong>{t('app.iconThemeLabel')}</strong>
           <div style={{ marginTop: '16px' }}>
             <Toggle
               checked={iconTheme === 'default'}
               onChange={() => handleThemeChange('default')}
-              label={'Tema di default'}
+              label={t('app.defaultTheme')}
               icons={getStatusIcons('default')}
             />
             <Toggle
               checked={iconTheme === 'checked'}
               onChange={() => handleThemeChange('checked')}
-              label={'Stile con spunta'}
+              label={t('app.checkedTheme')}
               icons={getStatusIcons('checked')}
             />
             <Toggle
               checked={iconTheme === 'panda'}
               onChange={() => handleThemeChange('panda')}
-              label={'Panda'}
+              label={t('app.pandaTheme')}
               icons={getStatusIcons('panda')}
             />
           </div>
@@ -886,7 +891,7 @@ function App() {
                 onClick={() => setShowHelp(true)}
                 style={{ cursor: 'pointer' }}
               >
-                help
+                {t('app.help')}
               </span>
             )}
             <span
@@ -900,7 +905,7 @@ function App() {
                 onClick={() => setShowConfig(true)}
                 style={{ cursor: 'pointer' }}
               >
-                config
+                {t('app.config')}
               </span>
             )}
             <Toggle checked={zenMode} onChange={setZenMode} label={''} />
@@ -913,7 +918,7 @@ function App() {
                 }}
                 style={{ cursor: 'pointer' }}
               >
-                zen mode
+                {t('app.zenMode')}
               </span>
             )}
             {token && (
@@ -932,7 +937,7 @@ function App() {
                 onMouseOver={(e) => e.target.style.backgroundColor = '#c82333'}
                 onMouseOut={(e) => e.target.style.backgroundColor = '#dc3545'}
               >
-                Logout.
+                {t('app.logout')}
               </button>
             )}
           </div>
@@ -941,14 +946,14 @@ function App() {
         {showConfig && (
           <Modal
             onClick={() => setShowConfig(false)}
-            title="Configurazioni"
+            title={t('app.settingsTitle')}
             icon={<GearIcon />}
           >
             <TabbedContent
               panels={[
-                { content: <TogglePanel />, title: 'Generale' },
-                { content: <ProjectPanel />, title: 'Progetti' },
-                { content: <ThemePanel />, title: 'Temi' },
+                { content: <TogglePanel />, title: t('app.generalTab') },
+                { content: <ProjectPanel />, title: t('app.projectsTab') },
+                { content: <ThemePanel />, title: t('app.themesTab') },
               ]}
             />
             <InfoPanel />
@@ -1057,15 +1062,15 @@ function App() {
 
   const WorkspaceNotificationsModalView = editingWorkspaceNotifications && (
     <Modal
-      title={`Notifiche: ${editingWorkspaceNotifications.name}`}
+      title={t('app.workspaceNotificationsTitle', { name: editingWorkspaceNotifications.name })}
       onClick={() => setEditingWorkspaceNotifications(null)}
       buttons={[
-        { label: 'salva', onClick: saveWorkspaceNotifications },
-        { label: 'chiudi', onClick: () => setEditingWorkspaceNotifications(null) },
+        { label: t('common.save'), onClick: saveWorkspaceNotifications },
+        { label: t('common.close'), onClick: () => setEditingWorkspaceNotifications(null) },
       ]}
     >
       <div className="modal-input-wrapper">
-        <label style={{ display: 'block', marginBottom: 4 }}>Dalle</label>
+        <label style={{ display: 'block', marginBottom: 4 }}>{t('app.from')}</label>
         <input
           type="time"
           value={notifDalle}
@@ -1074,7 +1079,7 @@ function App() {
         />
       </div>
       <div className="modal-input-wrapper">
-        <label style={{ display: 'block', marginBottom: 4 }}>Alle</label>
+        <label style={{ display: 'block', marginBottom: 4 }}>{t('app.to')}</label>
         <input
           type="time"
           value={notifAlle}
@@ -1123,7 +1128,7 @@ function App() {
 
       return (
         <Modal
-          title="Change Workspace"
+          title={t('app.changeWorkspaceTitle')}
           onClick={() => setShowChangeWorkspace(false)}
         >
           <div className="modal-input-wrapper">
@@ -1131,7 +1136,7 @@ function App() {
               type="text"
               value={workspaceFilter}
               onChange={(e) => setWorkspaceFilter(e.target.value)}
-              placeholder="Nome workspace"
+              placeholder={t('app.workspaceNamePlaceholder')}
               className="modal-input"
             />
           </div>
@@ -1183,13 +1188,13 @@ function App() {
                     {workspace.name} ({workspace.tasks_count ?? 0})
                   </button>
                   {workspace.shared && (
-                    <div title="Workspace condiviso" style={{ marginLeft: 8 }}>
+                    <div title={t('app.sharedWorkspace')} style={{ marginLeft: 8 }}>
                       <UsersIcon />
                     </div>
                   )}
                   {workspace.name === 'default' ? (
                     <div
-                      title="Il workspace default non ha impostazioni di notifica"
+                      title={t('app.defaultWorkspaceNoNotifications')}
                       style={{ marginLeft: 8, cursor: 'not-allowed' }}
                     >
                       <LockIcon />
@@ -1202,7 +1207,7 @@ function App() {
                       }}
                       role="button"
                       tabIndex={0}
-                      title="Impostazioni notifiche"
+                      title={t('app.notificationSettings')}
                       style={{ marginLeft: 8, cursor: 'pointer' }}
                       onKeyDown={(e) => {
                         if (e.key === 'Enter' || e.key === ' ') {
@@ -1272,7 +1277,7 @@ function App() {
                     .catch(() => finalize())
                 }}
               >
-                salva nuovo workspace
+                {t('app.saveNewWorkspace')}
               </button>
             )}
           </div>
@@ -1313,17 +1318,17 @@ function App() {
 
   const WorkspaceMembersModalView = (
     <Modal
-      title="Membri workspace"
+      title={t('app.workspaceMembersTitle')}
       onClick={() => setShowWorkspaceMembers(false)}
       buttons={[
-        { label: 'invita', onClick: () => addMemberHandler() },
-        { label: 'chiudi', onClick: () => setShowWorkspaceMembers(false) },
+        { label: t('app.inviteButton'), onClick: () => addMemberHandler() },
+        { label: t('common.close'), onClick: () => setShowWorkspaceMembers(false) },
       ]}
     >
       <div className="modal-input-wrapper">
         <input
           type="email"
-          placeholder="email membro"
+          placeholder={t('app.memberEmailPlaceholder')}
           className="modal-input"
         />
       </div>
@@ -1361,7 +1366,7 @@ function App() {
           backgroundColor: 'white'
         }}>
           <div className="workspace-wrapper">
-            <div className="workspaces-container clickable  " onClick={() => setShowChangeWorkspace(true)}>workspace: {ws}</div>
+            <div className="workspaces-container clickable  " onClick={() => setShowChangeWorkspace(true)}>{t('app.workspaceLabel', { name: ws })}</div>
             {ws != 'default' && <div
               className="workspace-members"
               onClick={() => setShowWorkspaceMembers(true)}

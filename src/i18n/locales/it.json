@@ -1,0 +1,214 @@
+{
+  "common": {
+    "cancel": "Annulla",
+    "save": "Salva",
+    "close": "Chiudi",
+    "confirm": "Conferma"
+  },
+  "app": {
+    "logoutConfirm": "Sei sicuro di voler uscire? Tutti i dati locali verranno rimossi.",
+    "logout": "Logout.",
+    "zenMode": "zen mode",
+    "help": "help",
+    "config": "config",
+    "newTaskModalTitle": "Nuovo Task",
+    "newTaskTitlePlaceholder": "Titolo del task",
+    "newTaskDescriptionPlaceholder": "Descrizione del task",
+    "newTaskProjectPlaceholder": "Progetto (opzionale)",
+    "addAnotherTask": "Aggiungi un altro task",
+    "saveTask": "salva task",
+    "settingsTitle": "Configurazioni",
+    "generalTab": "Generale",
+    "projectsTab": "Progetti",
+    "themesTab": "Temi",
+    "groupToggle": "Raggruppa",
+    "dueDateToggle": "Con scadenza",
+    "showExpiredToggle": "Mostra scaduti",
+    "showTextToggle": "Mostra testo",
+    "chooseColorTitle": "Scegli un colore",
+    "chooseColorButton": "Scegli colore",
+    "iconThemeLabel": "Tema icone:",
+    "defaultTheme": "Tema di default",
+    "checkedTheme": "Stile con spunta",
+    "pandaTheme": "Panda",
+    "workspaceLabel": "workspace: {{name}}",
+    "changeWorkspaceTitle": "Change Workspace",
+    "workspaceNamePlaceholder": "Nome workspace",
+    "saveNewWorkspace": "salva nuovo workspace",
+    "sharedWorkspace": "Workspace condiviso",
+    "defaultWorkspaceNoNotifications": "Il workspace default non ha impostazioni di notifica",
+    "notificationSettings": "Impostazioni notifiche",
+    "workspaceNotificationsTitle": "Notifiche: {{name}}",
+    "from": "Dalle",
+    "to": "Alle",
+    "workspaceMembersTitle": "Membri workspace",
+    "inviteButton": "invita",
+    "memberEmailPlaceholder": "email membro"
+  },
+  "formatDate": {
+    "tomorrow": "domani"
+  },
+  "editTask": {
+    "title": "Modifica task",
+    "start": "inizia",
+    "whatTab": "Cosa",
+    "shortTitleLabel": "Titolo breve",
+    "longDescriptionLabel": "Descrizione lunga",
+    "whenTab": "Quando",
+    "periodicityLabel": "Periodicità",
+    "repeatEvery": "ripeti ogni",
+    "units": {
+      "minutes": "minuti",
+      "days": "giorni",
+      "weeks": "settimane",
+      "months": "mesi",
+      "years": "anni"
+    },
+    "noDeadlineHint": "Lascia vuoto per nessuna scadenza",
+    "deadlineLabel": "Scadenza",
+    "inDays": "+{{count}}g",
+    "tomorrow": "domani",
+    "nextWeek": "settimana prossima",
+    "nextMonth": "mese prossimo",
+    "projectTab": "Progetto",
+    "projectLabel": "Progetto",
+    "editProjectPlaceholder": "Modifica progetto...",
+    "noProjectsFound": "Nessun progetto trovato"
+  },
+  "confirmModal": {
+    "title": "Conferma pulizia",
+    "message": "Vuoi davvero archiviare tutti i task completati o skippati?"
+  },
+  "loginModal": {
+    "title": "Autenticazione",
+    "loginButton": "Login",
+    "username": "Username",
+    "usernamePlaceholder": "Inserisci username",
+    "password": "Password",
+    "passwordPlaceholder": "Inserisci password",
+    "noAccount": "Non hai un account? Registrati"
+  },
+  "pandaLegend": {
+    "clickToTry": "Clicca per provare",
+    "tryQuadrato": "Provare Quadrato",
+    "todo": "Task da fare",
+    "inProgress": "Task iniziato",
+    "done": "Task completato",
+    "skipped": "Task skippato"
+  },
+  "taskList": {
+    "edit": "Modifica",
+    "viewDetail": "Vedi dettaglio",
+    "viewDetailAria": "Vedi dettaglio task"
+  },
+  "footer": {
+    "addAria": "Aggiungi nuovo task",
+    "addLabel": "aggiungi",
+    "cleanAria": "Pulisci task",
+    "cleanLabel": "archivia"
+  },
+  "loginForm": {
+    "loginButton": "Login",
+    "registerButton": "Registrati",
+    "freeTitle": "Free",
+    "freeSubtitle": "Tutte le funzionalità, senza costi",
+    "features": [
+      "Task illimitati: crea, modifica ed elimina senza limiti",
+      "Task periodici e ricorrenti",
+      "Gestione progetti con filtri e colori personalizzati",
+      "Workspace multipli e condivisibili con altri utenti",
+      "Notifiche configurabili per workspace",
+      "Modalità zen per la concentrazione",
+      "Temi icone personalizzabili",
+      "Scorciatoie da tastiera"
+    ]
+  },
+  "loginPage": {
+    "loginFailed": "Login fallito: {{message}}",
+    "passwordUpdateFailed": "Aggiornamento password fallito: {{message}}"
+  },
+  "lostPasswordPage": {
+    "title": "Recupera password",
+    "emailHint": "(la tua email sarà la tua username)",
+    "emailPlaceholder": "Inserisci la tua email",
+    "submitButton": "Recupera password",
+    "successAlert": "Se l'email è registrata, riceverai un'email con le istruzioni per recuperare la password.",
+    "errorAlert": "Si è verificato un errore. Riprova più tardi."
+  },
+  "registerPage": {
+    "title": "Registrazione",
+    "emailHint": "(la tua email sarà la tua username)",
+    "emailPlaceholder": "Inserisci la tua email",
+    "submitButton": "Registrati",
+    "submitting": "Invio in corso...",
+    "haveAccount": "Hai già un account? Accedi",
+    "forgotPassword": "Hai smarrito la password?",
+    "modalTitle": "Registrazione",
+    "closeButton": "Chiudi",
+    "registrationUnavailable": "Ci sono stati problemi con la registrazione. La funzionalità non è al momento disponibile.",
+    "registrationSuccess": "Registrazione avviata con successo! Controlla la tua email. Verrai reindirizzato alla home page tra {{seconds}} secondi.",
+    "genericError": "Si è verificato un errore durante la registrazione.",
+    "errorWithStatus": "Errore {{status}}: {{text}}",
+    "connectionError": "Errore di connessione. Riprova più tardi."
+  },
+  "taskDetailPage": {
+    "back": "← Torna indietro",
+    "notFound": "Task non trovato.",
+    "loading": "Caricamento...",
+    "home": "Home",
+    "status": "Stato",
+    "statusTodo": "Da fare",
+    "statusInProgress": "In corso",
+    "statusDone": "Completato",
+    "statusSkipped": "Saltato",
+    "project": "Progetto",
+    "deadline": "Scadenza",
+    "periodicity": "Periodicità",
+    "every": "Ogni {{number}} {{unit}}",
+    "description": "Descrizione",
+    "taskId": "ID task: {{id}}"
+  },
+  "expiredTasks": {
+    "loading": "Caricamento task scaduti...",
+    "fetchError": "Errore nella fetch /quadrato/workspaces",
+    "none": "Nessun task scaduto",
+    "title": "Task scaduti",
+    "viewDetail": "Vedi dettaglio task"
+  },
+  "helpModal": {
+    "title": "Help",
+    "colorsTab": "Colori",
+    "shortcutsTab": "Shortcuts",
+    "legendTab": "Legenda",
+    "blackLabel": "nero",
+    "blackDesc": "I task normali",
+    "redLabel": "rosso",
+    "redDesc": "I task scaduti",
+    "shortcutNewTask": "Nuovo task",
+    "shortcutArchive": "Archivia completati e skippati",
+    "shortcutHelp": "Mostra help",
+    "shortcutClose": "Chiudi modale help o nuovo task",
+    "legendIntro": "I panda rappresentano lo stato del task.",
+    "todo": "Task da fare",
+    "inProgress": "Task iniziato",
+    "done": "Task completato",
+    "skipped": "Task skippato"
+  },
+  "infoPanel": {
+    "version": "Versione:",
+    "createdBy": "Creato da:",
+    "repository": "Repository:"
+  },
+  "registeredModal": {
+    "title": "Registrazione avvenuta con successo!",
+    "goHome": "Vai alla home",
+    "body": "La registrazione è completata con successo! Controlla la tua email per ulteriori istruzioni. Tra {{seconds}} secondi verrai reindirizzato automaticamente alla home page."
+  },
+  "languageSwitcher": {
+    "label": "Lingua"
+  },
+  "taskProjectSelector": {
+    "allTasks": "tutti i task",
+    "noProject": "nessun progetto"
+  }
+}
