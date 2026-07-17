@@ -1,6 +1,7 @@
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import App from './App.jsx'
+import LoginPage from './pages/LoginPage.jsx'
 import RegisterPage from './pages/RegisterPage.jsx'
 import LostPasswordPage from './pages/LostPasswordPage.jsx'
 import TaskDetailPage from './pages/TaskDetailPage.tsx'
@@ -19,6 +20,10 @@ createRoot(document.getElementById('root')).render(
 
                 if (currentPath === '/register') {
                     return <RegisterPage />
+                }
+
+                if (currentPath === '/login') {
+                    return <LoginPage />
                 }
 
                 const taskDetailMatch = currentPath.match(/^\/task\/([\w-]+)$/)

@@ -294,6 +294,16 @@ input, textarea {
     width: 100%;
 }
 
+.workspace-buttons .modal-close-btn.workspace-current {
+    background: #cfe8cf;
+    color: #1f5c1f;
+    font-weight: 700;
+}
+
+.workspace-buttons .modal-close-btn.workspace-current:hover {
+    background: #b6dab6;
+}
+
 .modal-input {
     width: 100%;
     margin-bottom: 1rem;
