@@ -38,8 +38,8 @@ export interface Repository {
     getProjectGroupable(): boolean;
 
     // active tab
-    setActiveTab(index: React.SetStateAction<number>): void;
-    getActiveTab(): string | null;
+    setActiveTab(id: string, index: React.SetStateAction<number>): void;
+    getActiveTab(id: string): string | null;
 
     // filters
     setProjectFilter(value: string): void;

@@ -10,7 +10,7 @@ interface QuadratoData {
     "simplanner-zen-mode": boolean;
     "simplanner-project-filter": string | null;
     "simplanner-project-groupable": boolean;
-    "simplanner-config-tab": string;
+    "simplanner-config-tab": Record<string, string>;
 }
 
 // definisci un hook vuoto ma che si chiama router 
@@ -46,7 +46,7 @@ class AjaxRepository implements Repository {
         "simplanner-zen-mode": false,
         "simplanner-project-filter": null,
         "simplanner-project-groupable": true,
-        "simplanner-config-tab": "0",
+        "simplanner-config-tab": {},
     };
 
     constructor() {
@@ -411,12 +411,15 @@ class AjaxRepository implements Repository {
 
     // ========== UI State ==========
 
-    getActiveTab(): string | null {
-        return this.data["simplanner-config-tab"];
+    getActiveTab(id: string): string | null {
+        return this.data["simplanner-config-tab"][id] ?? null;
     }
 
-    setActiveTab(index: number): void {
-        this.data["simplanner-config-tab"] = String(index);
+    setActiveTab(id: string, index: number): void {
+        this.data["simplanner-config-tab"] = {
+            ...this.data["simplanner-config-tab"],
+            [id]: String(index),
+        };
         this.syncToServer();
     }
 
@@ -457,7 +460,7 @@ class AjaxRepository implements Repository {
             "simplanner-zen-mode": false,
             "simplanner-project-filter": null,
             "simplanner-project-groupable": false,
-            "simplanner-config-tab": "1"
+            "simplanner-config-tab": {}
         };
 
         this.lastSyncedHash = "";
