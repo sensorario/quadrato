@@ -13,20 +13,21 @@
 .header-bar {
     display: flex;
     align-items: center;
-    justify-content: space-between;
-    justify-content: end;
+    justify-content: flex-end;
+    flex-wrap: wrap;
+    row-gap: 8px;
+    width: 100%;
 }
 .header-icons {
     display: flex;
     align-items: center;
+    flex-wrap: wrap;
     gap: 8px;
-    height: 2.5rem;
+    row-gap: 8px;
 }
 .header-icons > span {
     display: flex;
     align-items: center;
-    height: 100%;
-    
 }
 .clean-icon {
     display: inline-flex;
@@ -158,8 +159,10 @@ input, textarea {
     background-color: #9e9e9e8c;
     border-top: #8f8f8f 1px solid   ;
     padding: 8px 16px;
-    border-radius: 0 0 8px 8px;
+    border-radius: 0;
     display: flex;
+    flex: 0 0 auto;
+    flex-wrap: wrap;
     gap: 8px;
     justify-content: flex-end;
     box-shadow: inset 0 8px 4px -8px rgba(0,0,0,0.3);
@@ -168,18 +171,38 @@ input, textarea {
 .modal-header {
     padding: 8px 8px 0;
     background-color: #dddddd;
-    border-radius: 8px 8px 0 0;
+    border-radius: 0;
+    flex: 0 0 auto;
 }
 .modal-content {
     padding: 1rem;
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+@media (min-width: 640px) {
+    .modal-footer {
+        border-radius: 0 0 8px 8px;
+    }
+    .modal-header {
+        border-radius: 8px 8px 0 0;
+    }
 }
 
 .app-container {
     width: 100%;
     max-width: 720px;
-    margin: 8px     auto;
-    padding: 0;
+    margin: 8px auto;
+    padding: 0 12px;
     box-sizing: border-box;
+}
+
+@media (min-width: 600px) {
+    .app-container {
+        padding: 0;
+    }
 }
 
 .task-title {
@@ -208,7 +231,7 @@ input, textarea {
     top: 0;
     left: 0;
     width: 100vw;
-    height: 100vh;
+    height: 100dvh;
     background: rgba(0, 0, 0, 0.8);
     display: flex;
     align-items: center;
@@ -221,17 +244,40 @@ input, textarea {
     animation: modal-overlay-fade-out 0.22s ease-in forwards;
 }
 
+/* Mobile-first: la modale è un foglio a schermo intero */
 .modal {
     background: white;
-    border-radius: 8px;
     box-shadow: 0 2px 8px rgba(0,0,0,0.2);
-    max-width: calc(100% - 40px);
-    min-width: 500px;
+    width: 100%;
+    height: 100%;
+    max-width: 100%;
+    min-width: 0;
+    max-height: 100%;
+    border-radius: 0;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
     animation: modal-slide-in 0.32s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .modal.modal-closing {
     animation: modal-slide-out 0.22s cubic-bezier(0.4, 0, 1, 1) forwards;
+}
+
+/* Da tablet in su: torna a essere un dialog centrato */
+@media (min-width: 640px) {
+    .modal-overlay {
+        padding: 20px;
+        box-sizing: border-box;
+    }
+    .modal {
+        width: auto;
+        height: auto;
+        max-width: calc(100% - 40px);
+        min-width: 500px;
+        max-height: 90vh;
+        border-radius: 8px;
+    }
 }
 
 @keyframes modal-overlay-fade-in {
@@ -258,7 +304,7 @@ input, textarea {
     display: flex;
     align-items: center;
     gap: 4px;
-    font-size: 13px;
+    font-size: 14px;
     color: #666;
     white-space: nowrap;
     animation: panda-hint-bounce 1.1s ease-in-out infinite;
@@ -270,14 +316,16 @@ input, textarea {
 }
 
 .tabbed-content {
-    height: calc(100vh - 360px);
     min-height: fit-content;
     .tabs {
         display: flex;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
         .tab:first-of-type {
             margin-left: 8px;
         }
         .tab {
+            flex: 0 0 auto;
             border: #ccc 1px solid;
             border-bottom: none;
             border-radius: 8px 8px 0 0;
@@ -286,7 +334,8 @@ input, textarea {
             cursor: pointer;
             position: relative;
             top: 1px;
-            
+            white-space: nowrap;
+
             &.active {
                 font-weight: bold;
                 border-bottom: 2px solid #fff;
@@ -295,10 +344,15 @@ input, textarea {
     }
 }
 
+@media (min-width: 640px) {
+    .tabbed-content {
+        height: calc(100vh - 360px);
+    }
+}
+
 /* Responsive styles */
 @media (max-width: 600px) {
     .app-container {
-    padding: 0;
     box-sizing: border-box;
     max-width: 100%;
     }
@@ -337,6 +391,19 @@ input, textarea {
 
 .workspace-buttons .modal-close-btn {
     width: 100%;
+    font-size: 1.15rem;
+}
+
+/* Su mobile la lista workspace mostra solo nome + conteggio totale,
+   il dettaglio per stato resta riservato agli schermi con più spazio */
+.workspace-stats {
+    display: none;
+}
+
+@media (min-width: 640px) {
+    .workspace-stats {
+        display: flex;
+    }
 }
 
 .workspace-buttons .modal-close-btn.workspace-current {
@@ -388,11 +455,13 @@ h2 {
 .workspace-wrapper {
     display: flex;
     align-items: center;
+    flex-wrap: wrap;
     gap: 8px;
+    row-gap: 8px;
 }
 
 .registered-users-count {
-    font-size: 12px;
+    font-size: 13px;
     color: #666;
     white-space: nowrap;
 }

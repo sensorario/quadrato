@@ -677,8 +677,9 @@ function App() {
         <div
           style={{
             display: 'flex',
+            alignItems: 'center',
             justifyContent: 'flex-end',
-            height: '35px',
+            flexWrap: 'wrap',
             gap: '12px',
           }}
         >
@@ -893,7 +894,7 @@ function App() {
 
     return (
       <>
-        <div className="header-bar" style={{ height: '35px' }}>
+        <div className="header-bar">
           <div className="header-icons">
             <span onClick={() => setShowHelp(true)}>
               <HelpIcon />
@@ -1160,12 +1161,19 @@ function App() {
                 state,
                 count: workspace.tasks_by_status && workspace.tasks_by_status[state] ? workspace.tasks_by_status[state] : 0
               }));
+              const hasLockOrEdit = workspace.name === 'default' || Boolean(workspace.id)
+              const iconCount = (workspace.shared ? 1 : 0) + (hasLockOrEdit ? 1 : 0)
               return (
-                <div key={workspace.id || workspace.name} style={{ marginBottom: 8, display: 'flex', alignItems: 'center' }}>
+                <div key={workspace.id || workspace.name} style={{ marginBottom: 8, display: 'flex', alignItems: 'flex-start', flexWrap: 'wrap', rowGap: 8, position: 'relative' }}>
                   <button
                     type="button"
                     className={`modal-close-btn${workspace.name === ws ? ' workspace-current' : ''}`}
-                    style={{ marginBottom: 0, minWidth: 120 }}
+                    style={{
+                      marginBottom: 0,
+                      minWidth: 120,
+                      textAlign: 'left',
+                      paddingRight: iconCount > 0 ? `${0.75 + iconCount * 1.75}rem` : undefined,
+                    }}
                     onClick={() => {
                       const accessToken = localStorage.getItem('simonegentili.com-access-token')
                       if (accessToken) {
@@ -1199,38 +1207,42 @@ function App() {
                   >
                     {workspace.name} ({workspace.tasks_count ?? 0})
                   </button>
-                  {workspace.shared && (
-                    <div title={t('app.sharedWorkspace')} style={{ marginLeft: 8 }}>
-                      <UsersIcon />
+                  {iconCount > 0 && (
+                    <div style={{ position: 'absolute', right: 12, top: 0, bottom: 0, display: 'flex', alignItems: 'center', gap: 8 }}>
+                      {workspace.shared && (
+                        <div title={t('app.sharedWorkspace')}>
+                          <UsersIcon />
+                        </div>
+                      )}
+                      {workspace.name === 'default' ? (
+                        <div
+                          title={t('app.defaultWorkspaceNoNotifications')}
+                          style={{ cursor: 'not-allowed' }}
+                        >
+                          <LockIcon />
+                        </div>
+                      ) : workspace.id && (
+                        <div
+                          onClick={(e) => {
+                            e.stopPropagation()
+                            openWorkspaceNotifications(workspace)
+                          }}
+                          role="button"
+                          tabIndex={0}
+                          title={t('app.notificationSettings')}
+                          style={{ cursor: 'pointer' }}
+                          onKeyDown={(e) => {
+                            if (e.key === 'Enter' || e.key === ' ') {
+                              openWorkspaceNotifications(workspace)
+                            }
+                          }}
+                        >
+                          <EditIcon />
+                        </div>
+                      )}
                     </div>
                   )}
-                  {workspace.name === 'default' ? (
-                    <div
-                      title={t('app.defaultWorkspaceNoNotifications')}
-                      style={{ marginLeft: 8, cursor: 'not-allowed' }}
-                    >
-                      <LockIcon />
-                    </div>
-                  ) : workspace.id && (
-                    <div
-                      onClick={(e) => {
-                        e.stopPropagation()
-                        openWorkspaceNotifications(workspace)
-                      }}
-                      role="button"
-                      tabIndex={0}
-                      title={t('app.notificationSettings')}
-                      style={{ marginLeft: 8, cursor: 'pointer' }}
-                      onKeyDown={(e) => {
-                        if (e.key === 'Enter' || e.key === ' ') {
-                          openWorkspaceNotifications(workspace)
-                        }
-                      }}
-                    >
-                      <EditIcon />
-                    </div>
-                  )}
-                  <div style={{ fontSize: '13px', color: '#444', marginLeft: 16, display: 'flex', alignItems: 'flex-end', gap: 16 }}>
+                  <div className="workspace-stats" style={{ fontSize: '13px', color: '#444', marginLeft: 16, alignItems: 'flex-end', flexWrap: 'wrap', gap: 16, rowGap: 8 }}>
                     {stats.map(({ state, count }) => (
                       <span key={state} style={{ minWidth: 60, textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
                         <span style={{ fontSize: '11px', color: '#888', marginBottom: 2 }}>{state}</span>
