@@ -963,6 +963,7 @@ function App() {
             icon={<GearIcon />}
           >
             <TabbedContent
+              id="settings"
               panels={[
                 { content: <TogglePanel />, title: t('app.generalTab') },
                 { content: <ProjectPanel />, title: t('app.projectsTab') },
@@ -1164,84 +1165,86 @@ function App() {
               const hasLockOrEdit = workspace.name === 'default' || Boolean(workspace.id)
               const iconCount = (workspace.shared ? 1 : 0) + (hasLockOrEdit ? 1 : 0)
               return (
-                <div key={workspace.id || workspace.name} style={{ marginBottom: 8, display: 'flex', alignItems: 'flex-start', flexWrap: 'wrap', rowGap: 8, position: 'relative' }}>
-                  <button
-                    type="button"
-                    className={`modal-close-btn${workspace.name === ws ? ' workspace-current' : ''}`}
-                    style={{
-                      marginBottom: 0,
-                      minWidth: 120,
-                      textAlign: 'left',
-                      paddingRight: iconCount > 0 ? `${0.75 + iconCount * 1.75}rem` : undefined,
-                    }}
-                    onClick={() => {
-                      const accessToken = localStorage.getItem('simonegentili.com-access-token')
-                      if (accessToken) {
-                        fetch('https://api.simonegentili.com/quadrato/workspace/current', {
-                          method: 'POST',
-                          headers: {
-                            authorization: accessToken,
-                            'Content-Type': 'application/json',
-                          },
-                          body: JSON.stringify({ name: workspace.name }),
-                        })
-                          .then(() => {
-                            setWs(workspace.name)
-                            setProjectFilter('ALL')
-                            setWorkspaceFilter('')
-                            setShowChangeWorkspace(false)
+                <div key={workspace.id || workspace.name} style={{ marginBottom: 8, display: 'flex', flexDirection: 'column', rowGap: 8 }}>
+                  <div style={{ position: 'relative' }}>
+                    <button
+                      type="button"
+                      className={`modal-close-btn${workspace.name === ws ? ' workspace-current' : ''}`}
+                      style={{
+                        marginBottom: 0,
+                        minWidth: 120,
+                        textAlign: 'left',
+                        paddingRight: iconCount > 0 ? `${0.75 + iconCount * 1.75}rem` : undefined,
+                      }}
+                      onClick={() => {
+                        const accessToken = localStorage.getItem('simonegentili.com-access-token')
+                        if (accessToken) {
+                          fetch('https://api.simonegentili.com/quadrato/workspace/current', {
+                            method: 'POST',
+                            headers: {
+                              authorization: accessToken,
+                              'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify({ name: workspace.name }),
                           })
-                          .catch(() => {
-                            setWs(workspace.name)
-                            setProjectFilter('ALL')
-                            setWorkspaceFilter('')
-                            setShowChangeWorkspace(false)
-                          })
-                      } else {
-                        setWs(workspace.name)
-                        setProjectFilter('ALL')
-                        setWorkspaceFilter('')
-                        setShowChangeWorkspace(false)
-                      }
-                    }}
-                  >
-                    {workspace.name} ({workspace.tasks_count ?? 0})
-                  </button>
-                  {iconCount > 0 && (
-                    <div style={{ position: 'absolute', right: 12, top: 0, bottom: 0, display: 'flex', alignItems: 'center', gap: 8 }}>
-                      {workspace.shared && (
-                        <div title={t('app.sharedWorkspace')}>
-                          <UsersIcon />
-                        </div>
-                      )}
-                      {workspace.name === 'default' ? (
-                        <div
-                          title={t('app.defaultWorkspaceNoNotifications')}
-                          style={{ cursor: 'not-allowed' }}
-                        >
-                          <LockIcon />
-                        </div>
-                      ) : workspace.id && (
-                        <div
-                          onClick={(e) => {
-                            e.stopPropagation()
-                            openWorkspaceNotifications(workspace)
-                          }}
-                          role="button"
-                          tabIndex={0}
-                          title={t('app.notificationSettings')}
-                          style={{ cursor: 'pointer' }}
-                          onKeyDown={(e) => {
-                            if (e.key === 'Enter' || e.key === ' ') {
+                            .then(() => {
+                              setWs(workspace.name)
+                              setProjectFilter('ALL')
+                              setWorkspaceFilter('')
+                              setShowChangeWorkspace(false)
+                            })
+                            .catch(() => {
+                              setWs(workspace.name)
+                              setProjectFilter('ALL')
+                              setWorkspaceFilter('')
+                              setShowChangeWorkspace(false)
+                            })
+                        } else {
+                          setWs(workspace.name)
+                          setProjectFilter('ALL')
+                          setWorkspaceFilter('')
+                          setShowChangeWorkspace(false)
+                        }
+                      }}
+                    >
+                      {workspace.name} ({workspace.tasks_count ?? 0})
+                    </button>
+                    {iconCount > 0 && (
+                      <div style={{ position: 'absolute', right: 12, top: 0, bottom: 0, display: 'flex', alignItems: 'center', gap: 8 }}>
+                        {workspace.shared && (
+                          <div title={t('app.sharedWorkspace')}>
+                            <UsersIcon />
+                          </div>
+                        )}
+                        {workspace.name === 'default' ? (
+                          <div
+                            title={t('app.defaultWorkspaceNoNotifications')}
+                            style={{ cursor: 'not-allowed' }}
+                          >
+                            <LockIcon />
+                          </div>
+                        ) : workspace.id && (
+                          <div
+                            onClick={(e) => {
+                              e.stopPropagation()
                               openWorkspaceNotifications(workspace)
-                            }
-                          }}
-                        >
-                          <EditIcon />
-                        </div>
-                      )}
-                    </div>
-                  )}
+                            }}
+                            role="button"
+                            tabIndex={0}
+                            title={t('app.notificationSettings')}
+                            style={{ cursor: 'pointer' }}
+                            onKeyDown={(e) => {
+                              if (e.key === 'Enter' || e.key === ' ') {
+                                openWorkspaceNotifications(workspace)
+                              }
+                            }}
+                          >
+                            <EditIcon />
+                          </div>
+                        )}
+                      </div>
+                    )}
+                  </div>
                   <div className="workspace-stats" style={{ fontSize: '13px', color: '#444', marginLeft: 16, alignItems: 'flex-end', flexWrap: 'wrap', gap: 16, rowGap: 8 }}>
                     {stats.map(({ state, count }) => (
                       <span key={state} style={{ minWidth: 60, textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>

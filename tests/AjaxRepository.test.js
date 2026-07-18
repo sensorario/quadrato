@@ -51,3 +51,34 @@ describe('AjaxRepository temporary-password wiring', () => {
         expect(JSON.parse(options.body)).toEqual({ newPassword: 'brand-new-pass' });
     });
 });
+
+describe('AjaxRepository active tab is scoped per TabbedContent id', () => {
+    let repository;
+
+    beforeEach(() => {
+        jest.resetModules();
+        window.localStorage.clear();
+        repository = require('../src/repositories/AjaxRepository').default;
+    });
+
+    it('stores the active tab separately for each id', () => {
+        repository.setActiveTab('editTask', 2);
+        repository.setActiveTab('settings', 0);
+
+        expect(repository.getActiveTab('editTask')).toBe('2');
+        expect(repository.getActiveTab('settings')).toBe('0');
+    });
+
+    it('does not let one id overwrite another when updated later', () => {
+        repository.setActiveTab('settings', 1);
+        repository.setActiveTab('editTask', 2);
+        repository.setActiveTab('editTask', 0);
+
+        expect(repository.getActiveTab('settings')).toBe('1');
+        expect(repository.getActiveTab('editTask')).toBe('0');
+    });
+
+    it('returns null for an id that has never been set', () => {
+        expect(repository.getActiveTab('settings')).toBeNull();
+    });
+});

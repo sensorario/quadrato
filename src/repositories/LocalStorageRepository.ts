@@ -179,13 +179,13 @@ class LocalStorageRepository implements Repository {
         localStorage.setItem("simplanner-tasks", JSON.stringify(tasks));
     }
 
-    setActiveTab(index: React.SetStateAction<number>): void {
-        localStorage.setItem('simplanner-config-tab', String(index));
+    setActiveTab(id: string, index: React.SetStateAction<number>): void {
+        localStorage.setItem(`simplanner-config-tab-${id}`, String(index));
     }
 
-    getActiveTab(): string | null {
+    getActiveTab(id: string): string | null {
         try {
-            const saved = localStorage.getItem('simplanner-config-tab');
+            const saved = localStorage.getItem(`simplanner-config-tab-${id}`);
             return saved ? JSON.parse(saved) : null;
         } catch (e) {
             console.error("Failed to parse active tab from localStorage", e);

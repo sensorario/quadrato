@@ -48,7 +48,7 @@ const EditTaskModal = ({ value, setValue, longValue, setLongValue, projectValue,
     return <Modal title={t('editTask.title')} icon={<HelpIcon />} onClick={onClose} >
         <PlayIcon /> {t('editTask.start')}
         <div style={{ marginBottom: '1rem', fontSize: '0.9rem', color: '#555' }}>&nbsp;</div>
-        <TabbedContent panels={[
+        <TabbedContent id="editTask" panels={[
             {
                 title: t('editTask.whatTab'), content: <>
                     <label style={{ fontWeight: 500, marginBottom: 4, display: 'block' }}>{t('editTask.shortTitleLabel')}</label>

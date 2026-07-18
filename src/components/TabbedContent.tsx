@@ -1,17 +1,16 @@
-import { getConfig } from "@testing-library/react";
 import React from "react";
 import { useState } from "react";
 import { getConfigRepository } from "../repositories";
 
 
-export const TabbedContent = ({ panels }: { panels: { title: string; content: React.ReactNode }[] }) => {
+export const TabbedContent = ({ id, panels }: { id: string; panels: { title: string; content: React.ReactNode }[] }) => {
     const [activeTab, setActiveTab] = useState(() => {
-        return getConfigRepository().getActiveTab() ?? 0;
+        return getConfigRepository().getActiveTab(id) ?? 0;
     });
 
     const handleTabChange = (index: React.SetStateAction<number>) => {
         setActiveTab(index);
-        getConfigRepository().setActiveTab(index);
+        getConfigRepository().setActiveTab(id, index);
     };
 
     return <div className="tabbed-content">
