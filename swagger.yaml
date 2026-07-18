@@ -192,6 +192,28 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
 
+  /users/count:
+    get:
+      tags:
+        - Authentication
+      summary: Count registered users
+      description: Returns the total number of registered users.
+      security: []
+      responses:
+        "200":
+          description: Registered users count retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: integer
+                    example: 200
+                  count:
+                    type: integer
+                    example: 42
+
   /data:
     get:
       tags:

@@ -32,6 +32,7 @@
     "checkedTheme": "Checkmark style",
     "pandaTheme": "Panda",
     "workspaceLabel": "workspace: {{name}}",
+    "registeredUsersCount": "{{count}} registered users",
     "changeWorkspaceTitle": "Change Workspace",
     "workspaceNamePlaceholder": "Workspace name",
     "saveNewWorkspace": "save new workspace",

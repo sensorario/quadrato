@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Link } from "../../Router"
 import { VersionNumber } from "../VersionNumber";
@@ -15,6 +16,18 @@ const LoginForm = ({
 }) => {
     const { t } = useTranslation();
     const FREE_FEATURES: string[] = t('loginForm.features', { returnObjects: true }) as unknown as string[];
+    const [registeredUsersCount, setRegisteredUsersCount] = useState<number | null>(null);
+
+    useEffect(() => {
+        fetch('https://api.simonegentili.com/quadrato/users/count')
+            .then((res) => res.json())
+            .then((json) => {
+                if (typeof json?.count === 'number') {
+                    setRegisteredUsersCount(json.count)
+                }
+            })
+            .catch(() => {})
+    }, [])
     return <div style={{
         position: 'fixed',
         top: 0,
@@ -35,6 +48,11 @@ const LoginForm = ({
             <LanguageSwitcher />
         </div>
         <h1 style={{ fontSize: '48px', color: '#333' }}>Quadrato</h1>
+        {registeredUsersCount !== null && (
+            <div style={{ fontSize: '14px', color: '#666', marginTop: '-20px' }}>
+                {t('app.registeredUsersCount', { count: registeredUsersCount })}
+            </div>
+        )}
         <div style={{ display: 'flex', gap: '20px' }}>
             <button
                 onClick={onClick}
@@ -100,6 +118,7 @@ const LoginForm = ({
                 ))}
             </ul>
         </div>
+        <VersionNumber />
     </div>
 }
 

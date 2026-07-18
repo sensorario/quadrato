@@ -32,6 +32,7 @@
     "checkedTheme": "チェックスタイル",
     "pandaTheme": "パンダ",
     "workspaceLabel": "ワークスペース: {{name}}",
+    "registeredUsersCount": "登録ユーザー数: {{count}}",
     "changeWorkspaceTitle": "ワークスペースを変更",
     "workspaceNamePlaceholder": "ワークスペース名",
     "saveNewWorkspace": "新しいワークスペースを保存",

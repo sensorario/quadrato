@@ -32,6 +32,7 @@
     "checkedTheme": "Häkchen-Stil",
     "pandaTheme": "Panda",
     "workspaceLabel": "Arbeitsbereich: {{name}}",
+    "registeredUsersCount": "{{count}} registrierte Benutzer",
     "changeWorkspaceTitle": "Arbeitsbereich wechseln",
     "workspaceNamePlaceholder": "Name des Arbeitsbereichs",
     "saveNewWorkspace": "neuen Arbeitsbereich speichern",

@@ -32,6 +32,7 @@
     "checkedTheme": "Estilo con marca",
     "pandaTheme": "Panda",
     "workspaceLabel": "espacio de trabajo: {{name}}",
+    "registeredUsersCount": "{{count}} usuarios registrados",
     "changeWorkspaceTitle": "Cambiar espacio de trabajo",
     "workspaceNamePlaceholder": "Nombre del espacio de trabajo",
     "saveNewWorkspace": "guardar nuevo espacio de trabajo",
