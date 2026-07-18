@@ -197,6 +197,7 @@ function App() {
   const [ws, setWs] = useState('default');
   // workspaces ora è un array di oggetti workspace (non solo nomi)
   const [workspaces, setWorkspaces] = useState([])
+  const [registeredUsersCount, setRegisteredUsersCount] = useState(null)
   const [workspaceFilter, setWorkspaceFilter] = useState('')
   const [editingWorkspaceNotifications, setEditingWorkspaceNotifications] = useState(null)
   const [notifDalle, setNotifDalle] = useState('08:00')
@@ -295,6 +296,17 @@ function App() {
         setWorkspaces([])
       })
   }, [token])
+
+  useEffect(() => {
+    fetch('https://api.simonegentili.com/quadrato/users/count')
+      .then((res) => res.json())
+      .then((json) => {
+        if (typeof json?.count === 'number') {
+          setRegisteredUsersCount(json.count)
+        }
+      })
+      .catch(() => {})
+  }, [])
 
   // Funzione per aggiornare la descrizione di un task
   const updateTaskTitle = (
@@ -1367,6 +1379,11 @@ function App() {
         }}>
           <div className="workspace-wrapper">
             <div className="workspaces-container clickable  " onClick={() => setShowChangeWorkspace(true)}>{t('app.workspaceLabel', { name: ws })}</div>
+            {registeredUsersCount !== null && (
+              <div className="registered-users-count">
+                {t('app.registeredUsersCount', { count: registeredUsersCount })}
+              </div>
+            )}
             {ws != 'default' && <div
               className="workspace-members"
               onClick={() => setShowWorkspaceMembers(true)}

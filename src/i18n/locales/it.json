@@ -32,6 +32,7 @@
     "checkedTheme": "Stile con spunta",
     "pandaTheme": "Panda",
     "workspaceLabel": "workspace: {{name}}",
+    "registeredUsersCount": "{{count}} utenti registrati",
     "changeWorkspaceTitle": "Change Workspace",
     "workspaceNamePlaceholder": "Nome workspace",
     "saveNewWorkspace": "salva nuovo workspace",

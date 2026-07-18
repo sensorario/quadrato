@@ -32,6 +32,7 @@
     "checkedTheme": "Style coché",
     "pandaTheme": "Panda",
     "workspaceLabel": "espace de travail : {{name}}",
+    "registeredUsersCount": "{{count}} utilisateurs inscrits",
     "changeWorkspaceTitle": "Changer d'espace de travail",
     "workspaceNamePlaceholder": "Nom de l'espace de travail",
     "saveNewWorkspace": "enregistrer le nouvel espace de travail",

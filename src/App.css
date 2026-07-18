@@ -391,6 +391,12 @@ h2 {
     gap: 8px;
 }
 
+.registered-users-count {
+    font-size: 12px;
+    color: #666;
+    white-space: nowrap;
+}
+
 .workspace-members {
     width: 32px;
     height: 32px;
