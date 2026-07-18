@@ -45,7 +45,12 @@ const EditTaskModal = ({ value, setValue, longValue, setLongValue, projectValue,
         return () => window.removeEventListener("keydown", handleEsc);
     }, [onClose]);
 
-    return <Modal title={t('editTask.title')} icon={<HelpIcon />} onClick={onClose} >
+    return <Modal title={t('editTask.title')} icon={<HelpIcon />} onClick={onClose} footer={
+        <Footer>
+            <button className="modal-close-btn" onClick={onClose}>{t('common.cancel')}</button>
+            <button className="modal-close-btn" style={{ background: '#666', color: '#fff' }} onClick={onSave}>{t('common.save')}</button>
+        </Footer>
+    }>
         <PlayIcon /> {t('editTask.start')}
         <div style={{ marginBottom: '1rem', fontSize: '0.9rem', color: '#555' }}>&nbsp;</div>
         <TabbedContent id="editTask" panels={[
@@ -178,10 +183,6 @@ const EditTaskModal = ({ value, setValue, longValue, setLongValue, projectValue,
                 )
             }
         ]} />
-        <Footer>
-            <button className="modal-close-btn" onClick={onClose}>{t('common.cancel')}</button>
-            <button className="modal-close-btn" style={{ background: '#666', color: '#fff' }} onClick={onSave}>{t('common.save')}</button>
-        </Footer>
     </Modal >;
 };
 

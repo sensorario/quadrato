@@ -5,13 +5,14 @@ type ModalProps = {
     title: string;
     icon?: React.ReactNode;
     onClick: () => void;
-    buttons: { label: string; onClick: () => void }[];
+    buttons?: { label: string; onClick: () => void }[];
+    footer?: React.ReactNode;
 };
 
 // Deve combaciare con la durata di .modal-closing / .modal-overlay-closing in App.css
 const CLOSE_ANIMATION_MS = 220;
 
-export const Modal = ({ children, title, icon, onClick, buttons }: ModalProps) => {
+export const Modal = ({ children, title, icon, onClick, buttons, footer }: ModalProps) => {
     const [closing, setClosing] = useState(false);
 
     const closeWith = (callback: () => void) => {
@@ -47,6 +48,7 @@ export const Modal = ({ children, title, icon, onClick, buttons }: ModalProps) =
                     </button>
                 ))}
             </div>}
+            {footer && <div className="modal-footer">{footer}</div>}
         </div>
     </div>;
 };
