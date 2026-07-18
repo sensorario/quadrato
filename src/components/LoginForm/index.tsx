@@ -32,8 +32,8 @@ const LoginForm = ({
         position: 'fixed',
         top: 0,
         left: 0,
-        width: '100vw',
-        height: '100vh',
+        width: '100%',
+        minHeight: '100dvh',
         backgroundColor: 'white',
         display: 'flex',
         flexDirection: 'column',
@@ -41,19 +41,20 @@ const LoginForm = ({
         justifyContent: 'center',
         gap: '30px',
         overflowY: 'auto',
-        padding: '30px 0',
+        padding: '30px 16px',
+        boxSizing: 'border-box',
         zIndex: 10000
     }}>
         <div style={{ position: 'absolute', top: '16px', right: '16px' }}>
             <LanguageSwitcher />
         </div>
-        <h1 style={{ fontSize: '48px', color: '#333' }}>Quadrato</h1>
+        <h1 style={{ fontSize: 'clamp(32px, 8vw, 48px)', color: '#333', textAlign: 'center' }}>Quadrato</h1>
         {registeredUsersCount !== null && (
-            <div style={{ fontSize: '14px', color: '#666', marginTop: '-20px' }}>
+            <div style={{ fontSize: '14px', color: '#666', marginTop: '-20px', textAlign: 'center' }}>
                 {t('app.registeredUsersCount', { count: registeredUsersCount })}
             </div>
         )}
-        <div style={{ display: 'flex', gap: '20px' }}>
+        <div style={{ display: 'flex', gap: '20px', flexWrap: 'wrap', justifyContent: 'center' }}>
             <button
                 onClick={onClick}
                 style={{

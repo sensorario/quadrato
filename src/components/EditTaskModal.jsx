@@ -120,7 +120,7 @@ const EditTaskModal = ({ value, setValue, longValue, setLongValue, projectValue,
                                 }}>{t('editTask.inDays', { count: days })}</button>
                             ))}
                         </div>
-                        <div style={{ display: 'flex', gap: '8px', marginBottom: '1rem' }}>
+                        <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', marginBottom: '1rem' }}>
                             <button type="button" style={{ fontSize: '0.95em', padding: '6px 14px', borderRadius: 6, border: '1px solid #ccc', background: '#f5f5f5', cursor: 'pointer' }} onClick={e => {
                                 e.preventDefault();
                                 const d = new Date();

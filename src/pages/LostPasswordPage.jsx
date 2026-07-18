@@ -12,11 +12,13 @@ export const LostPasswordPage = () => {
                 flexDirection: "column",
                 alignItems: "center",
                 justifyContent: "center",
-                height: "100vh",
+                minHeight: "100dvh",
                 backgroundColor: "#f5f5f5",
+                boxSizing: "border-box",
+                padding: "24px 16px",
             }}
         >
-            <h1 style={{ fontSize: "32px", marginBottom: "20px" }}>
+            <h1 style={{ fontSize: "clamp(24px, 7vw, 32px)", marginBottom: "20px", textAlign: "center" }}>
                 {t('lostPasswordPage.title')}
             </h1>
 
