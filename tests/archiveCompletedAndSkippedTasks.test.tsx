@@ -81,10 +81,10 @@ describe("archiveCompletedAndSkippedTasks", () => {
         // assicurarsi che il nuovo task abbia il timestamp corretto
         const expectedTimestamp = new Date(now);
         expectedTimestamp.setMinutes(expectedTimestamp.getMinutes() + 30);
-        expect(newTask?.timestamp).toBeCloseTo(expectedTimestamp.getTime(), -2); // entro 100ms 
+        expect(newTask?.timestamp).toBeCloseTo(expectedTimestamp.getTime(), -2); // entro 100ms
     });
 
-    it("archiving a repeatable but DONE task", () => {
+    it("archiving a repeatable but DONE task, going backwards", () => {
         // va indietro di 10 giorni e poi avanti di 30 minuti
         const now = Date.now() - 10 * 24 * 60 * 60 * 1000;
         const tasks = [
@@ -115,7 +115,7 @@ describe("archiveCompletedAndSkippedTasks", () => {
         // assicurarsi che il nuovo task abbia il timestamp corretto
         const expectedTimestamp = new Date();
         expectedTimestamp.setMinutes(expectedTimestamp.getMinutes() + 30);
-        expect(newTask?.timestamp).toBeCloseTo(expectedTimestamp.getTime(), -2); // entro 100ms 
+        expect(newTask?.timestamp).toBeCloseTo(expectedTimestamp.getTime(), -2); // entro 100ms
     });
 });
 

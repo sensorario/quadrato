@@ -4,14 +4,13 @@ import pkg from '../../package.json';
 import { useTranslation } from 'react-i18next';
 
 interface TaskProjectSelectorProps {
-    tasks: any[],
+    projects: string[],
     projectFilter: string | null,
     setProjectFilter: (val: string | null) => void
 }
 
-const TaskProjectSelector = ({ tasks, projectFilter, setProjectFilter }: TaskProjectSelectorProps) => {
+const TaskProjectSelector = ({ projects, projectFilter, setProjectFilter }: TaskProjectSelectorProps) => {
     const { t } = useTranslation();
-    tasks = tasks.filter(task => !task.archived);
 
     return <div>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '8px', flexWrap: 'wrap' }}>
@@ -32,7 +31,7 @@ const TaskProjectSelector = ({ tasks, projectFilter, setProjectFilter }: TaskPro
             <span style={{ fontSize: '0.8em', color: '#888' }}>v{pkg.version}</span>
         </div>
         <div style={{ display: 'flex', gap: '1rem', padding: '8px', flexWrap: 'wrap' }}>
-            {[...new Set(tasks.filter(t => t.project).map((t: { project: string }) => t.project))].map((proj: any) => (
+            {projects.map((proj: string) => (
                 <span
                     key={proj}
                     style={{ textDecoration: projectFilter === proj ? 'underline' : 'none', cursor: 'pointer', color: '#444' }}

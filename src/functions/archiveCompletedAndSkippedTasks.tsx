@@ -1,4 +1,3 @@
-import { getConfigRepository } from "../repositories";
 import { STATUS_ENUM } from "../utils";
 
 type ComponentProps = {
@@ -65,8 +64,6 @@ export const archiveCompletedAndSkippedTasks = ({ tasks }: ComponentProps) => {
         return t;
     });
     const allTasks = [...updatedTasks, ...newTasks];
-
-    getConfigRepository().setTasks(allTasks);
 
     return allTasks;
 };

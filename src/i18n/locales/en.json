@@ -27,6 +27,7 @@
     "showTextToggle": "Show text",
     "chooseColorTitle": "Choose a color",
     "chooseColorButton": "Choose color",
+    "noActiveProjects": "There are no active projects right now",
     "iconThemeLabel": "Icon theme:",
     "defaultTheme": "Default theme",
     "checkedTheme": "Checkmark style",

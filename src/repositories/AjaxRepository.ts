@@ -174,14 +174,14 @@ class AjaxRepository implements Repository {
             });
     }
 
-    private syncToServer(): void {
+    private syncToServer(): Promise<void> {
         // Sincronizza solo se i dati sono stati modificati
         if (!this.hasDataChanged()) {
-            return;
+            return Promise.resolve();
         }
 
         if (!this.isDataLoaded) {
-            return;
+            return Promise.resolve();
         }
 
         const headers: HeadersInit = {
@@ -193,7 +193,7 @@ class AjaxRepository implements Repository {
         }
 
         // fare una PUT a /quadrato/settings cui passare tutti i valori delle configurazini
-        fetch('https://api.simonegentili.com/quadrato/config', {
+        return fetch('https://api.simonegentili.com/quadrato/config', {
             method: 'PUT',
             headers: headers,
             body: JSON.stringify(this.data)
@@ -431,7 +431,7 @@ class AjaxRepository implements Repository {
 
     async setTasks(tasks: any[]): Promise<void> {
         this.data["simplanner-tasks"] = tasks;
-        this.syncToServer();
+        await this.syncToServer();
     }
 
     /**

@@ -5,7 +5,6 @@ import TaskList from './components/TaskList'
 import { STATUS_ENUM, getStatusIcons } from './utils'
 import Toggle from './components/Toggle'
 import TaskProjectSelector from './components/TaskProjectSelector'
-import Footer from './components/Footer'
 import ConfirmModal from './components/ConfirmModal'
 import HelpModal from './components/HelpModal'
 import GearIcon from './components/GearIcon'
@@ -18,6 +17,8 @@ import TabbedContent from './components/TabbedContent'
 import InfoPanel from './components/InfoPanel'
 import { handleAddAnotherModal } from './utils/handleAddAnotherModal'
 import { archiveCompletedAndSkippedTasks } from './functions/archiveCompletedAndSkippedTasks'
+import { persistArchivedTasks } from './functions/persistArchivedTasks'
+import { getActiveProjects } from './functions/getActiveProjects'
 import { getConfigRepository } from './repositories'
 import UsersIcon from './components/UsersIcon'
 import { navigate } from './Router'
@@ -426,7 +427,7 @@ function App() {
       if (e.ctrlKey && e.shiftKey && e.key === 'X') {
         e.preventDefault()
         const updatedTasks = archiveCompletedAndSkippedTasks({ tasks })
-        setTasks(updatedTasks)
+        persistArchivedTasks({ originalTasks: tasks, updatedTasks, token }).then(() => setTasks(updatedTasks))
       }
       if (e.ctrlKey && e.shiftKey && e.key === 'H') {
         e.preventDefault()
@@ -531,30 +532,10 @@ function App() {
 
   const [showCleanConfirm, setShowCleanConfirm] = useState(false)
 
-  const handleCleanTasks = () => {
-    const willArchivedTasts = tasks.filter(
-      (t) => t.status === STATUS_ENUM.DONE || t.status === STATUS_ENUM.SKIPPED
-    );
-    willArchivedTasts.forEach(task => {
-      const url = `https://api.simonegentili.com/quadrato/task/${task.id}`;
-      const options = {
-        method: 'PUT',
-        body: JSON.stringify({ archived: true }),
-        headers: {
-          authorization: token,
-          'Content-Type': 'application/json'
-        }
-      }
-      fetch(url, options)
-        .then(res => res.json())
-        .then(json => {
-          console.log({ json })
-        });
-    });
-
+  const handleCleanTasks = async () => {
     const updatedTasks = archiveCompletedAndSkippedTasks({ tasks })
+    await persistArchivedTasks({ originalTasks: tasks, updatedTasks, token })
     setTasks(updatedTasks)
-    getConfigRepository().setTasks(updatedTasks)
     setShowCleanConfirm(false)
     window.location.reload();
   }
@@ -704,7 +685,7 @@ function App() {
   }
 
   const Header = ({
-    tasks,
+    activeProjects,
     setShowHelp,
     projectGroupable,
     setProjectGroupable,
@@ -814,53 +795,48 @@ function App() {
     }
 
     const ProjectPanel = () => {
+      if (activeProjects.length === 0) {
+        return <p style={{ marginTop: '24px' }}>{t('app.noActiveProjects')}</p>
+      }
+
       return (
-        tasks &&
-        tasks.length > 0 && (
-          <div style={{ marginTop: '24px' }}>
-            <ul style={{ margin: '8px 0 0 0', padding: 0, listStyle: 'none' }}>
-              {Array.from(
-                new Set(
-                  tasks
-                    .map((t) => t.project)
-                    .filter((p) => typeof p === 'string' && p.trim() !== '')
-                )
-              ).map((project, idx) => (
-                <li
-                  key={idx}
+        <div style={{ marginTop: '24px' }}>
+          <ul style={{ margin: '8px 0 0 0', padding: 0, listStyle: 'none' }}>
+            {activeProjects.map((project, idx) => (
+              <li
+                key={idx}
+                style={{
+                  padding: '2px 0',
+                  display: 'flex',
+                  alignItems: 'center',
+                }}
+              >
+                <span style={{ marginRight: '8px', flex: '1' }}>
+                  {String(project)}
+                </span>
+                <button
                   style={{
-                    padding: '2px 0',
-                    display: 'flex',
-                    alignItems: 'center',
+                    width: 24,
+                    height: 24,
+                    border: 'none',
+                    background: projectColors[String(project)] || '#000000',
+                    borderRadius: '50%',
+                    cursor: 'pointer',
+                    boxShadow: '0 0 2px #0002',
                   }}
-                >
-                  <span style={{ marginRight: '8px', flex: '1' }}>
-                    {String(project)}
-                  </span>
-                  <button
-                    style={{
-                      width: 24,
-                      height: 24,
-                      border: 'none',
-                      background: projectColors[String(project)] || '#000000',
-                      borderRadius: '50%',
-                      cursor: 'pointer',
-                      boxShadow: '0 0 2px #0002',
-                    }}
-                    title={t('app.chooseColorButton')}
-                    onClick={() => setPaletteModalProject(project)}
-                  />
-                </li>
-              ))}
-            </ul>
-            {paletteModalProject && (
-              <PaletteModal
-                project={paletteModalProject}
-                onClose={() => setPaletteModalProject(null)}
-              />
-            )}
-          </div>
-        )
+                  title={t('app.chooseColorButton')}
+                  onClick={() => setPaletteModalProject(project)}
+                />
+              </li>
+            ))}
+          </ul>
+          {paletteModalProject && (
+            <PaletteModal
+              project={paletteModalProject}
+              onClose={() => setPaletteModalProject(null)}
+            />
+          )}
+        </div>
       )
     }
 
@@ -896,6 +872,38 @@ function App() {
       <>
         <div className="header-bar">
           <div className="header-icons">
+            <span
+              onClick={() => setShowPopup(true)}
+              style={{ cursor: 'pointer' }}
+              aria-label={t('footer.addAria')}
+            >
+              <svg width="24" height="24" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="16" cy="16" r="15" fill="#f0f0f0" stroke="#888" strokeWidth="1" />
+                <line x1="16" y1="10" x2="16" y2="22" stroke="#444" strokeWidth="1" />
+                <line x1="10" y1="16" x2="22" y2="16" stroke="#444" strokeWidth="1" />
+              </svg>
+            </span>
+            {showText && (
+              <span onClick={() => setShowPopup(true)} style={{ cursor: 'pointer' }}>
+                {t('footer.addLabel')}
+              </span>
+            )}
+            <span
+              onClick={() => setShowCleanConfirm(true)}
+              style={{ cursor: 'pointer' }}
+              aria-label={t('footer.cleanAria')}
+            >
+              <svg width="24" height="24" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="16" cy="16" r="15" fill="#f0f0f0" stroke="#888" strokeWidth="1" />
+                <line x1="10" y1="10" x2="22" y2="22" stroke="#444" strokeWidth="1" />
+                <line x1="22" y1="10" x2="10" y2="22" stroke="#444" strokeWidth="1" />
+              </svg>
+            </span>
+            {showText && (
+              <span onClick={() => setShowCleanConfirm(true)} style={{ cursor: 'pointer' }}>
+                {t('footer.cleanLabel')}
+              </span>
+            )}
             <span onClick={() => setShowHelp(true)}>
               <HelpIcon />
             </span>
@@ -977,9 +985,11 @@ function App() {
     )
   }
 
+  const activeProjects = getActiveProjects(tasks)
+
   const HeaderView = (
     <Header
-      tasks={tasks}
+      activeProjects={activeProjects}
       setShowHelp={setShowHelp}
       editable={editable}
       setEditable={setEditable}
@@ -1000,17 +1010,9 @@ function App() {
 
   const DefinedTaskProject = (
     <TaskProjectSelector
-      tasks={tasks}
+      projects={activeProjects}
       projectFilter={projectFilter}
       setProjectFilter={setProjectFilter}
-    />
-  )
-
-  const FooterView = (
-    <Footer
-      setShowPopup={setShowPopup}
-      setShowCleanConfirm={setShowCleanConfirm}
-      showText={showText}
     />
   )
 
@@ -1435,7 +1437,6 @@ function App() {
         {showWorkspaceMembers && WorkspaceMembersModalView}
         {editingWorkspaceNotifications && WorkspaceNotificationsModalView}
       </div>
-      {FooterView}
       <SGFooter />
     </div>
   )
