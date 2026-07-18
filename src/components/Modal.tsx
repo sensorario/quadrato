@@ -15,6 +15,7 @@ export const Modal = ({ children, title, icon, onClick, buttons }: ModalProps) =
     const [closing, setClosing] = useState(false);
 
     const closeWith = (callback: () => void) => {
+        if (closing) return;
         setClosing(true);
         setTimeout(callback, CLOSE_ANIMATION_MS);
     };
@@ -41,7 +42,7 @@ export const Modal = ({ children, title, icon, onClick, buttons }: ModalProps) =
             <div className="modal-content">{children}</div>
             {buttons && <div className="modal-footer">
                 {buttons.map((button, index) => (
-                    <button key={index} onClick={() => closeWith(button.onClick)} className='modal-close-btn'>
+                    <button key={index} onClick={() => closeWith(button.onClick)} disabled={closing} className='modal-close-btn'>
                         {button.label}
                     </button>
                 ))}

@@ -27,6 +27,7 @@
     "showTextToggle": "テキストを表示",
     "chooseColorTitle": "色を選択",
     "chooseColorButton": "色を選択",
+    "noActiveProjects": "現在アクティブなプロジェクトはありません",
     "iconThemeLabel": "アイコンテーマ:",
     "defaultTheme": "デフォルトテーマ",
     "checkedTheme": "チェックスタイル",

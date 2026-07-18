@@ -27,6 +27,7 @@
     "showTextToggle": "Afficher le texte",
     "chooseColorTitle": "Choisir une couleur",
     "chooseColorButton": "Choisir la couleur",
+    "noActiveProjects": "Il n'y a aucun projet actif pour le moment",
     "iconThemeLabel": "Thème des icônes :",
     "defaultTheme": "Thème par défaut",
     "checkedTheme": "Style coché",
