@@ -45,6 +45,7 @@
 
 
 ### Fixes
+- fix(UI): button for saving updates is not visible ([fb22cf8](https://github.com/sensorario/quadrato/commit/fb22cf8), 2026-07-19)
 - fix(login): hide landing screen while the credentials modal is open ([7d8a102](https://github.com/sensorario/quadrato/commit/7d8a102), 2026-07-17)
 - fix(router): don't sync workspace route segment while unauthenticated ([c335823](https://github.com/sensorario/quadrato/commit/c335823), 2026-07-17)
 - fix(router): register path-change subscribers during render, not effect ([75c667c](https://github.com/sensorario/quadrato/commit/75c667c), 2026-07-17)
