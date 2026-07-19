@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 type ModalProps = {
     children: React.ReactNode;
@@ -13,6 +14,7 @@ type ModalProps = {
 const CLOSE_ANIMATION_MS = 220;
 
 export const Modal = ({ children, title, icon, onClick, buttons, footer }: ModalProps) => {
+    const { t } = useTranslation();
     const [closing, setClosing] = useState(false);
 
     const closeWith = (callback: () => void) => {
@@ -38,7 +40,16 @@ export const Modal = ({ children, title, icon, onClick, buttons, footer }: Modal
         <div className={`modal${closing ? ' modal-closing' : ''}`} onClick={e => e.stopPropagation()}>
             <div className="modal-header" style={{ display: "flex", alignItems: "center", gap: "8px" }}>
                 {icon && <span className="icon">{icon}</span>}
-                <h2 className="title">{title}</h2>
+                <h2 className="title" style={{ flex: 1 }}>{title}</h2>
+                <button
+                    type="button"
+                    className="modal-dismiss-btn"
+                    aria-label={t('common.close')}
+                    onClick={() => closeWith(onClick)}
+                    disabled={closing}
+                >
+                    &times;
+                </button>
             </div>
             <div className="modal-content">{children}</div>
             {buttons && <div className="modal-footer">
