@@ -25,6 +25,8 @@ import { navigate } from './Router'
 import { SGFooter } from '@sensorario/sg-components'
 import ExpiredTasks from './components/ExpiredTasks'
 import LanguageSwitcher from './components/LanguageSwitcher'
+import FeatureIcon from './components/FeatureIcon'
+import BugIcon from './components/BugIcon'
 
 // Header di autorizzazione da allegare alle richieste autenticate verso l'API
 function getAuthHeader() {
@@ -903,6 +905,17 @@ function App() {
               label={t('app.pandaTheme')}
               icons={getStatusIcons('panda')}
             />
+          </div>
+          <strong>{t('app.taskTypeLegendLabel')}</strong>
+          <div style={{ marginTop: '16px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <FeatureIcon />
+              <span>{t('app.featureLabel')}</span>
+            </div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <BugIcon />
+              <span>{t('app.bugLabel')}</span>
+            </div>
           </div>
         </div>
       )
