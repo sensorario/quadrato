@@ -47,7 +47,7 @@ describe('AjaxRepository temporary-password wiring', () => {
         const [url, options] = global.fetch.mock.calls[2];
         expect(url).toBe('https://api.simonegentili.com/quadrato/update-password');
         expect(options.method).toBe('POST');
-        expect(options.headers.Authorization).toBe('abc123');
+        expect(options.headers.Authorization).toBe('Bearer abc123');
         expect(JSON.parse(options.body)).toEqual({ newPassword: 'brand-new-pass' });
     });
 });

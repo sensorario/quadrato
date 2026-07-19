@@ -15,12 +15,15 @@ const ExpiredTasks = () => {
         fetch('https://api.simonegentili.com/quadrato/workspace/current', {
             method: 'POST',
             headers: {
-                authorization: token,
+                Authorization: `Bearer ${token}`,
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify({ name: workspaceName }),
         })
-            .then(() => {
+            .then((res) => {
+                if (res.status === 401) {
+                    localStorage.removeItem('simonegentili.com-access-token');
+                }
                 window.location.reload();
             });
     };
@@ -30,11 +33,16 @@ const ExpiredTasks = () => {
             fetch('https://api.simonegentili.com/quadrato/workspaces', {
                 method: 'GET',
                 headers: {
-                    authorization: token,
+                    Authorization: `Bearer ${token}`,
                     'Content-Type': 'application/json',
                 },
             })
-                .then(res => res.json())
+                .then(res => {
+                    if (res.status === 401) {
+                        localStorage.removeItem('simonegentili.com-access-token');
+                    }
+                    return res.json()
+                })
                 .then(json => {
                     console.log('check expired tasks')
                     console.log({ ArrayIsArray: Array.isArray(json.expired_tasks) })

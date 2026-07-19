@@ -68,6 +68,13 @@ class AjaxRepository implements Repository {
     }
 
     /**
+     * Header di autorizzazione da allegare alle richieste autenticate
+     */
+    private getAuthHeaders(): HeadersInit {
+        return this.accessToken ? { 'Authorization': `Bearer ${this.accessToken}` } : {};
+    }
+
+    /**
      * Calcola un hash semplice del JSON per rilevare modifiche
      */
     private calculateHash(): string {
@@ -110,17 +117,21 @@ class AjaxRepository implements Repository {
     public fetchData(callback?: (tasks: any[]) => void): void {
         const headers: HeadersInit = {
             'Content-Type': 'application/json',
+            ...this.getAuthHeaders(),
         };
-
-        if (this.accessToken) {
-            headers['Authorization'] = `${this.accessToken}`;
-        }
 
         fetch('https://api.simonegentili.com/quadrato/data', {
             method: 'GET',
             headers: headers
         })
             .then(res => {
+                if (res.status === 401) {
+                    if (this.onUnauthorizedCallback) {
+                        this.onUnauthorizedCallback();
+                    }
+                    throw new Error('Unauthorized');
+                }
+
                 if (!res.ok) {
                     throw new Error(`HTTP error! status: ${res.status}`);
                 }
@@ -186,11 +197,8 @@ class AjaxRepository implements Repository {
 
         const headers: HeadersInit = {
             'Content-Type': 'application/json',
+            ...this.getAuthHeaders(),
         };
-
-        if (this.accessToken) {
-            headers['Authorization'] = `${this.accessToken}`;
-        }
 
         // fare una PUT a /quadrato/settings cui passare tutti i valori delle configurazini
         return fetch('https://api.simonegentili.com/quadrato/config', {
@@ -279,11 +287,8 @@ class AjaxRepository implements Repository {
     updatePassword(newPassword: string): Promise<void> {
         const headers: HeadersInit = {
             'Content-Type': 'application/json',
+            ...this.getAuthHeaders(),
         };
-
-        if (this.accessToken) {
-            headers['Authorization'] = `${this.accessToken}`;
-        }
 
         return fetch('https://api.simonegentili.com/quadrato/update-password', {
             method: 'POST',
@@ -291,6 +296,13 @@ class AjaxRepository implements Repository {
             body: JSON.stringify({ newPassword })
         })
             .then(res => {
+                if (res.status === 401) {
+                    if (this.onUnauthorizedCallback) {
+                        this.onUnauthorizedCallback();
+                    }
+                    throw new Error('Unauthorized');
+                }
+
                 if (!res.ok) {
                     throw new Error(`Update password failed: ${res.status}`);
                 }
