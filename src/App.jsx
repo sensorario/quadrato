@@ -26,6 +26,12 @@ import { SGFooter } from '@sensorario/sg-components'
 import ExpiredTasks from './components/ExpiredTasks'
 import LanguageSwitcher from './components/LanguageSwitcher'
 
+// Header di autorizzazione da allegare alle richieste autenticate verso l'API
+function getAuthHeader() {
+  const accessToken = localStorage.getItem('simonegentili.com-access-token')
+  return accessToken ? { Authorization: `Bearer ${accessToken}` } : {}
+}
+
 // Riferimento a una settimana nota (lun 5 - dom 11 gennaio 2026) per derivare
 // le abbreviazioni dei giorni nella lingua corrente tramite Intl
 const WEEKDAY_REFERENCE_DATES = [5, 6, 7, 8, 9, 10, 11].map((day) => new Date(2026, 0, day))
@@ -142,14 +148,20 @@ function App() {
     const options = {
       method: 'PUT',
       headers: {
-        'authorization': token,
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
+        ...getAuthHeader(),
       },
       body: JSON.stringify(allConfig)
     };
 
     fetch(url, options)
-      .then(res => res.json())
+      .then(res => {
+        if (res.status === 401) {
+          setToken(null)
+          throw new Error('Unauthorized')
+        }
+        return res.json()
+      })
       .then(json => {
         console.log('Configurazioni sincronizzate con API:', json);
       })
@@ -277,11 +289,17 @@ function App() {
     fetch('https://api.simonegentili.com/quadrato/workspaces', {
       method: 'GET',
       headers: {
-        authorization: accessToken,
         'Content-Type': 'application/json',
+        ...getAuthHeader(),
       },
     })
-      .then((res) => res.json())
+      .then((res) => {
+        if (res.status === 401) {
+          setToken(null)
+          throw new Error('Unauthorized')
+        }
+        return res.json()
+      })
       .then((json) => {
         const list = Array.isArray(json?.workspaces) ? json.workspaces : []
         setWorkspaces(list)
@@ -346,15 +364,22 @@ function App() {
             method: 'PUT',
             body: JSON.stringify(taskObj),
             headers: {
-              authorization: token,
-              'Content-Type': 'application/json'
+              'Content-Type': 'application/json',
+              ...getAuthHeader(),
             }
           }
           fetch(url, options)
-            .then(res => res.json())
+            .then(res => {
+              if (res.status === 401) {
+                setToken(null)
+                throw new Error('Unauthorized')
+              }
+              return res.json()
+            })
             .then(json => {
               console.log({ json })
-            });
+            })
+            .catch(() => {});
         }
 
         return taskObj;
@@ -466,15 +491,22 @@ function App() {
             method: 'PUT',
             body: JSON.stringify(updatedTask),
             headers: {
-              authorization: token,
-              'Content-Type': 'application/json'
+              'Content-Type': 'application/json',
+              ...getAuthHeader(),
             }
           }
           fetch(url, options)
-            .then(res => res.json())
+            .then(res => {
+              if (res.status === 401) {
+                setToken(null)
+                throw new Error('Unauthorized')
+              }
+              return res.json()
+            })
             .then(json => {
               console.log({ json })
-            });
+            })
+            .catch(() => {});
 
           return updatedTask;
         }
@@ -510,17 +542,24 @@ function App() {
     const options = {
       method: 'POST',
       headers: {
-        authorization: token,
-        'content-type': 'application/json'
+        'content-type': 'application/json',
+        ...getAuthHeader(),
       },
       body: JSON.stringify(newTask)
     };
 
     fetch(url, options)
-      .then(res => res.json())
+      .then(res => {
+        if (res.status === 401) {
+          setToken(null)
+          throw new Error('Unauthorized')
+        }
+        return res.json()
+      })
       .then(() => {
         getConfigRepository().fetchData()
-      });
+      })
+      .catch(() => {});
 
     handleAddAnotherModal({
       addAnother,
@@ -1058,12 +1097,18 @@ function App() {
     fetch(`https://api.simonegentili.com/quadrato/workspace/${editingWorkspaceNotifications.id}`, {
       method: 'PUT',
       headers: {
-        authorization: accessToken,
         'Content-Type': 'application/json',
+        ...getAuthHeader(),
       },
       body: JSON.stringify({ dalle: notifDalle, alle: notifAlle, giorni: notifGiorni }),
     })
-      .then((res) => res.json())
+      .then((res) => {
+        if (res.status === 401) {
+          setToken(null)
+          throw new Error('Unauthorized')
+        }
+        return res.json()
+      })
       .then((json) => {
         if (json?.workspace) {
           setWorkspaces((prev) =>
@@ -1185,8 +1230,8 @@ function App() {
                           fetch('https://api.simonegentili.com/quadrato/workspace/current', {
                             method: 'POST',
                             headers: {
-                              authorization: accessToken,
                               'Content-Type': 'application/json',
+                              ...getAuthHeader(),
                             },
                             body: JSON.stringify({ name: workspace.name }),
                           })
@@ -1287,8 +1332,8 @@ function App() {
                   fetch('https://api.simonegentili.com/quadrato/workspaces', {
                     method: 'POST',
                     headers: {
-                      authorization: accessToken,
                       'Content-Type': 'application/json',
+                      ...getAuthHeader(),
                     },
                     body: JSON.stringify({ name: newWorkspaceName }),
                   })
@@ -1297,8 +1342,8 @@ function App() {
                       return fetch('https://api.simonegentili.com/quadrato/workspace/current', {
                         method: 'POST',
                         headers: {
-                          authorization: accessToken,
                           'Content-Type': 'application/json',
+                          ...getAuthHeader(),
                         },
                         body: JSON.stringify({ name: newWorkspaceName }),
                       })
@@ -1327,8 +1372,8 @@ function App() {
     fetch('https://api.simonegentili.com/quadrato/workspace/members', {
       method: 'POST',
       headers: {
-        authorization: accessToken,
         'Content-Type': 'application/json',
+        ...getAuthHeader(),
       },
       body: JSON.stringify({ workspace: ws, email }),
     })

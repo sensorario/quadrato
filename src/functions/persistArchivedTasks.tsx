@@ -15,7 +15,7 @@ type PersistArchivedTasksProps = {
 export const persistArchivedTasks = async ({ originalTasks, updatedTasks, token }: PersistArchivedTasksProps) => {
     const originalById = new Map(originalTasks.map(t => [t.id, t]));
     const headers = {
-        authorization: token,
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
         'Content-Type': 'application/json',
     };
 
