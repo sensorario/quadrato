@@ -6,6 +6,7 @@
     "confirm": "Bestätigen"
   },
   "app": {
+    "logoutConfirmTitle": "Abmeldung bestätigen",
     "logoutConfirm": "Möchten Sie sich wirklich abmelden? Alle lokalen Daten werden gelöscht.",
     "logout": "Abmelden.",
     "zenMode": "Zen-Modus",

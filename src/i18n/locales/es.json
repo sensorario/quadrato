@@ -6,6 +6,7 @@
     "confirm": "Confirmar"
   },
   "app": {
+    "logoutConfirmTitle": "Confirmar cierre de sesión",
     "logoutConfirm": "¿Seguro que quieres cerrar sesión? Se eliminarán todos los datos locales.",
     "logout": "Cerrar sesión.",
     "zenMode": "modo zen",

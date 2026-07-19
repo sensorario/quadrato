@@ -6,6 +6,7 @@
     "confirm": "Conferma"
   },
   "app": {
+    "logoutConfirmTitle": "Conferma logout",
     "logoutConfirm": "Sei sicuro di voler uscire? Tutti i dati locali verranno rimossi.",
     "logout": "Logout.",
     "zenMode": "zen mode",
