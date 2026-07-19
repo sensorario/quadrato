@@ -136,6 +136,21 @@ input, textarea {
     border-radius: 0;
     flex: 0 0 auto;
 }
+
+.modal-dismiss-btn {
+    background: transparent;
+    border: none;
+    color: #444;
+    font-size: 1.5rem;
+    line-height: 1;
+    padding: 4px 8px;
+    cursor: pointer;
+    border-radius: 4px;
+    transition: background 0.2s;
+}
+.modal-dismiss-btn:hover {
+    background: #c8c8c8;
+}
 .modal-content {
     padding: 1rem;
     flex: 1 1 auto;
