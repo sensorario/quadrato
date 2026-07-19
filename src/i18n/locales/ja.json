@@ -6,6 +6,7 @@
     "confirm": "確認"
   },
   "app": {
+    "logoutConfirmTitle": "ログアウトの確認",
     "logoutConfirm": "本当にログアウトしますか？ローカルのデータはすべて削除されます。",
     "logout": "ログアウト",
     "zenMode": "禅モード",
