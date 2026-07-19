@@ -27,6 +27,7 @@ import ExpiredTasks from './components/ExpiredTasks'
 import LanguageSwitcher from './components/LanguageSwitcher'
 import FeatureIcon from './components/FeatureIcon'
 import BugIcon from './components/BugIcon'
+import LogoutConfirmModal from './components/LogoutConfirmModal'
 
 // Header di autorizzazione da allegare alle richieste autenticate verso l'API
 function getAuthHeader() {
@@ -69,17 +70,21 @@ function App() {
   }, [token])
 
   // Handler per il logout
+  const [showLogoutConfirm, setShowLogoutConfirm] = useState(false)
+
   const handleLogout = () => {
-    if (window.confirm(t('app.logoutConfirm'))) {
-      const repo = getConfigRepository()
-      if (repo.logout) {
-        repo.logout()
-      }
-      setToken(null)
-      setTasks([])
-      // Ricarica la pagina per resettare tutti gli stati
-      window.location.reload()
+    setShowLogoutConfirm(true)
+  }
+
+  const confirmLogout = () => {
+    const repo = getConfigRepository()
+    if (repo.logout) {
+      repo.logout()
     }
+    setToken(null)
+    setTasks([])
+    // Ricarica la pagina per resettare tutti gli stati
+    window.location.reload()
   }
 
   // Mostro nascondo testo accanto alle icone
@@ -1081,6 +1086,13 @@ function App() {
     />
   )
 
+  const LogoutConfirmModalView = (
+    <LogoutConfirmModal
+      onClick={() => setShowLogoutConfirm(false)}
+      onConfirm={confirmLogout}
+    />
+  )
+
   const openWorkspaceNotifications = (workspace) => {
     setEditingWorkspaceNotifications(workspace)
     setNotifDalle(workspace.dalle || '08:00')
@@ -1493,6 +1505,7 @@ function App() {
         {showHelp && HelpModalView}
         {showPopup && NewTaskModalView}
         {showCleanConfirm && ConfirmModalView}
+        {showLogoutConfirm && LogoutConfirmModalView}
         {showChangeWorkspace && ChangeWorkspaceModalView}
         {showWorkspaceMembers && WorkspaceMembersModalView}
         {editingWorkspaceNotifications && WorkspaceNotificationsModalView}
