@@ -574,6 +574,7 @@ function App() {
       projectEditable={projectGroupable}
       dateTimeEnabled={dateTimeEnabled}
       iconTheme={iconTheme}
+      projectFilter={projectFilter}
     />
   )
 
@@ -1429,6 +1430,7 @@ function App() {
           projectEditable={projectGroupable}
           dateTimeEnabled={dateTimeEnabled}
           iconTheme={iconTheme}
+          projectFilter={projectFilter}
         />
         {showHelp && HelpModalView}
         {showPopup && NewTaskModalView}

@@ -31,7 +31,7 @@ const TaskProjectSelector = ({ projects, projectFilter, setProjectFilter }: Task
             <span style={{ fontSize: '0.8em', color: '#888' }}>v{pkg.version}</span>
         </div>
         <div style={{ display: 'flex', gap: '1rem', padding: '8px', flexWrap: 'wrap' }}>
-            {projects.map((proj: string) => (
+            {projects.filter((proj: string) => proj !== projectFilter).map((proj: string) => (
                 <span
                     key={proj}
                     style={{ textDecoration: projectFilter === proj ? 'underline' : 'none', cursor: 'pointer', color: '#444' }}

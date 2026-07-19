@@ -10,7 +10,7 @@ import sortByDate from "../utils/filterTaskByVisibilityRange";
 import { navigate } from "../Router";
 
 // @todo #44 extract task type in a common file and fix dateTime to timestamp
-export const TaskList = ({ tasks, onTaskClick, updateTaskTitle, editable, projectEditable, dateTimeEnabled, iconTheme }: {
+export const TaskList = ({ tasks, onTaskClick, updateTaskTitle, editable, projectEditable, dateTimeEnabled, iconTheme, projectFilter }: {
     tasks: Task[];
     onTaskClick: (id: number) => void;
     updateTaskTitle: (id: number, title: string, longDescription?: string, project?: string, timestamp?: string | number, periodicity?: { number: string; unit: string }) => void;
@@ -18,6 +18,7 @@ export const TaskList = ({ tasks, onTaskClick, updateTaskTitle, editable, projec
     projectEditable: boolean;
     dateTimeEnabled: boolean;
     iconTheme: 'default' | 'checked' | 'panda';
+    projectFilter?: string | null;
 }) => {
     const { t } = useTranslation();
     // Aggiorno la tipizzazione per timestamp
@@ -118,7 +119,7 @@ export const TaskList = ({ tasks, onTaskClick, updateTaskTitle, editable, projec
                                 <FormatDate date={typeof task.timestamp === 'number' ? task.timestamp : (task.timestamp || '')} />
                             </span>
                         )}
-                        {projectEditable && task.project && (
+                        {projectEditable && task.project && task.project !== projectFilter && (
                             <span style={{ margin: '0', color: '#666' }}>({task.project})</span>
                         )}
                     </span>
