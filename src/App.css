@@ -423,9 +423,16 @@ h2 {
 }
 
 .registered-users-count {
+    display: none;
     font-size: 13px;
     color: #666;
     white-space: nowrap;
+}
+
+@media (min-width: 640px) {
+    .registered-users-count {
+        display: block;
+    }
 }
 
 .workspace-members {
