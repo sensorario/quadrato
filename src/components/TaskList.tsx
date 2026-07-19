@@ -2,6 +2,8 @@ import React, { SetStateAction, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { getStatusIcons } from "../utils";
 import EditIcon from "./EditIcon";
+import FeatureIcon from "./FeatureIcon";
+import BugIcon from "./BugIcon";
 import EditTaskModal from "./EditTaskModal";
 import FormatDate from "./FormatDate";
 import { Task, HandleEditClickProp } from "../types/commonTypes";
@@ -57,8 +59,17 @@ export const TaskList = ({ tasks, onTaskClick, updateTaskTitle, editable, projec
     };
 
     // @todo define task type
+    const taskTypeRegex = /^\[(feature|bug)\]\s*/i;
+
     const handler = (task: Task) => {
         let title = task.title;
+        const taskTypeMatch = taskTypeRegex.exec(title);
+        const taskTypeIcon = taskTypeMatch
+            ? (taskTypeMatch[1].toLowerCase() === 'bug' ? <BugIcon /> : <FeatureIcon />)
+            : null;
+        if (taskTypeMatch) {
+            title = title.slice(taskTypeMatch[0].length);
+        }
         const urlRegex = /(https?:\/\/[^\s]+)/g;
         const hasLink = urlRegex.test(title);
         if (hasLink) {
@@ -124,7 +135,8 @@ export const TaskList = ({ tasks, onTaskClick, updateTaskTitle, editable, projec
                         )}
                     </span>
 
-                    <span style={{ cursor: 'pointer' }} title={t('taskList.edit')} onClick={e => { e.stopPropagation(); handleEditClick(task); }}>
+                    <span style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px' }} title={t('taskList.edit')} onClick={e => { e.stopPropagation(); handleEditClick(task); }}>
+                        {taskTypeIcon}
                         <span dangerouslySetInnerHTML={{ __html: title }} />
                     </span>
 

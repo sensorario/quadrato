@@ -41,3 +41,38 @@ describe('TaskList project label', () => {
         expect(screen.getAllByText('(Alpha)')).toHaveLength(2);
     });
 });
+
+describe('TaskList task type icon', () => {
+    const renderList = (title: string) => render(
+        <TaskList
+            tasks={[{ id: 1, title, status: 0 }]}
+            onTaskClick={() => { }}
+            updateTaskTitle={() => { }}
+            editable={false}
+            projectEditable={false}
+            dateTimeEnabled={false}
+            iconTheme="default"
+        />
+    );
+
+    it('renders the bug icon and strips the [BUG] prefix from the title', () => {
+        renderList('[BUG] Fix login crash');
+        expect(screen.getByLabelText('bug')).toBeInTheDocument();
+        expect(screen.queryByLabelText('feature')).not.toBeInTheDocument();
+        expect(screen.getByText('Fix login crash')).toBeInTheDocument();
+        expect(screen.queryByText(/\[BUG\]/)).not.toBeInTheDocument();
+    });
+
+    it('renders the feature icon and strips the [FEATURE] prefix from the title, case-insensitively', () => {
+        renderList('[feature] Add CSV export');
+        expect(screen.getByLabelText('feature')).toBeInTheDocument();
+        expect(screen.queryByLabelText('bug')).not.toBeInTheDocument();
+        expect(screen.getByText('Add CSV export')).toBeInTheDocument();
+    });
+
+    it('renders no type icon when the title has no prefix', () => {
+        renderList('Plain task');
+        expect(screen.queryByLabelText('bug')).not.toBeInTheDocument();
+        expect(screen.queryByLabelText('feature')).not.toBeInTheDocument();
+    });
+});
