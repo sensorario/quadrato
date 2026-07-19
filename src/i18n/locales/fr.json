@@ -6,6 +6,7 @@
     "confirm": "Confirmer"
   },
   "app": {
+    "logoutConfirmTitle": "Confirmer la déconnexion",
     "logoutConfirm": "Voulez-vous vraiment vous déconnecter ? Toutes les données locales seront supprimées.",
     "logout": "Déconnexion.",
     "zenMode": "mode zen",
