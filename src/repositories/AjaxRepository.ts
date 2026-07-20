@@ -46,19 +46,43 @@ class AjaxRepository implements Repository {
     private onDataLoadedCallback: (() => void) | null = null;
     private onUnauthorizedCallback: (() => void) | null = null;
     private onAuthenticatedCallback: ((token: string) => void) | null = null;
-    private data: QuadratoData = {
-        "simplanner-tasks": [],
-        "simplanner-projects": [],
-        "simplanner-project-colors": {},
-        "simplanner-show-text": true,
-        "simplanner-icon-theme": "light",
-        "simplanner-show-expired": false,
-        "simplanner-dateTime-enabled": true,
-        "simplanner-zen-mode": false,
-        "simplanner-project-filter": null,
-        "simplanner-project-groupable": true,
-        "simplanner-config-tab": {},
-    };
+    private data: QuadratoData = this.defaultData();
+
+    private defaultData(): QuadratoData {
+        return {
+            "simplanner-tasks": [],
+            "simplanner-projects": [],
+            "simplanner-project-colors": {},
+            "simplanner-show-text": true,
+            "simplanner-icon-theme": "light",
+            "simplanner-show-expired": false,
+            "simplanner-dateTime-enabled": true,
+            "simplanner-zen-mode": false,
+            "simplanner-project-filter": null,
+            "simplanner-project-groupable": true,
+            "simplanner-config-tab": {},
+        };
+    }
+
+    /**
+     * Rimuove token, cookie e ogni chiave simplanner-* dal browser, riportandolo
+     * allo stato precedente a qualsiasi login (usato da logout, 401 e prima di un nuovo login).
+     */
+    private clearLocalData(): void {
+        this.accessToken = null;
+        localStorage.removeItem('simonegentili.com-access-token');
+        document.cookie = 'simonegentili.com-access-token=; path=/; domain=.simonegentili.com; expires=Thu, 01 Jan 1970 00:00:00 GMT; secure; samesite=strict';
+
+        Object.keys(localStorage).forEach(key => {
+            if (key.startsWith('simplanner-')) {
+                localStorage.removeItem(key);
+            }
+        });
+
+        this.data = this.defaultData();
+        this.lastSyncedHash = "";
+        this.isDataLoaded = false;
+    }
 
     constructor() {
 
@@ -137,6 +161,7 @@ class AjaxRepository implements Repository {
         })
             .then(res => {
                 if (res.status === 401) {
+                    this.clearLocalData();
                     if (this.onUnauthorizedCallback) {
                         this.onUnauthorizedCallback();
                     }
@@ -221,6 +246,7 @@ class AjaxRepository implements Repository {
             .then(res => {
                 if (res.status === 401) {
                     // Unauthorized
+                    this.clearLocalData();
                     if (this.onUnauthorizedCallback) {
                         this.onUnauthorizedCallback();
                     }
@@ -265,6 +291,10 @@ class AjaxRepository implements Repository {
      * Effettua l'autenticazione con username e password
      */
     authenticate(username: string, password: string): Promise<{ isTemporaryPassword: boolean }> {
+        // Riparte da uno stato pulito, cosi' nessun dato della sessione precedente
+        // (di questo o di un altro account) resta visibile nella nuova sessione.
+        this.clearLocalData();
+
         return fetch('https://api.simonegentili.com/quadrato/authenticate', {
             method: 'POST',
             headers: {
@@ -309,6 +339,7 @@ class AjaxRepository implements Repository {
         })
             .then(res => {
                 if (res.status === 401) {
+                    this.clearLocalData();
                     if (this.onUnauthorizedCallback) {
                         this.onUnauthorizedCallback();
                     }
@@ -462,34 +493,7 @@ class AjaxRepository implements Repository {
      * Effettua il logout: rimuove il token e pulisce i dati
      */
     logout(): void {
-        console.log("Logging out...");
-        this.accessToken = null;
-        localStorage.removeItem('simonegentili.com-access-token');
-
-        // Pulisci tutti i dati locali
-        Object.keys(localStorage).forEach(key => {
-            if (key.startsWith('simplanner-')) {
-                localStorage.removeItem(key);
-            }
-        });
-
-        // Reset dei dati in memoria
-        this.data = {
-            "simplanner-tasks": [],
-            "simplanner-projects": [],
-            "simplanner-project-colors": {},
-            "simplanner-show-text": false,
-            "simplanner-icon-theme": "light",
-            "simplanner-show-expired": false,
-            "simplanner-dateTime-enabled": false,
-            "simplanner-zen-mode": false,
-            "simplanner-project-filter": null,
-            "simplanner-project-groupable": false,
-            "simplanner-config-tab": {}
-        };
-
-        this.lastSyncedHash = "";
-        this.isDataLoaded = false;
+        this.clearLocalData();
     }
 }
 
