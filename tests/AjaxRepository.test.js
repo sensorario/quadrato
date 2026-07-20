@@ -502,7 +502,45 @@ describe('AjaxRepository logout', () => {
         expect(window.localStorage.getItem('simonegentili.com-access-token')).toBeNull();
         expect(window.localStorage.getItem('simplanner-tasks')).toBeNull();
         expect(window.localStorage.getItem('unrelated-key')).toBe('keep-me');
-        expect(repository.getShowText()).toBe(false);
+        expect(repository.getShowText()).toBe(true);
+        expect(repository.getTasks()).toEqual([]);
+    });
+
+    it('clears every simplanner-prefixed key with no exceptions', async () => {
+        repository.setAccessToken('tok');
+        await flush();
+        window.localStorage.setItem('simplanner-something-custom', 'leftover');
+
+        repository.logout();
+
+        Object.keys(window.localStorage).forEach(key => {
+            expect(key.startsWith('simplanner-')).toBe(false);
+        });
+    });
+
+    it('clears local data on a 401 response, matching the pre-login state', async () => {
+        repository.setAccessToken('tok');
+        await flush();
+
+        global.fetch = jest.fn().mockResolvedValue({ status: 401 });
+        repository.fetchData();
+        await flush();
+
+        expect(window.localStorage.getItem('simonegentili.com-access-token')).toBeNull();
+        expect(window.localStorage.getItem('simplanner-tasks')).toBeNull();
+        expect(repository.getShowText()).toBe(true);
+        expect(repository.getTasks()).toEqual([]);
+    });
+
+    it('clears any leftover session data before starting a new login', async () => {
+        repository.setAccessToken('tok');
+        await flush();
+        window.localStorage.setItem('simplanner-tasks', JSON.stringify([{ id: 1, project: 'stale' }]));
+
+        global.fetch = jest.fn().mockResolvedValue({ status: 200, json: () => Promise.resolve({ token: 'new-tok' }) });
+        repository.authenticate('user', 'pass');
+
+        expect(window.localStorage.getItem('simplanner-tasks')).toBeNull();
         expect(repository.getTasks()).toEqual([]);
     });
 });
