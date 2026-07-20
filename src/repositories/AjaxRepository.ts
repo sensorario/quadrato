@@ -42,6 +42,7 @@ const patchHistory = () => {
 class AjaxRepository implements Repository {
     private lastSyncedHash: string = "";
     private accessToken: string | null = null;
+    private username: string | null = null;
     private isDataLoaded: boolean = false;
     private onDataLoadedCallback: (() => void) | null = null;
     private onUnauthorizedCallback: (() => void) | null = null;
@@ -70,7 +71,9 @@ class AjaxRepository implements Repository {
      */
     private clearLocalData(): void {
         this.accessToken = null;
+        this.username = null;
         localStorage.removeItem('simonegentili.com-access-token');
+        localStorage.removeItem('simonegentili.com-username');
         document.cookie = 'simonegentili.com-access-token=; path=/; domain=.simonegentili.com; expires=Thu, 01 Jan 1970 00:00:00 GMT; secure; samesite=strict';
 
         Object.keys(localStorage).forEach(key => {
@@ -94,6 +97,7 @@ class AjaxRepository implements Repository {
         const savedToken = localStorage.getItem('simonegentili.com-access-token');
         if (savedToken) {
             this.accessToken = savedToken;
+            this.username = localStorage.getItem('simonegentili.com-username');
             this.fetchData();
             // Notifica che siamo già autenticati
             if (this.onAuthenticatedCallback) {
@@ -147,6 +151,13 @@ class AjaxRepository implements Repository {
      */
     onAuthenticated(callback: (token: string) => void): void {
         this.onAuthenticatedCallback = callback;
+    }
+
+    /**
+     * Nome utente autenticato (noto solo lato client, salvato al login)
+     */
+    getUsername(): string | null {
+        return this.username;
     }
 
     public fetchData(callback?: (tasks: any[]) => void): void {
@@ -312,6 +323,8 @@ class AjaxRepository implements Repository {
             .then(data => {
                 const token = data.token || data.access_token;
                 if (token) {
+                    this.username = username;
+                    localStorage.setItem('simonegentili.com-username', username);
                     this.setAccessToken(token);
                     if (this.onAuthenticatedCallback) {
                         this.onAuthenticatedCallback(token);

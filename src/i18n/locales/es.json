@@ -38,6 +38,7 @@
     "bugLabel": "Error",
     "workspaceLabel": "espacio de trabajo: {{name}}",
     "registeredUsersCount": "{{count}} usuarios registrados",
+    "loggedInAs": "Sesión iniciada como {{name}}",
     "changeWorkspaceTitle": "Cambiar espacio de trabajo",
     "workspaceNamePlaceholder": "Nombre del espacio de trabajo",
     "saveNewWorkspace": "guardar nuevo espacio de trabajo",

@@ -38,6 +38,7 @@
     "bugLabel": "Fehler",
     "workspaceLabel": "Arbeitsbereich: {{name}}",
     "registeredUsersCount": "{{count}} registrierte Benutzer",
+    "loggedInAs": "Angemeldet als {{name}}",
     "changeWorkspaceTitle": "Arbeitsbereich wechseln",
     "workspaceNamePlaceholder": "Name des Arbeitsbereichs",
     "saveNewWorkspace": "neuen Arbeitsbereich speichern",

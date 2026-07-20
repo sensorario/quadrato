@@ -38,6 +38,7 @@
     "bugLabel": "バグ",
     "workspaceLabel": "ワークスペース: {{name}}",
     "registeredUsersCount": "登録ユーザー数: {{count}}",
+    "loggedInAs": "{{name}} としてログイン中",
     "changeWorkspaceTitle": "ワークスペースを変更",
     "workspaceNamePlaceholder": "ワークスペース名",
     "saveNewWorkspace": "新しいワークスペースを保存",

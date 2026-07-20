@@ -38,6 +38,7 @@
     "bugLabel": "Bug",
     "workspaceLabel": "workspace: {{name}}",
     "registeredUsersCount": "{{count}} utenti registrati",
+    "loggedInAs": "Accesso effettuato come {{name}}",
     "changeWorkspaceTitle": "Change Workspace",
     "workspaceNamePlaceholder": "Nome workspace",
     "saveNewWorkspace": "salva nuovo workspace",

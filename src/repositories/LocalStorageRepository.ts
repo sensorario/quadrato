@@ -200,6 +200,10 @@ class LocalStorageRepository implements Repository {
     onAuthenticated(callback: (token: string) => void): void {
         // this.onAuthenticatedCallback = callback;
     }
+
+    getUsername(): string | null {
+        return null;
+    }
 }
 
 export default new LocalStorageRepository();
