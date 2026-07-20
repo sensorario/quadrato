@@ -51,14 +51,21 @@ function App() {
     return localStorage.getItem('simonegentili.com-access-token')
   })
 
+  // Nome dell'utente autenticato, noto dal login e salvato dal repository
+  const [username, setUsername] = useState(() => {
+    return getConfigRepository().getUsername()
+  })
+
   // Registra callback per gestire 401 Unauthorized e autenticazione
   useEffect(() => {
     const repository = getConfigRepository()
     repository.onUnauthorized(() => {
       setToken(null)
+      setUsername(null)
     })
     repository.onAuthenticated((newToken) => {
       setToken(newToken)
+      setUsername(repository.getUsername())
     })
   }, [])
 
@@ -82,6 +89,7 @@ function App() {
       repo.logout()
     }
     setToken(null)
+    setUsername(null)
     setTasks([])
     // Ricarica la pagina per resettare tutti gli stati
     window.location.reload()
@@ -1467,6 +1475,11 @@ function App() {
         }}>
           <div className="workspace-wrapper">
             <div className="workspaces-container clickable  " onClick={() => setShowChangeWorkspace(true)}>{t('app.workspaceLabel', { name: ws })}</div>
+            {username && (
+              <div className="logged-in-as">
+                {t('app.loggedInAs', { name: username })}
+              </div>
+            )}
             {registeredUsersCount !== null && (
               <div className="registered-users-count">
                 {t('app.registeredUsersCount', { count: registeredUsersCount })}
