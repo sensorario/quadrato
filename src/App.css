@@ -151,6 +151,12 @@ select:focus-visible,
     }
 }
 
+/* sg-components QuadratoHeader is sticky by default; with .sticky-header
+   right below it (also top: 0) they'd overlap at the same scroll position. */
+.app-container > .header {
+    position: static;
+}
+
 /* ============================================================
    Sticky header / workspace bar
    ============================================================ */

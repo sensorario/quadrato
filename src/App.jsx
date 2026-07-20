@@ -22,7 +22,7 @@ import { getActiveProjects } from './functions/getActiveProjects'
 import { getConfigRepository } from './repositories'
 import UsersIcon from './components/UsersIcon'
 import { navigate } from './Router'
-import { SGFooter } from '@sensorario/sg-components'
+import { QuadratoHeader, SGFooter } from '@sensorario/sg-components'
 import ExpiredTasks from './components/ExpiredTasks'
 import LanguageSwitcher from './components/LanguageSwitcher'
 import FeatureIcon from './components/FeatureIcon'
@@ -1008,25 +1008,6 @@ function App() {
                 {t('app.zenMode')}
               </span>
             )}
-            {token && (
-              <button
-                onClick={handleLogout}
-                style={{
-                  padding: '4px 12px',
-                  backgroundColor: '#dc3545',
-                  color: 'white',
-                  border: 'none',
-                  borderRadius: '4px',
-                  cursor: 'pointer',
-                  fontSize: '12px',
-                  fontWeight: 'bold'
-                }}
-                onMouseOver={(e) => e.target.style.backgroundColor = '#c82333'}
-                onMouseOut={(e) => e.target.style.backgroundColor = '#dc3545'}
-              >
-                {t('app.logout')}
-              </button>
-            )}
           </div>
         </div>
         {/** estrarre un componente modal da questo */}
@@ -1466,6 +1447,14 @@ function App() {
     <div className="foo">
       <div className="app-container">
 
+        {token && (
+          <QuadratoHeader
+            username={username}
+            onLogin={() => navigate('/login')}
+            onLogout={handleLogout}
+          />
+        )}
+
         <div className="sticky-header" style={{
           marginBottom: '8px',
           position: 'sticky',
@@ -1475,11 +1464,6 @@ function App() {
         }}>
           <div className="workspace-wrapper">
             <div className="workspaces-container clickable  " onClick={() => setShowChangeWorkspace(true)}>{t('app.workspaceLabel', { name: ws })}</div>
-            {username && (
-              <div className="logged-in-as">
-                {t('app.loggedInAs', { name: username })}
-              </div>
-            )}
             {registeredUsersCount !== null && (
               <div className="registered-users-count">
                 {t('app.registeredUsersCount', { count: registeredUsersCount })}
