@@ -1,7 +1,17 @@
 import { Repository } from "./Repository";
 
+interface QuadratoProject {
+    id: string;
+    name: string;
+    color: string;
+    username: string;
+    workspace: string | null;
+    workspaceUuid: string | null;
+}
+
 interface QuadratoData {
     "simplanner-tasks": any[];
+    "simplanner-projects": QuadratoProject[];
     "simplanner-project-colors": Record<string, string>;
     "simplanner-show-text": boolean;
     "simplanner-icon-theme": string;
@@ -38,6 +48,7 @@ class AjaxRepository implements Repository {
     private onAuthenticatedCallback: ((token: string) => void) | null = null;
     private data: QuadratoData = {
         "simplanner-tasks": [],
+        "simplanner-projects": [],
         "simplanner-project-colors": {},
         "simplanner-show-text": true,
         "simplanner-icon-theme": "light",
@@ -142,6 +153,7 @@ class AjaxRepository implements Repository {
                 // Merge i dati dall'API con i default
                 this.data = {
                     "simplanner-tasks": apiData["simplanner-tasks"] || apiData.tasks || this.data["simplanner-tasks"],
+                    "simplanner-projects": apiData["simplanner-projects"] || this.data["simplanner-projects"],
                     "simplanner-project-colors": apiData["simplanner-project-colors"] || apiData.projectColors || this.data["simplanner-project-colors"],
                     "simplanner-show-text": apiData["simplanner-show-text"] ?? apiData.showText ?? this.data["simplanner-show-text"],
                     "simplanner-icon-theme": apiData["simplanner-icon-theme"] || apiData.iconTheme || this.data["simplanner-icon-theme"],
@@ -361,25 +373,25 @@ class AjaxRepository implements Repository {
     // ========== Projects ==========
 
     getAllProjects(): string[] {
+        const projects = this.data["simplanner-projects"];
+        if (projects.length > 0) {
+            return projects.map(p => p.name);
+        }
+
+        // Fallback for data loaded before the server exposed real, workspace-scoped
+        // projects (e.g. stale localStorage cache): derive names from visible tasks.
         const tasks = this.data["simplanner-tasks"];
-        const projects: string[] = [];
+        const names: string[] = [];
         tasks.forEach((task: any) => {
-            if (task.project && !projects.includes(task.project)) {
-                projects.push(task.project);
+            if (task.project && !names.includes(task.project)) {
+                names.push(task.project);
             }
         });
-        return projects;
+        return names;
     }
 
     getAllFullProjects(): { project: string }[] {
-        const tasks = this.data["simplanner-tasks"];
-        const projects: { project: string }[] = [];
-        tasks.forEach((task: any) => {
-            if (task.project && !projects.some(p => p.project === task.project)) {
-                projects.push({ project: task.project });
-            }
-        });
-        return projects;
+        return this.getAllProjects().map(name => ({ project: name }));
     }
 
     getProjectColors(): Record<string, string> {
@@ -464,6 +476,7 @@ class AjaxRepository implements Repository {
         // Reset dei dati in memoria
         this.data = {
             "simplanner-tasks": [],
+            "simplanner-projects": [],
             "simplanner-project-colors": {},
             "simplanner-show-text": false,
             "simplanner-icon-theme": "light",
