@@ -1,7 +1,7 @@
 {
     "name": "simplanner",
     "private": true,
-    "version": "1.2.87",
+    "version": "1.2.88",
     "type": "module",
     "homepage": "https://sensorario.github.io/quadrato",
     "scripts": {
@@ -13,7 +13,7 @@
         "test:watch": "jest --watch"
     },
     "dependencies": {
-        "@sensorario/sg-components": "^0.0.68",
+        "@sensorario/sg-components": "^0.0.69",
         "i18next": "^26.3.6",
         "react": "^19.2.7",
         "react-dom": "^19.2.7",
