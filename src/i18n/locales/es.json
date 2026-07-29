@@ -128,7 +128,25 @@
       "Modo zen para la concentración",
       "Temas de iconos personalizables",
       "Atajos de teclado"
-    ]
+    ],
+    "fakeReviews": {
+      "title": "Lo que dicen nuestros usuarios (reseñas falsas)",
+      "badge": "Reseña falsa",
+      "items": [
+        {
+          "name": "Usuario Totalmente Real",
+          "text": "Esta reseña está completamente inventada, ningún usuario real la ha escrito jamás. ¡Cinco estrellas de todos modos!"
+        },
+        {
+          "name": "Definitivamente No Un Panda",
+          "text": "Yo no existo, pero si existiera, me encantaría esta app. Este es un testimonio falso."
+        },
+        {
+          "name": "Panda Anónimo #3",
+          "text": "Nadie me preguntó nada, me lo inventé todo. Reseña 100% ficticia."
+        }
+      ]
+    }
   },
   "loginPage": {
     "loginFailed": "Error al iniciar sesión: {{message}}",

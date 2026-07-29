@@ -128,7 +128,25 @@
       "Zen mode for focus",
       "Customizable icon themes",
       "Keyboard shortcuts"
-    ]
+    ],
+    "fakeReviews": {
+      "title": "What our users say (fake reviews)",
+      "badge": "Fake review",
+      "items": [
+        {
+          "name": "Totally Real User",
+          "text": "This review is completely made up, no real user has ever written it. Five stars anyway!"
+        },
+        {
+          "name": "Definitely Not A Panda",
+          "text": "I do not exist, but if I did, I would love this app. This is a fake testimonial."
+        },
+        {
+          "name": "Anonymous Panda #3",
+          "text": "Nobody asked me anything, I just made this up. 100% fictional review."
+        }
+      ]
+    }
   },
   "loginPage": {
     "loginFailed": "Login failed: {{message}}",

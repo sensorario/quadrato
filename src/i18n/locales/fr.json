@@ -128,7 +128,25 @@
       "Mode zen pour la concentration",
       "Thèmes d'icônes personnalisables",
       "Raccourcis clavier"
-    ]
+    ],
+    "fakeReviews": {
+      "title": "Ce que disent nos utilisateurs (faux avis)",
+      "badge": "Faux avis",
+      "items": [
+        {
+          "name": "Utilisateur Totalement Réel",
+          "text": "Cet avis est entièrement inventé, aucun utilisateur réel ne l'a jamais écrit. Cinq étoiles quand même !"
+        },
+        {
+          "name": "Certainement Pas Un Panda",
+          "text": "Je n'existe pas, mais si c'était le cas, j'adorerais cette appli. Ceci est un témoignage fictif."
+        },
+        {
+          "name": "Panda Anonyme n°3",
+          "text": "Personne ne m'a rien demandé, j'ai tout inventé. Avis 100% fictif."
+        }
+      ]
+    }
   },
   "loginPage": {
     "loginFailed": "Échec de la connexion : {{message}}",

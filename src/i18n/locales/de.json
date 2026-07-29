@@ -128,7 +128,25 @@
       "Zen-Modus zur Konzentration",
       "Anpassbare Symboldesigns",
       "Tastenkombinationen"
-    ]
+    ],
+    "fakeReviews": {
+      "title": "Was unsere Nutzer sagen (fiktive Bewertungen)",
+      "badge": "Fiktive Bewertung",
+      "items": [
+        {
+          "name": "Absolut echter Nutzer",
+          "text": "Diese Bewertung ist komplett erfunden, kein echter Nutzer hat sie je geschrieben. Trotzdem fünf Sterne!"
+        },
+        {
+          "name": "Definitiv kein Panda",
+          "text": "Ich existiere nicht, aber wenn ich es täte, würde ich diese App lieben. Dies ist ein fiktives Testimonial."
+        },
+        {
+          "name": "Anonymer Panda Nr. 3",
+          "text": "Niemand hat mich gefragt, ich habe mir das einfach ausgedacht. 100 % fiktive Bewertung."
+        }
+      ]
+    }
   },
   "loginPage": {
     "loginFailed": "Anmeldung fehlgeschlagen: {{message}}",
