@@ -128,7 +128,25 @@
       "Modalità zen per la concentrazione",
       "Temi icone personalizzabili",
       "Scorciatoie da tastiera"
-    ]
+    ],
+    "fakeReviews": {
+      "title": "Cosa dicono di noi (recensioni finte)",
+      "badge": "Recensione finta",
+      "items": [
+        {
+          "name": "Utente Assolutamente Vero",
+          "text": "Questa recensione è completamente inventata, non l'ha mai scritta nessun utente reale. Cinque stelle comunque!"
+        },
+        {
+          "name": "Sicuramente Non Un Panda",
+          "text": "Io non esisto, ma se esistessi adorerei questa app. Questa è una testimonianza finta."
+        },
+        {
+          "name": "Panda Anonimo #3",
+          "text": "Nessuno mi ha chiesto niente, me la sono inventata di sana pianta. Recensione 100% fittizia."
+        }
+      ]
+    }
   },
   "loginPage": {
     "loginFailed": "Login fallito: {{message}}",

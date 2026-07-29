@@ -4,6 +4,7 @@ import { Link } from "../../Router"
 import { VersionNumber } from "../VersionNumber";
 import PandaLegend from "../PandaLegend";
 import LanguageSwitcher from "../LanguageSwitcher";
+import FakeReviews from "../FakeReviews";
 
 const LoginForm = ({
     onClick,
@@ -120,6 +121,7 @@ const LoginForm = ({
                 ))}
             </ul>
         </div>
+        <FakeReviews />
         <VersionNumber />
     </div>
 }
