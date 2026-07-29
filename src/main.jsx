@@ -12,32 +12,30 @@ import { RegisteredRedirectModal } from './components/RegisteredRedirectModal.js
 import '../node_modules/@sensorario/sg-components/dist/sg-components.css';
 
 createRoot(document.getElementById('root')).render(
-    <StrictMode>
-        <Router>
-            {(currentPath) => {
-                if (currentPath === '/lost-password') {
-                    return <LostPasswordPage />
-                }
+    <Router>
+        {(currentPath) => {
+            if (currentPath === '/lost-password') {
+                return <LostPasswordPage />
+            }
 
-                if (currentPath === '/register') {
-                    return <RegisterPage />
-                }
+            if (currentPath === '/register') {
+                return <RegisterPage />
+            }
 
-                if (currentPath === '/login') {
-                    return <LoginPage />
-                }
+            if (currentPath === '/login') {
+                return <LoginPage />
+            }
 
-                const taskDetailMatch = currentPath.match(/^\/task\/([\w-]+)$/)
-                if (taskDetailMatch) {
-                    return <TaskDetailPage taskId={taskDetailMatch[1]} />
-                }
+            const taskDetailMatch = currentPath.match(/^\/task\/([\w-]+)$/)
+            if (taskDetailMatch) {
+                return <TaskDetailPage taskId={taskDetailMatch[1]} />
+            }
 
-                if (currentPath === '/registered') {
-                    return <RegisteredRedirectModal />
-                }
+            if (currentPath === '/registered') {
+                return <RegisteredRedirectModal />
+            }
 
-                return <App />
-            }}
-        </Router>
-    </StrictMode>,
+            return <App />
+        }}
+    </Router>
 )
