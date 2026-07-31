@@ -12,12 +12,6 @@
     "zenMode": "Zen-Modus",
     "help": "Hilfe",
     "config": "Einstellungen",
-    "newTaskModalTitle": "Neue Aufgabe",
-    "newTaskTitlePlaceholder": "Aufgabentitel",
-    "newTaskDescriptionPlaceholder": "Aufgabenbeschreibung",
-    "newTaskProjectPlaceholder": "Projekt (optional)",
-    "addAnotherTask": "Weitere Aufgabe hinzufügen",
-    "saveTask": "Aufgabe speichern",
     "settingsTitle": "Einstellungen",
     "generalTab": "Allgemein",
     "projectsTab": "Projekte",
@@ -55,12 +49,14 @@
   "formatDate": {
     "tomorrow": "morgen"
   },
-  "editTask": {
-    "title": "Aufgabe bearbeiten",
-    "start": "starten",
+  "taskModal": {
+    "createTitle": "Neue Aufgabe",
+    "editTitle": "Aufgabe bearbeiten",
     "whatTab": "Was",
-    "shortTitleLabel": "Kurztitel",
+    "titleLabel": "Kurztitel",
+    "titlePlaceholder": "Aufgabentitel",
     "longDescriptionLabel": "Ausführliche Beschreibung",
+    "longDescriptionPlaceholder": "Aufgabenbeschreibung",
     "whenTab": "Wann",
     "periodicityLabel": "Wiederholung",
     "repeatEvery": "wiederholen alle",
@@ -79,8 +75,9 @@
     "nextMonth": "nächster Monat",
     "projectTab": "Projekt",
     "projectLabel": "Projekt",
-    "editProjectPlaceholder": "Projekt bearbeiten...",
-    "noProjectsFound": "Keine Projekte gefunden"
+    "projectPlaceholder": "Projekt (optional)",
+    "noProjectsFound": "Keine Projekte gefunden",
+    "addAnotherTask": "Weitere Aufgabe hinzufügen"
   },
   "confirmModal": {
     "title": "Bereinigung bestätigen",

@@ -12,12 +12,6 @@
     "zenMode": "modo zen",
     "help": "ayuda",
     "config": "config",
-    "newTaskModalTitle": "Nueva tarea",
-    "newTaskTitlePlaceholder": "Título de la tarea",
-    "newTaskDescriptionPlaceholder": "Descripción de la tarea",
-    "newTaskProjectPlaceholder": "Proyecto (opcional)",
-    "addAnotherTask": "Añadir otra tarea",
-    "saveTask": "guardar tarea",
     "settingsTitle": "Configuración",
     "generalTab": "General",
     "projectsTab": "Proyectos",
@@ -55,12 +49,14 @@
   "formatDate": {
     "tomorrow": "mañana"
   },
-  "editTask": {
-    "title": "Editar tarea",
-    "start": "iniciar",
+  "taskModal": {
+    "createTitle": "Nueva tarea",
+    "editTitle": "Editar tarea",
     "whatTab": "Qué",
-    "shortTitleLabel": "Título breve",
+    "titleLabel": "Título breve",
+    "titlePlaceholder": "Título de la tarea",
     "longDescriptionLabel": "Descripción larga",
+    "longDescriptionPlaceholder": "Descripción de la tarea",
     "whenTab": "Cuándo",
     "periodicityLabel": "Periodicidad",
     "repeatEvery": "repetir cada",
@@ -79,8 +75,9 @@
     "nextMonth": "el próximo mes",
     "projectTab": "Proyecto",
     "projectLabel": "Proyecto",
-    "editProjectPlaceholder": "Editar proyecto...",
-    "noProjectsFound": "No se encontraron proyectos"
+    "projectPlaceholder": "Proyecto (opcional)",
+    "noProjectsFound": "No se encontraron proyectos",
+    "addAnotherTask": "Añadir otra tarea"
   },
   "confirmModal": {
     "title": "Confirmar limpieza",

@@ -182,7 +182,7 @@ export const TaskDetailPage = ({ taskId }: TaskDetailPageProps) => {
             {task.periodicity && (task.periodicity.number || task.periodicity.unit) && (
                 <>
                     <span style={labelStyle}>{t('taskDetailPage.periodicity')}</span>
-                    <span style={valueStyle}>{t('taskDetailPage.every', { number: task.periodicity.number, unit: t(`editTask.units.${UNIT_KEYS[task.periodicity.unit] ?? task.periodicity.unit}`) })}</span>
+                    <span style={valueStyle}>{t('taskDetailPage.every', { number: task.periodicity.number, unit: t(`taskModal.units.${UNIT_KEYS[task.periodicity.unit] ?? task.periodicity.unit}`) })}</span>
                 </>
             )}
 

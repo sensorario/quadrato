@@ -12,12 +12,6 @@
     "zenMode": "禅モード",
     "help": "ヘルプ",
     "config": "設定",
-    "newTaskModalTitle": "新しいタスク",
-    "newTaskTitlePlaceholder": "タスクのタイトル",
-    "newTaskDescriptionPlaceholder": "タスクの説明",
-    "newTaskProjectPlaceholder": "プロジェクト（任意）",
-    "addAnotherTask": "続けてタスクを追加",
-    "saveTask": "タスクを保存",
     "settingsTitle": "設定",
     "generalTab": "一般",
     "projectsTab": "プロジェクト",
@@ -55,12 +49,14 @@
   "formatDate": {
     "tomorrow": "明日"
   },
-  "editTask": {
-    "title": "タスクを編集",
-    "start": "開始",
+  "taskModal": {
+    "createTitle": "新しいタスク",
+    "editTitle": "タスクを編集",
     "whatTab": "内容",
-    "shortTitleLabel": "短いタイトル",
+    "titleLabel": "短いタイトル",
+    "titlePlaceholder": "タスクのタイトル",
     "longDescriptionLabel": "詳細説明",
+    "longDescriptionPlaceholder": "タスクの説明",
     "whenTab": "期限",
     "periodicityLabel": "繰り返し",
     "repeatEvery": "繰り返し間隔",
@@ -79,8 +75,9 @@
     "nextMonth": "来月",
     "projectTab": "プロジェクト",
     "projectLabel": "プロジェクト",
-    "editProjectPlaceholder": "プロジェクトを編集...",
-    "noProjectsFound": "プロジェクトが見つかりません"
+    "projectPlaceholder": "プロジェクト（任意）",
+    "noProjectsFound": "プロジェクトが見つかりません",
+    "addAnotherTask": "続けてタスクを追加"
   },
   "confirmModal": {
     "title": "整理の確認",
