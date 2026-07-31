@@ -5,6 +5,7 @@
 
 
 ### Features
+- feat: unify create/edit task modals into a single TaskModal component ([59fc069](https://github.com/sensorario/quadrato/commit/59fc069), 2026-07-31)
 - feat: use sg-components QuadratoHeader for login/logout state ([cff9304](https://github.com/sensorario/quadrato/commit/cff9304), 2026-07-20)
 - feat: show authenticated username in header ([7d56f72](https://github.com/sensorario/quadrato/commit/7d56f72), 2026-07-20)
 - feat: derive projects from workspace-scoped project data ([75d1815](https://github.com/sensorario/quadrato/commit/75d1815), 2026-07-20)
