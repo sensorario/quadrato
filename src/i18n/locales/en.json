@@ -12,12 +12,6 @@
     "zenMode": "zen mode",
     "help": "help",
     "config": "config",
-    "newTaskModalTitle": "New Task",
-    "newTaskTitlePlaceholder": "Task title",
-    "newTaskDescriptionPlaceholder": "Task description",
-    "newTaskProjectPlaceholder": "Project (optional)",
-    "addAnotherTask": "Add another task",
-    "saveTask": "save task",
     "settingsTitle": "Settings",
     "generalTab": "General",
     "projectsTab": "Projects",
@@ -55,12 +49,14 @@
   "formatDate": {
     "tomorrow": "tomorrow"
   },
-  "editTask": {
-    "title": "Edit task",
-    "start": "start",
+  "taskModal": {
+    "createTitle": "New Task",
+    "editTitle": "Edit task",
     "whatTab": "What",
-    "shortTitleLabel": "Short title",
+    "titleLabel": "Short title",
+    "titlePlaceholder": "Task title",
     "longDescriptionLabel": "Long description",
+    "longDescriptionPlaceholder": "Task description",
     "whenTab": "When",
     "periodicityLabel": "Recurrence",
     "repeatEvery": "repeat every",
@@ -79,8 +75,9 @@
     "nextMonth": "next month",
     "projectTab": "Project",
     "projectLabel": "Project",
-    "editProjectPlaceholder": "Edit project...",
-    "noProjectsFound": "No projects found"
+    "projectPlaceholder": "Project (optional)",
+    "noProjectsFound": "No projects found",
+    "addAnotherTask": "Add another task"
   },
   "confirmModal": {
     "title": "Confirm cleanup",

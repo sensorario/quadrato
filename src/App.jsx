@@ -12,10 +12,10 @@ import HelpIcon from './components/HelpIcon'
 import EditIcon from './components/EditIcon'
 import LockIcon from './components/LockIcon'
 import { Modal } from './components/Modal'
+import TaskModal from './components/TaskModal'
 import { Palette24 } from './types/Palette24'
 import TabbedContent from './components/TabbedContent'
 import InfoPanel from './components/InfoPanel'
-import { handleAddAnotherModal } from './utils/handleAddAnotherModal'
 import { archiveCompletedAndSkippedTasks } from './functions/archiveCompletedAndSkippedTasks'
 import { persistArchivedTasks } from './functions/persistArchivedTasks'
 import { getActiveProjects } from './functions/getActiveProjects'
@@ -280,10 +280,6 @@ function App() {
   }, [projectFilter, token])
 
   const [showPopup, setShowPopup] = useState(false)
-  const [newTaskTitle, setNewTaskTitle] = useState('')
-  const [newTaskProject, setNewTaskProject] = useState()
-  const [newTaskDateTime, setNewTaskDateTime] = useState('')
-  const [newTaskLongDescription, setNewTaskLongDescription] = useState('')
   const [showHelp, setShowHelp] = useState(false)
   const [zenMode, setZenMode] = useState(() => {
     return getConfigRepository().getZenMode()
@@ -367,7 +363,7 @@ function App() {
             longDescription: longValue,
             project: projectValue ?? task.project,
             timestamp: newTimestamp,
-            periodicity: periodicityValue ?? task.periodicity,
+            periodicity: periodicityValue === undefined ? task.periodicity : periodicityValue,
           }
           : task;
 
@@ -455,10 +451,6 @@ function App() {
   }, [])
 
   useEffect(() => {
-    setNewTaskProject(projectFilter === 'ALL' ? '' : projectFilter)
-  }, [projectFilter])
-
-  useEffect(() => {
     const handleKeyDown = (e) => {
       if (e.ctrlKey && e.shiftKey && e.key === 'N') {
         e.preventDefault()
@@ -532,26 +524,14 @@ function App() {
     })
   }
 
-  const handleAddTask = () => {
-    if (newTaskTitle.trim() === '') return
-    let timestamp = '';
-
-    if (typeof newTaskDateTime === 'string' && newTaskDateTime.length > 0) {
-      timestamp = new Date(newTaskDateTime).getTime()
-    }
-
+  const handleAddTask = (values) => {
     const newTask = {
       // simulate uuid with timestamp and random number
       id: Date.now() + Math.floor(Math.random() * 1000),
-      title: newTaskTitle,
-      longDescription: newTaskLongDescription,
-      project: newTaskProject,
-      timestamp,
+      ...values,
       status: 0,
       archived: false,
-      periodicity: null,
     }
-
 
     const url = 'https://api.simonegentili.com/quadrato/task';
     const options = {
@@ -575,13 +555,6 @@ function App() {
         getConfigRepository().fetchData()
       })
       .catch(() => {});
-
-    handleAddAnotherModal({
-      addAnother,
-      setShowPopup,
-      setAddAnother,
-      setNewTaskTitle,
-    })
   }
 
   const [showCleanConfirm, setShowCleanConfirm] = useState(false)
@@ -617,8 +590,6 @@ function App() {
     })
   })()
 
-  const [addAnother, setAddAnother] = useState(false)
-
   const VisibleTasks = (
     <TaskList
       tasks={visible}
@@ -636,75 +607,14 @@ function App() {
   const [showWorkspaceMembers, setShowWorkspaceMembers] = useState(false)
 
   const NewTaskModalView = (
-    <Modal
-      title={t('app.newTaskModalTitle')}
-      onClick={() => {
-        setShowPopup(false)
-      }}
-      buttons={[
-        { label: t('common.close'), onClick: () => setShowPopup(false) },
-        { label: t('app.saveTask'), onClick: () => handleAddTask() },
-      ]}
-    >
-      <div className="modal-input-wrapper">
-        <input
-          type="text"
-          value={newTaskTitle}
-          onChange={(e) => setNewTaskTitle(e.target.value)}
-          placeholder={t('app.newTaskTitlePlaceholder')}
-          className="modal-input"
-          autoFocus
-          onFocus={(e) => e.currentTarget.classList.add('input-focus')}
-          onBlur={(e) => e.currentTarget.classList.remove('input-focus')}
-          onKeyDown={(e) => {
-            if (e.key === 'Enter') {
-              handleAddTask()
-            } else if (e.key === 'Escape') {
-              setShowPopup(false)
-            }
-          }}
-        />
-      </div>
-      <div className="modal-long-description">
-        <textarea
-          value={newTaskLongDescription}
-          onChange={(e) => setNewTaskLongDescription(e.target.value)}
-          placeholder={t('app.newTaskDescriptionPlaceholder')}
-          className="modal-input"
-        />
-      </div>
-      {projectGroupable && (
-        <div className="modal-input-wrapper">
-          <input
-            type="text"
-            value={newTaskProject}
-            onChange={(e) => setNewTaskProject(e.target.value)}
-            placeholder={t('app.newTaskProjectPlaceholder')}
-            className="modal-input"
-            onKeyDown={(e) => {
-              if (e.key === 'Enter') {
-                handleAddTask()
-              }
-            }}
-          />
-        </div>
-      )}
-      {dateTimeEnabled && (
-        <div className="modal-input-wrapper">
-          <input
-            type="datetime-local"
-            value={newTaskDateTime}
-            onChange={(e) => setNewTaskDateTime(e.target.value)}
-            className="modal-input"
-          />
-        </div>
-      )}
-      <Toggle
-        checked={addAnother}
-        onChange={setAddAnother}
-        label={t('app.addAnotherTask')}
-      />
-    </Modal>
+    <TaskModal
+      mode="create"
+      initialValues={{ project: projectFilter === 'ALL' ? '' : projectFilter }}
+      onSave={handleAddTask}
+      onClose={() => setShowPopup(false)}
+      projectEditable={projectGroupable}
+      dateTimeEnabled={dateTimeEnabled}
+    />
   )
 
   if (zenMode) {

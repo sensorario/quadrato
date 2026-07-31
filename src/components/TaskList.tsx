@@ -4,9 +4,9 @@ import { getStatusIcons } from "../utils";
 import EditIcon from "./EditIcon";
 import FeatureIcon from "./FeatureIcon";
 import BugIcon from "./BugIcon";
-import EditTaskModal from "./EditTaskModal";
+import TaskModal from "./TaskModal";
 import FormatDate from "./FormatDate";
-import { Task, HandleEditClickProp } from "../types/commonTypes";
+import { Task } from "../types/commonTypes";
 import { getConfigRepository } from "../repositories";
 import sortByDate from "../utils/filterTaskByVisibilityRange";
 import { navigate } from "../Router";
@@ -15,7 +15,7 @@ import { navigate } from "../Router";
 export const TaskList = ({ tasks, onTaskClick, updateTaskTitle, editable, projectEditable, dateTimeEnabled, iconTheme, projectFilter }: {
     tasks: Task[];
     onTaskClick: (id: number) => void;
-    updateTaskTitle: (id: number, title: string, longDescription?: string, project?: string, timestamp?: string | number, periodicity?: { number: string; unit: string }) => void;
+    updateTaskTitle: (id: number, title: string, longDescription?: string, project?: string, timestamp?: string | number, periodicity?: { number: string; unit: string } | null) => void;
     editable: boolean;
     projectEditable: boolean;
     dateTimeEnabled: boolean;
@@ -31,31 +31,17 @@ export const TaskList = ({ tasks, onTaskClick, updateTaskTitle, editable, projec
     let projectColors: Record<string, string> = getConfigRepository().getProjectColors();
 
     const [hoveredId, setHoveredId] = useState<number | null>(null);
-    const [editId, setEditId] = useState<number | null>(null);
-    const [editValue, setEditValue] = useState("");
-    const [editLongValue, setEditLongValue] = useState("");
-    const [editProjectValue, setEditProjectValue] = useState("");
-    const [editTimestampValue, setEditTimestampValue] = useState<string | number>("");
-    const [editPeriodicityValue, setEditPeriodicityValue] = useState({ number: '', unit: 'giorni' });
+    const [editTask, setEditTask] = useState<Task | null>(null);
 
-    // @todo #38 move types in a common file
-    // Removed local type definition for HandleEditClickProp
-
-    const handleEditClick = (task: HandleEditClickProp) => {
-        setEditId(task.id);
-        setEditValue(task.title);
-        setEditLongValue(task.longDescription || "");
-        setEditProjectValue(task.project || "");
-        setEditTimestampValue(task.timestamp ?? "");
-        setEditPeriodicityValue(task.periodicity || { number: '', unit: 'giorni' });
+    const handleEditClick = (task: Task) => {
+        setEditTask(task);
     };
 
-    const handleEditSave = () => {
-        if (editValue.trim() === "") return;
-        if (editId !== null) {
-            updateTaskTitle(editId, editValue, editLongValue, editProjectValue, editTimestampValue, editPeriodicityValue);
+    const handleEditSave = (values: { title: string; longDescription: string; project: string; timestamp: string | number | ""; periodicity: { number: string; unit: string } | null }) => {
+        if (editTask) {
+            updateTaskTitle(editTask.id, values.title, values.longDescription, values.project, values.timestamp, values.periodicity);
         }
-        setEditId(null);
+        setEditTask(null);
     };
 
     // @todo define task type
@@ -171,20 +157,13 @@ export const TaskList = ({ tasks, onTaskClick, updateTaskTitle, editable, projec
             <ul className="task-list">
                 {orderedTasks.map(handler)}
             </ul>
-            {editable && editId !== null && (
-                <EditTaskModal
-                    value={editValue}
-                    setValue={setEditValue}
-                    longValue={editLongValue}
-                    setLongValue={setEditLongValue}
-                    projectValue={editProjectValue}
-                    setProjectValue={setEditProjectValue}
-                    timestampValue={editTimestampValue}
-                    setTimestampValue={setEditTimestampValue}
-                    periodicityValue={editPeriodicityValue}
-                    setPeriodicityValue={setEditPeriodicityValue}
-                    onClose={() => setEditId(null)}
+            {editable && editTask !== null && (
+                <TaskModal
+                    key={editTask.id}
+                    mode="edit"
+                    initialValues={editTask}
                     onSave={handleEditSave}
+                    onClose={() => setEditTask(null)}
                     projectEditable={projectEditable}
                     dateTimeEnabled={dateTimeEnabled}
                 />

@@ -12,12 +12,6 @@
     "zenMode": "zen mode",
     "help": "help",
     "config": "config",
-    "newTaskModalTitle": "Nuovo Task",
-    "newTaskTitlePlaceholder": "Titolo del task",
-    "newTaskDescriptionPlaceholder": "Descrizione del task",
-    "newTaskProjectPlaceholder": "Progetto (opzionale)",
-    "addAnotherTask": "Aggiungi un altro task",
-    "saveTask": "salva task",
     "settingsTitle": "Configurazioni",
     "generalTab": "Generale",
     "projectsTab": "Progetti",
@@ -55,12 +49,14 @@
   "formatDate": {
     "tomorrow": "domani"
   },
-  "editTask": {
-    "title": "Modifica task",
-    "start": "inizia",
+  "taskModal": {
+    "createTitle": "Nuovo Task",
+    "editTitle": "Modifica task",
     "whatTab": "Cosa",
-    "shortTitleLabel": "Titolo breve",
+    "titleLabel": "Titolo breve",
+    "titlePlaceholder": "Titolo del task",
     "longDescriptionLabel": "Descrizione lunga",
+    "longDescriptionPlaceholder": "Descrizione del task",
     "whenTab": "Quando",
     "periodicityLabel": "Periodicità",
     "repeatEvery": "ripeti ogni",
@@ -79,8 +75,9 @@
     "nextMonth": "mese prossimo",
     "projectTab": "Progetto",
     "projectLabel": "Progetto",
-    "editProjectPlaceholder": "Modifica progetto...",
-    "noProjectsFound": "Nessun progetto trovato"
+    "projectPlaceholder": "Progetto (opzionale)",
+    "noProjectsFound": "Nessun progetto trovato",
+    "addAnotherTask": "Aggiungi un altro task"
   },
   "confirmModal": {
     "title": "Conferma pulizia",
