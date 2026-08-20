@@ -177,6 +177,7 @@
     "back": "← Zurück",
     "notFound": "Aufgabe nicht gefunden.",
     "loading": "Wird geladen...",
+    "loginRequired": "Du musst dich anmelden, um diese Aufgabe zu sehen.",
     "home": "Startseite",
     "status": "Status",
     "statusTodo": "Zu erledigen",

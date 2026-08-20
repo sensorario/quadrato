@@ -177,6 +177,7 @@
     "back": "← Volver",
     "notFound": "Tarea no encontrada.",
     "loading": "Cargando...",
+    "loginRequired": "Debes iniciar sesión para ver esta tarea.",
     "home": "Inicio",
     "status": "Estado",
     "statusTodo": "Por hacer",

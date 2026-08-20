@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { QuadratoHeader } from '@sensorario/sg-components';
 import { Task } from '../types/commonTypes';
 import { getConfigRepository } from '../repositories';
 import { navigate } from '../Router';
@@ -73,6 +74,9 @@ export const TaskDetailPage = ({ taskId }: TaskDetailPageProps) => {
     };
     const [task, setTask] = useState<Task | null>(null);
     const [notFound, setNotFound] = useState(false);
+    const [isAuthenticated, setIsAuthenticated] = useState(
+        () => Boolean(localStorage.getItem('simonegentili.com-access-token'))
+    );
 
     const matchTask = (t: any) =>
         String(t.id) === String(taskId) || String(t.uuid) === String(taskId);
@@ -88,6 +92,8 @@ export const TaskDetailPage = ({ taskId }: TaskDetailPageProps) => {
                 setNotFound(true);
             }
         });
+        repo.onAuthenticated(() => setIsAuthenticated(true));
+        repo.onUnauthorized(() => setIsAuthenticated(false));
 
         // Fallback: try from localStorage directly
         const raw = localStorage.getItem('simplanner-tasks');
@@ -105,6 +111,23 @@ export const TaskDetailPage = ({ taskId }: TaskDetailPageProps) => {
             }
         }
     }, [taskId]);
+
+    const handleLogin = async (username: string, password: string) => {
+        try {
+            // Autenticandosi direttamente su questa pagina (invece di rimandare
+            // a /login) l'utente resta su /task/:id e i dati del task vengono
+            // ricaricati automaticamente da onDataLoaded al termine del login.
+            await getConfigRepository().authenticate(username, password);
+        } catch (err) {
+            alert(t('loginPage.loginFailed', { message: (err as Error).message }));
+        }
+    };
+
+    const handleLogout = () => {
+        getConfigRepository().logout();
+        setIsAuthenticated(false);
+        setTask(null);
+    };
 
     const containerStyle: React.CSSProperties = {
         maxWidth: '600px',
@@ -132,71 +155,93 @@ export const TaskDetailPage = ({ taskId }: TaskDetailPageProps) => {
         color: '#222',
     };
 
+    const header = <QuadratoHeader onLogin={handleLogin} onLogout={handleLogout} />;
+
+    if (!isAuthenticated) {
+        return (
+            <>
+                {header}
+                <div style={containerStyle}>
+                    <p>{t('taskDetailPage.loginRequired')}</p>
+                </div>
+            </>
+        );
+    }
+
     if (notFound && !task) {
         return (
-            <div style={containerStyle}>
-                <button
-                    onClick={() => navigate('/')}
-                    style={{ marginBottom: '20px', cursor: 'pointer', background: 'none', border: 'none', color: '#007bff', fontSize: '14px' }}
-                >
-                    {t('taskDetailPage.back')}
-                </button>
-                <p>{t('taskDetailPage.notFound')}</p>
-            </div>
+            <>
+                {header}
+                <div style={containerStyle}>
+                    <button
+                        onClick={() => navigate('/')}
+                        style={{ marginBottom: '20px', cursor: 'pointer', background: 'none', border: 'none', color: '#007bff', fontSize: '14px' }}
+                    >
+                        {t('taskDetailPage.back')}
+                    </button>
+                    <p>{t('taskDetailPage.notFound')}</p>
+                </div>
+            </>
         );
     }
 
     if (!task) {
         return (
-            <div style={containerStyle}>
-                <p>{t('taskDetailPage.loading')}</p>
-            </div>
+            <>
+                {header}
+                <div style={containerStyle}>
+                    <p>{t('taskDetailPage.loading')}</p>
+                </div>
+            </>
         );
     }
 
     return (
-        <div style={containerStyle}>
-            <Breadcrumb task={task} />
+        <>
+            {header}
+            <div style={containerStyle}>
+                <Breadcrumb task={task} />
 
-            <h2 style={{ margin: '0 0 8px', fontSize: '22px' }}>{task.title}</h2>
+                <h2 style={{ margin: '0 0 8px', fontSize: '22px' }}>{task.title}</h2>
 
-            <span style={labelStyle}>{t('taskDetailPage.status')}</span>
-            <span style={valueStyle}>{statusLabel[task.status] ?? task.status}</span>
+                <span style={labelStyle}>{t('taskDetailPage.status')}</span>
+                <span style={valueStyle}>{statusLabel[task.status] ?? task.status}</span>
 
-            {task.project && (
-                <>
-                    <span style={labelStyle}>{t('taskDetailPage.project')}</span>
-                    <span style={valueStyle}>{task.project}</span>
-                </>
-            )}
+                {task.project && (
+                    <>
+                        <span style={labelStyle}>{t('taskDetailPage.project')}</span>
+                        <span style={valueStyle}>{task.project}</span>
+                    </>
+                )}
 
-            {task.timestamp && (
-                <>
-                    <span style={labelStyle}>{t('taskDetailPage.deadline')}</span>
-                    <span style={valueStyle}>
-                        <FormatDate date={typeof task.timestamp === 'number' ? task.timestamp : task.timestamp} />
-                    </span>
-                </>
-            )}
+                {task.timestamp && (
+                    <>
+                        <span style={labelStyle}>{t('taskDetailPage.deadline')}</span>
+                        <span style={valueStyle}>
+                            <FormatDate date={typeof task.timestamp === 'number' ? task.timestamp : task.timestamp} />
+                        </span>
+                    </>
+                )}
 
-            {task.periodicity && (task.periodicity.number || task.periodicity.unit) && (
-                <>
-                    <span style={labelStyle}>{t('taskDetailPage.periodicity')}</span>
-                    <span style={valueStyle}>{t('taskDetailPage.every', { number: task.periodicity.number, unit: t(`taskModal.units.${UNIT_KEYS[task.periodicity.unit] ?? task.periodicity.unit}`) })}</span>
-                </>
-            )}
+                {task.periodicity && (task.periodicity.number || task.periodicity.unit) && (
+                    <>
+                        <span style={labelStyle}>{t('taskDetailPage.periodicity')}</span>
+                        <span style={valueStyle}>{t('taskDetailPage.every', { number: task.periodicity.number, unit: t(`taskModal.units.${UNIT_KEYS[task.periodicity.unit] ?? task.periodicity.unit}`) })}</span>
+                    </>
+                )}
 
-            {task.longDescription && (
-                <>
-                    <span style={labelStyle}>{t('taskDetailPage.description')}</span>
-                    <p style={{ ...valueStyle, whiteSpace: 'pre-wrap', lineHeight: '1.5' }}>{task.longDescription}</p>
-                </>
-            )}
+                {task.longDescription && (
+                    <>
+                        <span style={labelStyle}>{t('taskDetailPage.description')}</span>
+                        <p style={{ ...valueStyle, whiteSpace: 'pre-wrap', lineHeight: '1.5' }}>{task.longDescription}</p>
+                    </>
+                )}
 
-            <div style={{ marginTop: '24px', paddingTop: '16px', borderTop: '1px solid #eee', fontSize: '12px', color: '#999' }}>
-                {t('taskDetailPage.taskId', { id: task.id })}
+                <div style={{ marginTop: '24px', paddingTop: '16px', borderTop: '1px solid #eee', fontSize: '12px', color: '#999' }}>
+                    {t('taskDetailPage.taskId', { id: task.id })}
+                </div>
             </div>
-        </div>
+        </>
     );
 };
 
