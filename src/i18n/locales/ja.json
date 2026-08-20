@@ -177,6 +177,7 @@
     "back": "← 戻る",
     "notFound": "タスクが見つかりません。",
     "loading": "読み込み中...",
+    "loginRequired": "このタスクを表示するにはログインが必要です。",
     "home": "ホーム",
     "status": "ステータス",
     "statusTodo": "未着手",

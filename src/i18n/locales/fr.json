@@ -177,6 +177,7 @@
     "back": "← Retour",
     "notFound": "Tâche introuvable.",
     "loading": "Chargement...",
+    "loginRequired": "Vous devez vous connecter pour voir cette tâche.",
     "home": "Accueil",
     "status": "Statut",
     "statusTodo": "À faire",

@@ -177,6 +177,7 @@
     "back": "← Go back",
     "notFound": "Task not found.",
     "loading": "Loading...",
+    "loginRequired": "You must log in to view this task.",
     "home": "Home",
     "status": "Status",
     "statusTodo": "To do",
