@@ -189,7 +189,11 @@
     "periodicity": "Wiederholung",
     "every": "Alle {{number}} {{unit}}",
     "description": "Beschreibung",
-    "taskId": "Aufgaben-ID: {{id}}"
+    "taskId": "Aufgaben-ID: {{id}}",
+    "delete": "Aufgabe löschen",
+    "deleting": "Wird gelöscht...",
+    "deleteConfirm": "Diese Aufgabe löschen? Dies kann nicht rückgängig gemacht werden.",
+    "deleteFailed": "Die Aufgabe konnte nicht gelöscht werden."
   },
   "expiredTasks": {
     "loading": "Abgelaufene Aufgaben werden geladen...",

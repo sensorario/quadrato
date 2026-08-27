@@ -189,7 +189,11 @@
     "periodicity": "Periodicità",
     "every": "Ogni {{number}} {{unit}}",
     "description": "Descrizione",
-    "taskId": "ID task: {{id}}"
+    "taskId": "ID task: {{id}}",
+    "delete": "Elimina task",
+    "deleting": "Eliminazione...",
+    "deleteConfirm": "Eliminare questo task? L'operazione non può essere annullata.",
+    "deleteFailed": "Impossibile eliminare il task."
   },
   "expiredTasks": {
     "loading": "Caricamento task scaduti...",

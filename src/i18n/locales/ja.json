@@ -189,7 +189,11 @@
     "periodicity": "繰り返し",
     "every": "{{number}}{{unit}}ごと",
     "description": "説明",
-    "taskId": "タスクID: {{id}}"
+    "taskId": "タスクID: {{id}}",
+    "delete": "タスクを削除",
+    "deleting": "削除中...",
+    "deleteConfirm": "このタスクを削除しますか？この操作は元に戻せません。",
+    "deleteFailed": "タスクの削除に失敗しました。"
   },
   "expiredTasks": {
     "loading": "期限切れタスクを読み込み中...",

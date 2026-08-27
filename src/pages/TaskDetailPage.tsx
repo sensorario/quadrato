@@ -77,6 +77,7 @@ export const TaskDetailPage = ({ taskId }: TaskDetailPageProps) => {
     const [isAuthenticated, setIsAuthenticated] = useState(
         () => Boolean(localStorage.getItem('simonegentili.com-access-token'))
     );
+    const [deleting, setDeleting] = useState(false);
 
     const matchTask = (t: any) =>
         String(t.id) === String(taskId) || String(t.uuid) === String(taskId);
@@ -127,6 +128,37 @@ export const TaskDetailPage = ({ taskId }: TaskDetailPageProps) => {
         getConfigRepository().logout();
         setIsAuthenticated(false);
         setTask(null);
+    };
+
+    const handleDelete = async () => {
+        if (!task || !window.confirm(t('taskDetailPage.deleteConfirm'))) {
+            return;
+        }
+
+        const token = localStorage.getItem('simonegentili.com-access-token');
+        setDeleting(true);
+        try {
+            const res = await fetch(`https://api.simonegentili.com/quadrato/task/${task.id}`, {
+                method: 'DELETE',
+                headers: token ? { Authorization: `Bearer ${token}` } : {},
+            });
+
+            if (res.status === 401) {
+                localStorage.removeItem('simonegentili.com-access-token');
+                setIsAuthenticated(false);
+                return;
+            }
+
+            if (!res.ok) {
+                throw new Error(String(res.status));
+            }
+
+            goBack(task);
+        } catch {
+            alert(t('taskDetailPage.deleteFailed'));
+        } finally {
+            setDeleting(false);
+        }
     };
 
     const containerStyle: React.CSSProperties = {
@@ -237,8 +269,26 @@ export const TaskDetailPage = ({ taskId }: TaskDetailPageProps) => {
                     </>
                 )}
 
-                <div style={{ marginTop: '24px', paddingTop: '16px', borderTop: '1px solid #eee', fontSize: '12px', color: '#999' }}>
-                    {t('taskDetailPage.taskId', { id: task.id })}
+                <div style={{ marginTop: '24px', paddingTop: '16px', borderTop: '1px solid #eee', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <span style={{ fontSize: '12px', color: '#999' }}>
+                        {t('taskDetailPage.taskId', { id: task.id })}
+                    </span>
+                    <button
+                        onClick={handleDelete}
+                        disabled={deleting}
+                        style={{
+                            cursor: deleting ? 'default' : 'pointer',
+                            background: 'none',
+                            border: '1px solid #e74c3c',
+                            color: '#e74c3c',
+                            borderRadius: '4px',
+                            padding: '6px 12px',
+                            fontSize: '13px',
+                            opacity: deleting ? 0.6 : 1,
+                        }}
+                    >
+                        {deleting ? t('taskDetailPage.deleting') : t('taskDetailPage.delete')}
+                    </button>
                 </div>
             </div>
         </>

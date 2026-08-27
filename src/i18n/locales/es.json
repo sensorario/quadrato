@@ -189,7 +189,11 @@
     "periodicity": "Periodicidad",
     "every": "Cada {{number}} {{unit}}",
     "description": "Descripción",
-    "taskId": "ID de tarea: {{id}}"
+    "taskId": "ID de tarea: {{id}}",
+    "delete": "Eliminar tarea",
+    "deleting": "Eliminando...",
+    "deleteConfirm": "¿Eliminar esta tarea? Esta acción no se puede deshacer.",
+    "deleteFailed": "No se pudo eliminar la tarea."
   },
   "expiredTasks": {
     "loading": "Cargando tareas vencidas...",
