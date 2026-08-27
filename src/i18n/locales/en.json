@@ -189,7 +189,11 @@
     "periodicity": "Recurrence",
     "every": "Every {{number}} {{unit}}",
     "description": "Description",
-    "taskId": "Task ID: {{id}}"
+    "taskId": "Task ID: {{id}}",
+    "delete": "Delete task",
+    "deleting": "Deleting...",
+    "deleteConfirm": "Delete this task? This cannot be undone.",
+    "deleteFailed": "Failed to delete the task."
   },
   "expiredTasks": {
     "loading": "Loading expired tasks...",

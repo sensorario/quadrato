@@ -53,6 +53,7 @@
 
 
 ### Fixes
+- fix(task): login on static link opening from a not authenticated user ([11418c8](https://github.com/sensorario/quadrato/commit/11418c8), 2026-08-20)
 - fix: clear all simplanner-* localStorage on logout, 401 and before login ([9a8d785](https://github.com/sensorario/quadrato/commit/9a8d785), 2026-07-20)
 - fix: replace native logout confirm with in-app modal ([d9272f3](https://github.com/sensorario/quadrato/commit/d9272f3), 2026-07-19)
 - fix: add visible dismiss button to modal header ([b1cd77e](https://github.com/sensorario/quadrato/commit/b1cd77e), 2026-07-19)

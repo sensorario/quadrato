@@ -189,7 +189,11 @@
     "periodicity": "Périodicité",
     "every": "Tous les {{number}} {{unit}}",
     "description": "Description",
-    "taskId": "ID de la tâche : {{id}}"
+    "taskId": "ID de la tâche : {{id}}",
+    "delete": "Supprimer la tâche",
+    "deleting": "Suppression...",
+    "deleteConfirm": "Supprimer cette tâche ? Cette action est irréversible.",
+    "deleteFailed": "Impossible de supprimer la tâche."
   },
   "expiredTasks": {
     "loading": "Chargement des tâches expirées...",
