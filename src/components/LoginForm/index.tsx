@@ -40,7 +40,7 @@ const LoginForm = ({
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
-        justifyContent: 'center',
+        justifyContent: 'safe center',
         gap: '30px',
         overflowY: 'auto',
         padding: '30px 16px',
