@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next";
 import { Link } from "../../Router"
 import { VersionNumber } from "../VersionNumber";
 import PandaLegend from "../PandaLegend";
-import LanguageSwitcher from "../LanguageSwitcher";
+import { LanguageSwitcher } from "@sensorario/sg-components";
 import FakeReviews from "../FakeReviews";
 
 const LoginForm = ({

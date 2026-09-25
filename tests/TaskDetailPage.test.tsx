@@ -44,7 +44,7 @@ describe('TaskDetailPage delete', () => {
     it('sends a DELETE request for the current task and navigates away on success', async () => {
         render(<TaskDetailPage taskId="42" />);
 
-        const deleteButton = await screen.findByText('Delete task');
+        const deleteButton = await screen.findByText('Elimina task');
         fireEvent.click(deleteButton);
 
         await waitFor(() => expect(global.fetch).toHaveBeenCalledWith(
@@ -63,7 +63,7 @@ describe('TaskDetailPage delete', () => {
 
         render(<TaskDetailPage taskId="42" />);
 
-        const deleteButton = await screen.findByText('Delete task');
+        const deleteButton = await screen.findByText('Elimina task');
         fireEvent.click(deleteButton);
 
         expect(global.fetch).not.toHaveBeenCalled();
