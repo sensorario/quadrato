@@ -231,6 +231,7 @@ function App() {
     const [workspaces, setWorkspaces] = useState([]);
     const [registeredUsersCount, setRegisteredUsersCount] = useState(null);
     const [workspaceFilter, setWorkspaceFilter] = useState("");
+    const [deletingWorkspace, setDeletingWorkspace] = useState(null);
     const [editingWorkspaceNotifications, setEditingWorkspaceNotifications] =
         useState(null);
     const [notifDalle, setNotifDalle] = useState("08:00");
@@ -1211,6 +1212,70 @@ function App() {
             .catch(() => setEditingWorkspaceNotifications(null));
     };
 
+    const deleteWorkspace = () => {
+        const workspace = deletingWorkspace;
+        setDeletingWorkspace(null);
+
+        fetch(`https://api.simonegentili.com/quadrato/workspace/${workspace.id}`, {
+            method: "DELETE",
+            headers: getAuthHeader(),
+        })
+            .then((res) => {
+                if (res.status === 401) {
+                    setToken(null);
+                    throw new Error("Unauthorized");
+                }
+                return res.json();
+            })
+            .then((json) => {
+                if (!json?.success) return;
+                setWorkspaces((prev) =>
+                    prev
+                        .filter((w) => w.id !== workspace.id)
+                        .map((w) =>
+                            w.name === "default"
+                                ? {
+                                      ...w,
+                                      tasks_count:
+                                          (w.tasks_count ?? 0) +
+                                          json.moved_tasks,
+                                  }
+                                : w
+                        )
+                );
+                if (ws === workspace.name) {
+                    setWs("default");
+                } else if (ws === "default") {
+                    getConfigRepository().fetchData((tasks) => setTasks(tasks));
+                }
+            })
+            .catch(() => {});
+    };
+
+    const DeleteWorkspaceModalView = deletingWorkspace && (
+        <Modal
+            title={t("app.deleteWorkspaceTitle")}
+            onClick={() => setDeletingWorkspace(null)}
+            buttons={[
+                {
+                    label: t("common.cancel"),
+                    onClick: () => setDeletingWorkspace(null),
+                },
+                {
+                    label: t("common.confirm"),
+                    onClick: deleteWorkspace,
+                },
+            ]}
+        >
+            <p>
+                {t("app.deleteWorkspaceConfirm", {
+                    name: deletingWorkspace.name,
+                    count: deletingWorkspace.tasks_count ?? 0,
+                })}
+            </p>
+        </Modal>
+    );
+
     const WorkspaceNotificationsModalView = editingWorkspaceNotifications && (
         <Modal
             title={t("app.workspaceNotificationsTitle", {
@@ -1221,6 +1286,13 @@ function App() {
                 {
                     label: t("common.save"),
                     onClick: saveWorkspaceNotifications,
+                },
+                {
+                    label: t("app.deleteWorkspace"),
+                    onClick: () => {
+                        setDeletingWorkspace(editingWorkspaceNotifications);
+                        setEditingWorkspaceNotifications(null);
+                    },
                 },
                 {
                     label: t("common.close"),
@@ -1773,6 +1845,7 @@ function App() {
                     {showWorkspaceMembers && WorkspaceMembersModalView}
                     {editingWorkspaceNotifications &&
                         WorkspaceNotificationsModalView}
+                    {deletingWorkspace && DeleteWorkspaceModalView}
                 </div>
                 <SGFooter />
             </div>

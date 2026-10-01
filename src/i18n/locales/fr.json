@@ -43,6 +43,9 @@
     "from": "De",
     "to": "À",
     "workspaceMembersTitle": "Membres de l'espace de travail",
+    "deleteWorkspace": "Supprimer l'espace de travail",
+    "deleteWorkspaceTitle": "Supprimer l'espace de travail ?",
+    "deleteWorkspaceConfirm": "L'espace de travail \"{{name}}\" sera supprimé. Ses {{count}} tâches et leurs projets seront déplacés vers l'espace de travail par défaut ; les membres perdront l'accès.",
     "inviteButton": "inviter",
     "memberEmailPlaceholder": "email du membre"
   },

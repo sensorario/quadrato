@@ -43,6 +43,9 @@
     "from": "Von",
     "to": "Bis",
     "workspaceMembersTitle": "Mitglieder des Arbeitsbereichs",
+    "deleteWorkspace": "Arbeitsbereich löschen",
+    "deleteWorkspaceTitle": "Arbeitsbereich löschen?",
+    "deleteWorkspaceConfirm": "Der Arbeitsbereich \"{{name}}\" wird gelöscht. Seine {{count}} Aufgaben und die zugehörigen Projekte werden in den Standard-Arbeitsbereich verschoben; Mitglieder verlieren den Zugriff.",
     "inviteButton": "einladen",
     "memberEmailPlaceholder": "E-Mail des Mitglieds"
   },

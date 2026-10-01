@@ -43,6 +43,9 @@
     "from": "開始",
     "to": "終了",
     "workspaceMembersTitle": "ワークスペースのメンバー",
+    "deleteWorkspace": "ワークスペースを削除",
+    "deleteWorkspaceTitle": "ワークスペースを削除しますか？",
+    "deleteWorkspaceConfirm": "ワークスペース「{{name}}」を削除します。{{count}} 件のタスクとそのプロジェクトはデフォルトのワークスペースに移動され、メンバーはアクセスできなくなります。",
     "inviteButton": "招待",
     "memberEmailPlaceholder": "メンバーのメール"
   },

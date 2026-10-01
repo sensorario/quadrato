@@ -113,7 +113,9 @@ select:focus-visible,
    ============================================================ */
 .foo {
     min-height: 100vh;
-    margin-bottom: calc(var(--unit) * 7);
+    box-sizing: border-box;
+    /* SGFooter is position: fixed (~53px tall): this keeps the last tasks clear of it */
+    padding-bottom: calc(var(--unit) * 12);
     background:
         radial-gradient(1200px 480px at 50% -120px, var(--color-primary-soft) 0%, transparent 60%),
         var(--color-bg);
@@ -122,7 +124,7 @@ select:focus-visible,
 .app-container {
     width: 100%;
     max-width: 720px;
-    margin: var(--unit) auto;
+    margin: calc(var(--unit) * 3) auto;
     padding: 0 12px;
     box-sizing: border-box;
 }
@@ -561,6 +563,42 @@ select:focus-visible,
 .modal-input-wrapper {
     display: flex;
     justify-content: center;
+}
+
+.modal-content:has(.modal-long-description) {
+    display: flex;
+    flex-direction: column;
+}
+
+.modal-content:has(.modal-long-description) .tabbed-content {
+    flex: 1 1 auto;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+}
+
+.modal-content:has(.modal-long-description) .tabbed-content .content {
+    flex: 1 1 auto;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+}
+
+.tab-content.active:has(> .modal-long-description) {
+    flex: 1 1 auto;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+}
+
+.modal-long-description {
+    flex: 1 1 auto;
+    min-height: 0;
+}
+
+.modal-long-description textarea {
+    min-height: 8rem;
+    resize: none;
 }
 
 .modal-input {

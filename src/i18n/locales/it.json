@@ -43,6 +43,9 @@
     "from": "Dalle",
     "to": "Alle",
     "workspaceMembersTitle": "Membri workspace",
+    "deleteWorkspace": "Elimina workspace",
+    "deleteWorkspaceTitle": "Eliminare il workspace?",
+    "deleteWorkspaceConfirm": "Il workspace \"{{name}}\" verrà eliminato. I suoi {{count}} task e i relativi progetti saranno spostati nel workspace default; i membri perderanno l'accesso.",
     "inviteButton": "invita",
     "memberEmailPlaceholder": "email membro"
   },

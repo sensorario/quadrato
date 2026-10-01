@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Modal } from "./Modal";
 import TabbedContent from "./TabbedContent";
@@ -58,7 +58,6 @@ type TaskModalProps = {
 
 const TaskModal = ({ mode, initialValues, onSave, onClose, projectEditable, dateTimeEnabled }: TaskModalProps) => {
     const { t } = useTranslation();
-    const textareaRef = useRef<HTMLTextAreaElement>(null);
     const seededProject = initialValues?.project ?? "";
 
     const [title, setTitle] = useState(initialValues?.title ?? "");
@@ -67,13 +66,6 @@ const TaskModal = ({ mode, initialValues, onSave, onClose, projectEditable, date
     const [timestamp, setTimestamp] = useState<string | number | "">(initialValues?.timestamp ?? "");
     const [periodicity, setPeriodicity] = useState<Periodicity>(initialValues?.periodicity ?? DEFAULT_PERIODICITY);
     const [addAnother, setAddAnother] = useState(false);
-
-    useEffect(() => {
-        if (textareaRef.current) {
-            textareaRef.current.style.height = "auto";
-            textareaRef.current.style.height = textareaRef.current.scrollHeight + "px";
-        }
-    }, [longDescription]);
 
     const handleSave = () => {
         if (title.trim() === "") return;
@@ -139,7 +131,6 @@ const TaskModal = ({ mode, initialValues, onSave, onClose, projectEditable, date
                         <label className="modal-input-label">{t("taskModal.longDescriptionLabel")}</label>
                         <div className="modal-long-description">
                             <textarea
-                                ref={textareaRef}
                                 value={longDescription}
                                 onChange={(e) => setLongDescription(e.target.value)}
                                 placeholder={t("taskModal.longDescriptionPlaceholder")}

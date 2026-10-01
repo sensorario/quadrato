@@ -43,6 +43,9 @@
     "from": "Desde",
     "to": "Hasta",
     "workspaceMembersTitle": "Miembros del espacio de trabajo",
+    "deleteWorkspace": "Eliminar espacio de trabajo",
+    "deleteWorkspaceTitle": "¿Eliminar el espacio de trabajo?",
+    "deleteWorkspaceConfirm": "El espacio de trabajo \"{{name}}\" se eliminará. Sus {{count}} tareas y sus proyectos se moverán al espacio de trabajo predeterminado; los miembros perderán el acceso.",
     "inviteButton": "invitar",
     "memberEmailPlaceholder": "email del miembro"
   },
