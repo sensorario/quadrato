@@ -30,6 +30,7 @@
     "taskTypeLegendLabel": "Tipo de tarea:",
     "featureLabel": "Función",
     "bugLabel": "Error",
+    "payLabel": "Pago",
     "workspaceLabel": "espacio de trabajo: {{name}}",
     "registeredUsersCount": "{{count}} usuarios registrados",
     "loggedInAs": "Sesión iniciada como {{name}}",

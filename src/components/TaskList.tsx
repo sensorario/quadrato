@@ -4,6 +4,7 @@ import { getStatusIcons } from "../utils";
 import EditIcon from "./EditIcon";
 import FeatureIcon from "./FeatureIcon";
 import BugIcon from "./BugIcon";
+import PayIcon from "./PayIcon";
 import TaskModal from "./TaskModal";
 import FormatDate from "./FormatDate";
 import { Task } from "../types/commonTypes";
@@ -45,14 +46,13 @@ export const TaskList = ({ tasks, onTaskClick, updateTaskTitle, editable, projec
     };
 
     // @todo define task type
-    const taskTypeRegex = /^\[(feature|bug)\]\s*/i;
+    const taskTypeRegex = /^\[(feature|bug|pay)\]\s*/i;
 
     const handler = (task: Task) => {
         let title = task.title;
         const taskTypeMatch = taskTypeRegex.exec(title);
-        const taskTypeIcon = taskTypeMatch
-            ? (taskTypeMatch[1].toLowerCase() === 'bug' ? <BugIcon /> : <FeatureIcon />)
-            : null;
+        const taskTypeIcons: Record<string, React.ReactElement> = { feature: <FeatureIcon />, bug: <BugIcon />, pay: <PayIcon /> };
+        const taskTypeIcon = taskTypeMatch ? taskTypeIcons[taskTypeMatch[1].toLowerCase()] : null;
         if (taskTypeMatch) {
             title = title.slice(taskTypeMatch[0].length);
         }

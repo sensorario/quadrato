@@ -26,6 +26,7 @@ import { LanguageSwitcher, QuadratoHeader, SGFooter } from "@sensorario/sg-compo
 import ExpiredTasks from "./components/ExpiredTasks";
 import FeatureIcon from "./components/FeatureIcon";
 import BugIcon from "./components/BugIcon";
+import PayIcon from "./components/PayIcon";
 import LogoutConfirmModal from "./components/LogoutConfirmModal";
 
 // Header di autorizzazione da allegare alle richieste autenticate verso l'API
@@ -922,6 +923,16 @@ function App() {
                         >
                             <BugIcon />
                             <span>{t("app.bugLabel")}</span>
+                        </div>
+                        <div
+                            style={{
+                                display: "flex",
+                                alignItems: "center",
+                                gap: "8px",
+                            }}
+                        >
+                            <PayIcon />
+                            <span>{t("app.payLabel")}</span>
                         </div>
                     </div>
                 </div>

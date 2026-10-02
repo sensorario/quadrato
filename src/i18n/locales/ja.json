@@ -30,6 +30,7 @@
     "taskTypeLegendLabel": "タスクの種類:",
     "featureLabel": "機能",
     "bugLabel": "バグ",
+    "payLabel": "支払い",
     "workspaceLabel": "ワークスペース: {{name}}",
     "registeredUsersCount": "登録ユーザー数: {{count}}",
     "loggedInAs": "{{name}} としてログイン中",

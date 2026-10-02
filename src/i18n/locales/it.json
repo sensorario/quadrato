@@ -30,6 +30,7 @@
     "taskTypeLegendLabel": "Tipo di task:",
     "featureLabel": "Feature",
     "bugLabel": "Bug",
+    "payLabel": "Pagamento",
     "workspaceLabel": "workspace: {{name}}",
     "registeredUsersCount": "{{count}} utenti registrati",
     "loggedInAs": "Accesso effettuato come {{name}}",
