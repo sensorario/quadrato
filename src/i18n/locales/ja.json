@@ -107,7 +107,11 @@
   "taskList": {
     "edit": "編集",
     "viewDetail": "詳細を見る",
-    "viewDetailAria": "タスクの詳細を見る"
+    "viewDetailAria": "タスクの詳細を見る",
+    "dragHandle": "ドラッグして並べ替え",
+    "selectionTitle": "選択したタスク",
+    "selectionMessage": "選択したタスク: {{count}}件。すべての期限を削除できます。",
+    "clearDueDates": "期限を削除"
   },
   "footer": {
     "addAria": "新しいタスクを追加",

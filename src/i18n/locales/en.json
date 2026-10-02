@@ -107,7 +107,11 @@
   "taskList": {
     "edit": "Edit",
     "viewDetail": "View detail",
-    "viewDetailAria": "View task detail"
+    "viewDetailAria": "View task detail",
+    "dragHandle": "Drag to reorder",
+    "selectionTitle": "Selected tasks",
+    "selectionMessage": "Selected tasks: {{count}}. You can remove the due date from all of them.",
+    "clearDueDates": "Remove due date"
   },
   "footer": {
     "addAria": "Add new task",

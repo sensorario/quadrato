@@ -107,7 +107,11 @@
   "taskList": {
     "edit": "Bearbeiten",
     "viewDetail": "Details anzeigen",
-    "viewDetailAria": "Aufgabendetails anzeigen"
+    "viewDetailAria": "Aufgabendetails anzeigen",
+    "dragHandle": "Ziehen zum Neuordnen",
+    "selectionTitle": "Ausgewählte Aufgaben",
+    "selectionMessage": "Ausgewählte Aufgaben: {{count}}. Du kannst bei allen das Fälligkeitsdatum entfernen.",
+    "clearDueDates": "Fälligkeitsdatum entfernen"
   },
   "footer": {
     "addAria": "Neue Aufgabe hinzufügen",

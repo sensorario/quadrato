@@ -107,7 +107,11 @@
   "taskList": {
     "edit": "Editar",
     "viewDetail": "Ver detalle",
-    "viewDetailAria": "Ver detalle de la tarea"
+    "viewDetailAria": "Ver detalle de la tarea",
+    "dragHandle": "Arrastra para reordenar",
+    "selectionTitle": "Tareas seleccionadas",
+    "selectionMessage": "Tareas seleccionadas: {{count}}. Puedes quitar la fecha de vencimiento de todas.",
+    "clearDueDates": "Quitar vencimiento"
   },
   "footer": {
     "addAria": "Añadir nueva tarea",

@@ -107,7 +107,11 @@
   "taskList": {
     "edit": "Modifica",
     "viewDetail": "Vedi dettaglio",
-    "viewDetailAria": "Vedi dettaglio task"
+    "viewDetailAria": "Vedi dettaglio task",
+    "dragHandle": "Trascina per riordinare",
+    "selectionTitle": "Task selezionati",
+    "selectionMessage": "Task selezionati: {{count}}. Puoi rimuovere la data di scadenza da tutti.",
+    "clearDueDates": "Rimuovi scadenza"
   },
   "footer": {
     "addAria": "Aggiungi nuovo task",

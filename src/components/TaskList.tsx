@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 import { getStatusIcons } from "../utils";
 import { Icon } from "@sensorario/sg-components";
 import TaskModal from "./TaskModal";
+import { Modal } from "./Modal";
 import FormatDate from "./FormatDate";
 import { Task } from "../types/commonTypes";
 import { getConfigRepository } from "../repositories";
@@ -10,11 +11,12 @@ import sortByDate from "../utils/filterTaskByVisibilityRange";
 import { navigate } from "../Router";
 
 // @todo #44 extract task type in a common file and fix dateTime to timestamp
-export const TaskList = ({ tasks, onTaskClick, updateTaskTitle, onReorder, editable, projectEditable, dateTimeEnabled, iconTheme, projectFilter }: {
+export const TaskList = ({ tasks, onTaskClick, updateTaskTitle, onReorder, onClearDueDates, editable, projectEditable, dateTimeEnabled, iconTheme, projectFilter }: {
     tasks: Task[];
     onTaskClick: (id: number) => void;
     updateTaskTitle: (id: number, title: string, longDescription?: string, project?: string, timestamp?: string | number, periodicity?: { number: string; unit: string } | null) => void;
     onReorder?: (orderedIds: Task['id'][]) => void;
+    onClearDueDates?: (ids: Task['id'][]) => void;
     editable: boolean;
     projectEditable: boolean;
     dateTimeEnabled: boolean;
@@ -34,39 +36,81 @@ export const TaskList = ({ tasks, onTaskClick, updateTaskTitle, onReorder, edita
     const [dragOrder, setDragOrder] = useState<Task['id'][] | null>(null);
     const [draggedId, setDraggedId] = useState<Task['id'] | null>(null);
     const rowRefs = useRef(new Map<Task['id'], HTMLLIElement>());
+    const [selectedIds, setSelectedIds] = useState<Task['id'][]>([]);
+    const [marquee, setMarquee] = useState<{ left: number; top: number; width: number; height: number } | null>(null);
+    const [showSelectionModal, setShowSelectionModal] = useState(false);
     const suppressClick = useRef(false);
 
-    // Only tasks without a due date can be reordered: dated ones stay sorted by date.
-    // Mouse drags start after a few pixels so a plain click still works; touch drags
-    // need a long press so a swipe keeps scrolling the page.
-    const startDrag = (e: React.PointerEvent, task: Task, undatedIds: Task['id'][]) => {
-        if (!onReorder || task.timestamp || e.button !== 0) return;
+    // Mouse only: pressing anywhere on the list and dragging draws a selection area.
+    // It starts after a few pixels, so a plain click on a row still works.
+    const startMarquee = (e: React.PointerEvent) => {
+        if (!onClearDueDates || e.pointerType !== 'mouse' || e.button !== 0) return;
         const startX = e.clientX;
         const startY = e.clientY;
-        const isTouch = e.pointerType !== 'mouse';
         let active = false;
-        let order = undatedIds;
-        let longPress: number | undefined;
+        let selected: Task['id'][] = [];
 
-        const activate = () => {
-            active = true;
-            window.getSelection()?.removeAllRanges();
-            setDraggedId(task.id);
-            setDragOrder(order);
-        };
-        const preventScroll = (ev: TouchEvent) => {
-            if (active) ev.preventDefault();
-        };
         const onMove = (ev: PointerEvent) => {
             if (!active) {
-                const moved = Math.hypot(ev.clientX - startX, ev.clientY - startY);
-                if (isTouch) {
-                    if (moved > 8) cleanup();
-                    return;
-                }
-                if (moved < 5) return;
-                activate();
+                if (Math.hypot(ev.clientX - startX, ev.clientY - startY) < 5) return;
+                active = true;
+                document.body.style.userSelect = 'none';
             }
+            window.getSelection()?.removeAllRanges();
+            const area = {
+                left: Math.min(startX, ev.clientX),
+                top: Math.min(startY, ev.clientY),
+                right: Math.max(startX, ev.clientX),
+                bottom: Math.max(startY, ev.clientY),
+            };
+            setMarquee({ left: area.left, top: area.top, width: area.right - area.left, height: area.bottom - area.top });
+            selected = [...rowRefs.current.entries()]
+                .filter(([, li]) => {
+                    const rect = li.getBoundingClientRect();
+                    return rect.left < area.right && rect.right > area.left && rect.top < area.bottom && rect.bottom > area.top;
+                })
+                .map(([id]) => id);
+            setSelectedIds(selected);
+        };
+        const onUp = () => {
+            if (active) {
+                // The click that follows the release must not toggle a status or open the editor.
+                suppressClick.current = true;
+                setTimeout(() => { suppressClick.current = false; }, 0);
+                if (selected.length > 0) setShowSelectionModal(true);
+            }
+            cleanup();
+        };
+        const cleanup = () => {
+            window.removeEventListener('pointermove', onMove);
+            window.removeEventListener('pointerup', onUp);
+            window.removeEventListener('pointercancel', cleanup);
+            document.body.style.userSelect = '';
+            setMarquee(null);
+            if (!active || selected.length === 0) setSelectedIds([]);
+        };
+
+        window.addEventListener('pointermove', onMove);
+        window.addEventListener('pointerup', onUp);
+        window.addEventListener('pointercancel', cleanup);
+    };
+
+    const closeSelection = () => {
+        setShowSelectionModal(false);
+        setSelectedIds([]);
+    };
+
+    // Only tasks without a due date can be reordered: dated ones stay sorted by date.
+    // Dragging starts from the grip only, so clicks on the row and page scrolling are untouched.
+    const startDrag = (e: React.PointerEvent, task: Task, undatedIds: Task['id'][]) => {
+        if (!onReorder || e.button !== 0) return;
+        e.preventDefault();
+        e.stopPropagation();
+        let order = undatedIds;
+        setDraggedId(task.id);
+        setDragOrder(order);
+
+        const onMove = (ev: PointerEvent) => {
             const others = order.filter(id => id !== task.id);
             let index = others.findIndex(id => {
                 const rect = rowRefs.current.get(id)?.getBoundingClientRect();
@@ -80,29 +124,20 @@ export const TaskList = ({ tasks, onTaskClick, updateTaskTitle, onReorder, edita
             }
         };
         const onUp = () => {
-            if (active) {
-                // The click that follows the drop must not toggle the status or open the editor.
-                suppressClick.current = true;
-                setTimeout(() => { suppressClick.current = false; }, 0);
-                if (order.some((id, i) => id !== undatedIds[i])) onReorder(order);
-            }
+            if (order.some((id, i) => id !== undatedIds[i])) onReorder(order);
             cleanup();
         };
         const cleanup = () => {
-            clearTimeout(longPress);
             window.removeEventListener('pointermove', onMove);
             window.removeEventListener('pointerup', onUp);
             window.removeEventListener('pointercancel', cleanup);
-            window.removeEventListener('touchmove', preventScroll);
             setDraggedId(null);
             setDragOrder(null);
         };
 
-        if (isTouch) longPress = window.setTimeout(activate, 300);
         window.addEventListener('pointermove', onMove);
         window.addEventListener('pointerup', onUp);
         window.addEventListener('pointercancel', cleanup);
-        window.addEventListener('touchmove', preventScroll, { passive: false });
     };
 
     const handleEditClick = (task: Task) => {
@@ -150,6 +185,7 @@ export const TaskList = ({ tasks, onTaskClick, updateTaskTitle, onReorder, edita
 
         const draggable = onReorder !== undefined && !task.timestamp;
         const isDragged = draggedId === task.id;
+        const isSelected = selectedIds.includes(task.id);
 
         return (
             <li
@@ -158,15 +194,24 @@ export const TaskList = ({ tasks, onTaskClick, updateTaskTitle, onReorder, edita
                 className="task-item"
                 onMouseEnter={() => setHoveredId(typeof task.id === 'number' ? task.id : null)}
                 onMouseLeave={() => setHoveredId(null)}
-                onPointerDown={e => startDrag(e, task, undatedIds)}
                 style={{
                     display: 'flex', alignItems: 'center', justifyContent: 'space-between',
                     padding: '4px', borderBottom: '1px solid #eee', cursor: isDragged ? 'grabbing' : 'pointer',
-                    ...(draggable && { WebkitTouchCallout: 'none', WebkitUserSelect: 'none' }),
+                    ...(isSelected && { background: '#e8f0fe' }),
                     ...(isDragged && { opacity: 0.6, background: '#f3f7ff', boxShadow: '0 2px 6px rgba(0,0,0,0.12)' })
                 }}
 
             >
+                {draggable && (
+                    <span
+                        onPointerDown={e => startDrag(e, task, undatedIds)}
+                        title={t('taskList.dragHandle')}
+                        aria-label={t('taskList.dragHandle')}
+                        style={{ display: 'flex', alignItems: 'center', flexShrink: 0, color: '#aaa', cursor: isDragged ? 'grabbing' : 'grab', touchAction: 'none', padding: '0 2px' }}
+                    >
+                        <Icon name="grip-vertical" size={16} />
+                    </span>
+                )}
                 {/* Quadrato di stato (presente) */}
                 {/* Quadrato colore progetto */}
                 <span
@@ -234,9 +279,34 @@ export const TaskList = ({ tasks, onTaskClick, updateTaskTitle, onReorder, edita
 
     return (
         <>
-            <ul className="task-list" onClickCapture={e => { if (suppressClick.current) { e.stopPropagation(); e.preventDefault(); } }}>
+            <ul
+                className="task-list"
+                onPointerDown={startMarquee}
+                onClickCapture={e => { if (suppressClick.current) { e.stopPropagation(); e.preventDefault(); } }}
+            >
                 {orderedTasks.map(task => handler(task, undatedIds))}
             </ul>
+            {marquee && (
+                <div
+                    data-testid="selection-area"
+                    style={{
+                        position: 'fixed', ...marquee, pointerEvents: 'none', zIndex: 1000,
+                        border: '1px dashed #5480e6', background: 'rgba(84, 128, 230, 0.1)'
+                    }}
+                />
+            )}
+            {showSelectionModal && onClearDueDates && (
+                <Modal
+                    title={t('taskList.selectionTitle')}
+                    onClick={closeSelection}
+                    buttons={[
+                        { label: t('common.cancel'), onClick: closeSelection },
+                        { label: t('taskList.clearDueDates'), onClick: () => { onClearDueDates(selectedIds); closeSelection(); } },
+                    ]}
+                >
+                    <p>{t('taskList.selectionMessage', { count: selectedIds.length })}</p>
+                </Modal>
+            )}
             {editable && editTask !== null && (
                 <TaskModal
                     key={editTask.id}

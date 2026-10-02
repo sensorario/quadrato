@@ -107,7 +107,11 @@
   "taskList": {
     "edit": "Modifier",
     "viewDetail": "Voir le détail",
-    "viewDetailAria": "Voir le détail de la tâche"
+    "viewDetailAria": "Voir le détail de la tâche",
+    "dragHandle": "Glisser pour réorganiser",
+    "selectionTitle": "Tâches sélectionnées",
+    "selectionMessage": "Tâches sélectionnées : {{count}}. Tu peux supprimer la date d'échéance de toutes.",
+    "clearDueDates": "Supprimer l'échéance"
   },
   "footer": {
     "addAria": "Ajouter une nouvelle tâche",

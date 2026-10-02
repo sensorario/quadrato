@@ -589,6 +589,33 @@ function App() {
         });
     };
 
+    const handleClearDueDates = (ids) => {
+        const cleared = tasks.filter((task) => ids.includes(task.id) && task.timestamp);
+        const updated = tasks.map((task) =>
+            cleared.includes(task) ? { ...task, timestamp: null } : task
+        );
+        setTasks(updated);
+        getConfigRepository().setTasks(updated);
+
+        cleared.forEach((task) => {
+            fetch(`https://api.simonegentili.com/quadrato/task/${task.id}`, {
+                method: "PUT",
+                body: JSON.stringify({ timestamp: null }),
+                headers: {
+                    "Content-Type": "application/json",
+                    ...getAuthHeader(),
+                },
+            })
+                .then((res) => {
+                    if (res.status === 401) {
+                        setToken(null);
+                        throw new Error("Unauthorized");
+                    }
+                })
+                .catch(() => {});
+        });
+    };
+
     const handleAddTask = (values) => {
         const newTask = {
             // simulate uuid with timestamp and random number
@@ -668,6 +695,7 @@ function App() {
             onTaskClick={handleClick}
             updateTaskTitle={updateTaskTitle}
             onReorder={handleReorder}
+            onClearDueDates={handleClearDueDates}
             editable={editable}
             projectEditable={projectGroupable}
             dateTimeEnabled={dateTimeEnabled}
@@ -1806,6 +1834,7 @@ function App() {
                         onTaskClick={handleClick}
                         updateTaskTitle={updateTaskTitle}
                         onReorder={handleReorder}
+                        onClearDueDates={handleClearDueDates}
                         editable={editable}
                         projectEditable={projectGroupable}
                         dateTimeEnabled={dateTimeEnabled}
