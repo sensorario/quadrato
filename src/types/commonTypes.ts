@@ -11,6 +11,7 @@ export type Task = {
     status: number;
     archived?: boolean;
     periodicity?: Periodicity;
+    position?: number | null;
 };
 
 export type HandleAddAnotherModalParams = {

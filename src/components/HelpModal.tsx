@@ -1,5 +1,5 @@
 import { useTranslation } from "react-i18next";
-import HelpIcon from "./HelpIcon";
+import { Icon } from "@sensorario/sg-components";
 import { Modal } from "./Modal";
 import TabbedContent from "./TabbedContent";
 import { STATUS_PANDA } from './../themes/statusPanda';
@@ -50,7 +50,7 @@ export const HelpModal = ({ setShowHelp }: { setShowHelp: (show: boolean) => voi
         </div>
     );
 
-    return <Modal title={t('helpModal.title')} icon={<HelpIcon />} onClick={() => setShowHelp(false)} >
+    return <Modal title={t('helpModal.title')} icon={<Icon name="help-circle" size={24} style={{ color: "#7c63c9" }} />} onClick={() => setShowHelp(false)} >
         <TabbedContent panels={[
             { title: t('helpModal.colorsTab'), content: <ColorsPanel /> },
             { title: t('helpModal.shortcutsTab'), content: <ShortcutsPanel /> },

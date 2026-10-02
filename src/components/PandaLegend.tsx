@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { STATUS_PANDA } from '../themes/statusPanda';
-import CurvedArrowIcon from './CurvedArrowIcon';
+import { Icon } from '@sensorario/sg-components';
 
 const PandaLegend = () => {
     const { t } = useTranslation();
@@ -42,7 +42,7 @@ const PandaLegend = () => {
                     </div>
                 </div>
                 <div className="panda-hint">
-                    <CurvedArrowIcon />
+                    <Icon name="arrow-curved" size={32} style={{ color: '#e2727d' }} />
                     <span>{t('pandaLegend.clickToTry')}</span>
                 </div>
             </div>

@@ -1,10 +1,7 @@
-import React, { SetStateAction, useState } from "react";
+import React, { SetStateAction, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { getStatusIcons } from "../utils";
-import EditIcon from "./EditIcon";
-import FeatureIcon from "./FeatureIcon";
-import BugIcon from "./BugIcon";
-import PayIcon from "./PayIcon";
+import { Icon } from "@sensorario/sg-components";
 import TaskModal from "./TaskModal";
 import FormatDate from "./FormatDate";
 import { Task } from "../types/commonTypes";
@@ -13,10 +10,11 @@ import sortByDate from "../utils/filterTaskByVisibilityRange";
 import { navigate } from "../Router";
 
 // @todo #44 extract task type in a common file and fix dateTime to timestamp
-export const TaskList = ({ tasks, onTaskClick, updateTaskTitle, editable, projectEditable, dateTimeEnabled, iconTheme, projectFilter }: {
+export const TaskList = ({ tasks, onTaskClick, updateTaskTitle, onReorder, editable, projectEditable, dateTimeEnabled, iconTheme, projectFilter }: {
     tasks: Task[];
     onTaskClick: (id: number) => void;
     updateTaskTitle: (id: number, title: string, longDescription?: string, project?: string, timestamp?: string | number, periodicity?: { number: string; unit: string } | null) => void;
+    onReorder?: (orderedIds: Task['id'][]) => void;
     editable: boolean;
     projectEditable: boolean;
     dateTimeEnabled: boolean;
@@ -33,6 +31,79 @@ export const TaskList = ({ tasks, onTaskClick, updateTaskTitle, editable, projec
 
     const [hoveredId, setHoveredId] = useState<number | null>(null);
     const [editTask, setEditTask] = useState<Task | null>(null);
+    const [dragOrder, setDragOrder] = useState<Task['id'][] | null>(null);
+    const [draggedId, setDraggedId] = useState<Task['id'] | null>(null);
+    const rowRefs = useRef(new Map<Task['id'], HTMLLIElement>());
+    const suppressClick = useRef(false);
+
+    // Only tasks without a due date can be reordered: dated ones stay sorted by date.
+    // Mouse drags start after a few pixels so a plain click still works; touch drags
+    // need a long press so a swipe keeps scrolling the page.
+    const startDrag = (e: React.PointerEvent, task: Task, undatedIds: Task['id'][]) => {
+        if (!onReorder || task.timestamp || e.button !== 0) return;
+        const startX = e.clientX;
+        const startY = e.clientY;
+        const isTouch = e.pointerType !== 'mouse';
+        let active = false;
+        let order = undatedIds;
+        let longPress: number | undefined;
+
+        const activate = () => {
+            active = true;
+            window.getSelection()?.removeAllRanges();
+            setDraggedId(task.id);
+            setDragOrder(order);
+        };
+        const preventScroll = (ev: TouchEvent) => {
+            if (active) ev.preventDefault();
+        };
+        const onMove = (ev: PointerEvent) => {
+            if (!active) {
+                const moved = Math.hypot(ev.clientX - startX, ev.clientY - startY);
+                if (isTouch) {
+                    if (moved > 8) cleanup();
+                    return;
+                }
+                if (moved < 5) return;
+                activate();
+            }
+            const others = order.filter(id => id !== task.id);
+            let index = others.findIndex(id => {
+                const rect = rowRefs.current.get(id)?.getBoundingClientRect();
+                return rect !== undefined && ev.clientY < rect.top + rect.height / 2;
+            });
+            if (index === -1) index = others.length;
+            const next = [...others.slice(0, index), task.id, ...others.slice(index)];
+            if (next.some((id, i) => id !== order[i])) {
+                order = next;
+                setDragOrder(next);
+            }
+        };
+        const onUp = () => {
+            if (active) {
+                // The click that follows the drop must not toggle the status or open the editor.
+                suppressClick.current = true;
+                setTimeout(() => { suppressClick.current = false; }, 0);
+                if (order.some((id, i) => id !== undatedIds[i])) onReorder(order);
+            }
+            cleanup();
+        };
+        const cleanup = () => {
+            clearTimeout(longPress);
+            window.removeEventListener('pointermove', onMove);
+            window.removeEventListener('pointerup', onUp);
+            window.removeEventListener('pointercancel', cleanup);
+            window.removeEventListener('touchmove', preventScroll);
+            setDraggedId(null);
+            setDragOrder(null);
+        };
+
+        if (isTouch) longPress = window.setTimeout(activate, 300);
+        window.addEventListener('pointermove', onMove);
+        window.addEventListener('pointerup', onUp);
+        window.addEventListener('pointercancel', cleanup);
+        window.addEventListener('touchmove', preventScroll, { passive: false });
+    };
 
     const handleEditClick = (task: Task) => {
         setEditTask(task);
@@ -48,10 +119,10 @@ export const TaskList = ({ tasks, onTaskClick, updateTaskTitle, editable, projec
     // @todo define task type
     const taskTypeRegex = /^\[(feature|bug|pay)\]\s*/i;
 
-    const handler = (task: Task) => {
+    const handler = (task: Task, undatedIds: Task['id'][]) => {
         let title = task.title;
         const taskTypeMatch = taskTypeRegex.exec(title);
-        const taskTypeIcons: Record<string, React.ReactElement> = { feature: <FeatureIcon />, bug: <BugIcon />, pay: <PayIcon /> };
+        const taskTypeIcons: Record<string, React.ReactElement> = { feature: <Icon name="sparkle" aria-hidden={false} aria-label="feature" style={{ color: '#5480e6' }} />, bug: <Icon name="bug" aria-hidden={false} aria-label="bug" style={{ color: '#e2727d' }} />, pay: <Icon name="credit-card" aria-hidden={false} aria-label="pay" style={{ color: '#2e9e5b' }} /> };
         const taskTypeIcon = taskTypeMatch ? taskTypeIcons[taskTypeMatch[1].toLowerCase()] : null;
         if (taskTypeMatch) {
             title = title.slice(taskTypeMatch[0].length);
@@ -77,15 +148,22 @@ export const TaskList = ({ tasks, onTaskClick, updateTaskTitle, editable, projec
             }
         }
 
+        const draggable = onReorder !== undefined && !task.timestamp;
+        const isDragged = draggedId === task.id;
+
         return (
             <li
                 key={task.id}
+                ref={el => { if (el) rowRefs.current.set(task.id, el); else rowRefs.current.delete(task.id); }}
                 className="task-item"
                 onMouseEnter={() => setHoveredId(typeof task.id === 'number' ? task.id : null)}
                 onMouseLeave={() => setHoveredId(null)}
+                onPointerDown={e => startDrag(e, task, undatedIds)}
                 style={{
                     display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-                    padding: '4px', borderBottom: '1px solid #eee', cursor: 'pointer'
+                    padding: '4px', borderBottom: '1px solid #eee', cursor: isDragged ? 'grabbing' : 'pointer',
+                    ...(draggable && { WebkitTouchCallout: 'none', WebkitUserSelect: 'none' }),
+                    ...(isDragged && { opacity: 0.6, background: '#f3f7ff', boxShadow: '0 2px 6px rgba(0,0,0,0.12)' })
                 }}
 
             >
@@ -132,12 +210,7 @@ export const TaskList = ({ tasks, onTaskClick, updateTaskTitle, editable, projec
                         style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '0 4px', display: 'flex', alignItems: 'center', flexShrink: 0, color: '#888' }}
                         aria-label={t('taskList.viewDetailAria')}
                     >
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                            <circle cx="11" cy="11" r="8" />
-                            <line x1="21" y1="21" x2="16.65" y2="16.65" />
-                            <line x1="11" y1="8" x2="11" y2="14" />
-                            <line x1="8" y1="11" x2="14" y2="11" />
-                        </svg>
+                        <Icon name="zoom-in" size={16} />
                     </button>
 
 
@@ -152,10 +225,17 @@ export const TaskList = ({ tasks, onTaskClick, updateTaskTitle, editable, projec
     orderedTasks = sortByDate(tasks)
         .filter(t => !t.archived);
 
+    const datedTasks = orderedTasks.filter(t => t.timestamp);
+    const undatedTasks = orderedTasks.filter(t => !t.timestamp);
+    const undatedIds = undatedTasks.map(t => t.id);
+    if (dragOrder) {
+        orderedTasks = [...datedTasks, ...dragOrder.map(id => undatedTasks.find(t => t.id === id) as Task)];
+    }
+
     return (
         <>
-            <ul className="task-list">
-                {orderedTasks.map(handler)}
+            <ul className="task-list" onClickCapture={e => { if (suppressClick.current) { e.stopPropagation(); e.preventDefault(); } }}>
+                {orderedTasks.map(task => handler(task, undatedIds))}
             </ul>
             {editable && editTask !== null && (
                 <TaskModal

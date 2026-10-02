@@ -10,6 +10,9 @@ export const sortByDate = (tasks: Task[]) => {
         return aTime - bTime;
     });
 
+    // Tasks never dragged have no position yet and keep their original order, after the ordered ones.
+    withoutDate.sort((a: Task, b: Task) => (a.position ?? Number.MAX_SAFE_INTEGER) - (b.position ?? Number.MAX_SAFE_INTEGER));
+
     return [...withDate, ...withoutDate];
 }
 

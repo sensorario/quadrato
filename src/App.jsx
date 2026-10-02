@@ -7,10 +7,6 @@ import Toggle from "./components/Toggle";
 import TaskProjectSelector from "./components/TaskProjectSelector";
 import ConfirmModal from "./components/ConfirmModal";
 import HelpModal from "./components/HelpModal";
-import GearIcon from "./components/GearIcon";
-import HelpIcon from "./components/HelpIcon";
-import EditIcon from "./components/EditIcon";
-import LockIcon from "./components/LockIcon";
 import { Modal } from "./components/Modal";
 import TaskModal from "./components/TaskModal";
 import { Palette24 } from "./types/Palette24";
@@ -20,13 +16,9 @@ import { archiveCompletedAndSkippedTasks } from "./functions/archiveCompletedAnd
 import { persistArchivedTasks } from "./functions/persistArchivedTasks";
 import { getActiveProjects } from "./functions/getActiveProjects";
 import { getConfigRepository } from "./repositories";
-import UsersIcon from "./components/UsersIcon";
 import { navigate } from "./Router";
-import { LanguageSwitcher, QuadratoHeader, SGFooter } from "@sensorario/sg-components";
+import { Icon, LanguageSwitcher, QuadratoHeader, SGFooter } from "@sensorario/sg-components";
 import ExpiredTasks from "./components/ExpiredTasks";
-import FeatureIcon from "./components/FeatureIcon";
-import BugIcon from "./components/BugIcon";
-import PayIcon from "./components/PayIcon";
 import LogoutConfirmModal from "./components/LogoutConfirmModal";
 
 // Header di autorizzazione da allegare alle richieste autenticate verso l'API
@@ -567,6 +559,36 @@ function App() {
         });
     };
 
+    const handleReorder = (orderedIds) => {
+        const positions = new Map(orderedIds.map((id, index) => [id, index]));
+        const moved = tasks.filter(
+            (task) => positions.has(task.id) && task.position !== positions.get(task.id)
+        );
+        const updated = tasks.map((task) =>
+            positions.has(task.id) ? { ...task, position: positions.get(task.id) } : task
+        );
+        setTasks(updated);
+        getConfigRepository().setTasks(updated);
+
+        moved.forEach((task) => {
+            fetch(`https://api.simonegentili.com/quadrato/task/${task.id}`, {
+                method: "PUT",
+                body: JSON.stringify({ position: positions.get(task.id) }),
+                headers: {
+                    "Content-Type": "application/json",
+                    ...getAuthHeader(),
+                },
+            })
+                .then((res) => {
+                    if (res.status === 401) {
+                        setToken(null);
+                        throw new Error("Unauthorized");
+                    }
+                })
+                .catch(() => {});
+        });
+    };
+
     const handleAddTask = (values) => {
         const newTask = {
             // simulate uuid with timestamp and random number
@@ -645,6 +667,7 @@ function App() {
             tasks={visible}
             onTaskClick={handleClick}
             updateTaskTitle={updateTaskTitle}
+            onReorder={handleReorder}
             editable={editable}
             projectEditable={projectGroupable}
             dateTimeEnabled={dateTimeEnabled}
@@ -911,7 +934,7 @@ function App() {
                                 gap: "8px",
                             }}
                         >
-                            <FeatureIcon />
+                            <Icon name="sparkle" style={{ color: "#5480e6" }} />
                             <span>{t("app.featureLabel")}</span>
                         </div>
                         <div
@@ -921,7 +944,7 @@ function App() {
                                 gap: "8px",
                             }}
                         >
-                            <BugIcon />
+                            <Icon name="bug" style={{ color: "#e2727d" }} />
                             <span>{t("app.bugLabel")}</span>
                         </div>
                         <div
@@ -931,7 +954,7 @@ function App() {
                                 gap: "8px",
                             }}
                         >
-                            <PayIcon />
+                            <Icon name="credit-card" style={{ color: "#2e9e5b" }} />
                             <span>{t("app.payLabel")}</span>
                         </div>
                     </div>
@@ -948,37 +971,7 @@ function App() {
                             style={{ cursor: "pointer" }}
                             aria-label={t("footer.addAria")}
                         >
-                            <svg
-                                width="24"
-                                height="24"
-                                viewBox="0 0 32 32"
-                                xmlns="http://www.w3.org/2000/svg"
-                            >
-                                <circle
-                                    cx="16"
-                                    cy="16"
-                                    r="15"
-                                    fill="#f0f0f0"
-                                    stroke="#888"
-                                    strokeWidth="1"
-                                />
-                                <line
-                                    x1="16"
-                                    y1="10"
-                                    x2="16"
-                                    y2="22"
-                                    stroke="#444"
-                                    strokeWidth="1"
-                                />
-                                <line
-                                    x1="10"
-                                    y1="16"
-                                    x2="22"
-                                    y2="16"
-                                    stroke="#444"
-                                    strokeWidth="1"
-                                />
-                            </svg>
+                            <Icon name="plus" size={24} style={{ color: "#444" }} />
                         </span>
                         {showText && (
                             <span
@@ -993,37 +986,7 @@ function App() {
                             style={{ cursor: "pointer" }}
                             aria-label={t("footer.cleanAria")}
                         >
-                            <svg
-                                width="24"
-                                height="24"
-                                viewBox="0 0 32 32"
-                                xmlns="http://www.w3.org/2000/svg"
-                            >
-                                <circle
-                                    cx="16"
-                                    cy="16"
-                                    r="15"
-                                    fill="#f0f0f0"
-                                    stroke="#888"
-                                    strokeWidth="1"
-                                />
-                                <line
-                                    x1="10"
-                                    y1="10"
-                                    x2="22"
-                                    y2="22"
-                                    stroke="#444"
-                                    strokeWidth="1"
-                                />
-                                <line
-                                    x1="22"
-                                    y1="10"
-                                    x2="10"
-                                    y2="22"
-                                    stroke="#444"
-                                    strokeWidth="1"
-                                />
-                            </svg>
+                            <Icon name="x" size={24} style={{ color: "#444" }} />
                         </span>
                         {showText && (
                             <span
@@ -1034,7 +997,7 @@ function App() {
                             </span>
                         )}
                         <span onClick={() => setShowHelp(true)}>
-                            <HelpIcon />
+                            <Icon name="help-circle" size={24} style={{ color: "#7c63c9" }} />
                         </span>
                         {showText && (
                             <span
@@ -1048,7 +1011,7 @@ function App() {
                             onClick={() => setShowConfig(true)}
                             style={{ cursor: "pointer" }}
                         >
-                            <GearIcon />
+                            <Icon name="settings" size={24} style={{ color: "#5480e6" }} />
                         </span>
                         {showText && (
                             <span
@@ -1082,7 +1045,7 @@ function App() {
                     <Modal
                         onClick={() => setShowConfig(false)}
                         title={t("app.settingsTitle")}
-                        icon={<GearIcon />}
+                        icon={<Icon name="settings" size={24} style={{ color: "#5480e6" }} />}
                     >
                         <TabbedContent
                             id="settings"
@@ -1520,7 +1483,7 @@ function App() {
                                                         "app.sharedWorkspace"
                                                     )}
                                                 >
-                                                    <UsersIcon />
+                                                    <Icon name="users" size={24} style={{ color: "#5480e6" }} />
                                                 </div>
                                             )}
                                             {workspace.name === "default" ? (
@@ -1532,7 +1495,7 @@ function App() {
                                                         cursor: "not-allowed",
                                                     }}
                                                 >
-                                                    <LockIcon />
+                                                    <Icon name="lock" size={16} style={{ color: "#7c8aa8" }} />
                                                 </div>
                                             ) : (
                                                 workspace.id && (
@@ -1563,7 +1526,7 @@ function App() {
                                                             }
                                                         }}
                                                     >
-                                                        <EditIcon />
+                                                        <Icon name="edit" size={16} style={{ color: "#5480e6" }} />
                                                     </div>
                                                 )
                                             )}
@@ -1828,7 +1791,7 @@ function App() {
                                         }
                                     }}
                                 >
-                                    <UsersIcon />
+                                    <Icon name="users" size={24} style={{ color: "#5480e6" }} />
                                 </div>
                             )}
                             {HeaderView}
@@ -1842,6 +1805,7 @@ function App() {
                         tasks={visibleTasks}
                         onTaskClick={handleClick}
                         updateTaskTitle={updateTaskTitle}
+                        onReorder={handleReorder}
                         editable={editable}
                         projectEditable={projectGroupable}
                         dateTimeEnabled={dateTimeEnabled}
