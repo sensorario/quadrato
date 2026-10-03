@@ -110,8 +110,16 @@
     "viewDetailAria": "Voir le détail de la tâche",
     "dragHandle": "Glisser pour réorganiser",
     "selectionTitle": "Tâches sélectionnées",
-    "selectionMessage": "Tâches sélectionnées : {{count}}. Tu peux supprimer la date d'échéance de toutes.",
-    "clearDueDates": "Supprimer l'échéance"
+    "selectionMessage": "Tâches sélectionnées : {{count}}. Que veux-tu faire ?",
+    "clearDueDates": "Supprimer l'échéance",
+    "archive": "Archiver terminées et ignorées ({{count}})",
+    "delete": "Supprimer",
+    "deleteTitle": "Supprimer les tâches ?",
+    "deleteMessage": "Tâches à supprimer : {{count}}. C'est irréversible.",
+    "deleteConfirm": "Supprimer ({{count}})",
+    "projectLabel": "Projet",
+    "noProject": "Aucun projet",
+    "moveToProject": "Déplacer vers le projet"
   },
   "footer": {
     "addAria": "Ajouter une nouvelle tâche",

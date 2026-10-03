@@ -110,8 +110,16 @@
     "viewDetailAria": "Aufgabendetails anzeigen",
     "dragHandle": "Ziehen zum Neuordnen",
     "selectionTitle": "Ausgewählte Aufgaben",
-    "selectionMessage": "Ausgewählte Aufgaben: {{count}}. Du kannst bei allen das Fälligkeitsdatum entfernen.",
-    "clearDueDates": "Fälligkeitsdatum entfernen"
+    "selectionMessage": "Ausgewählte Aufgaben: {{count}}. Was möchtest du tun?",
+    "clearDueDates": "Fälligkeitsdatum entfernen",
+    "archive": "Erledigte und übersprungene archivieren ({{count}})",
+    "delete": "Löschen",
+    "deleteTitle": "Aufgaben löschen?",
+    "deleteMessage": "Zu löschende Aufgaben: {{count}}. Das kann nicht rückgängig gemacht werden.",
+    "deleteConfirm": "Löschen ({{count}})",
+    "projectLabel": "Projekt",
+    "noProject": "Kein Projekt",
+    "moveToProject": "In Projekt verschieben"
   },
   "footer": {
     "addAria": "Neue Aufgabe hinzufügen",

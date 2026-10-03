@@ -1,6 +1,6 @@
-import React, { SetStateAction, useRef, useState } from "react";
+import React, { SetStateAction, useLayoutEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { getStatusIcons } from "../utils";
+import { getStatusIcons, STATUS_ENUM } from "../utils";
 import { Icon } from "@sensorario/sg-components";
 import TaskModal from "./TaskModal";
 import { Modal } from "./Modal";
@@ -11,12 +11,15 @@ import sortByDate from "../utils/filterTaskByVisibilityRange";
 import { navigate } from "../Router";
 
 // @todo #44 extract task type in a common file and fix dateTime to timestamp
-export const TaskList = ({ tasks, onTaskClick, updateTaskTitle, onReorder, onClearDueDates, editable, projectEditable, dateTimeEnabled, iconTheme, projectFilter }: {
+export const TaskList = ({ tasks, onTaskClick, updateTaskTitle, onReorder, onClearDueDates, onArchive, onDelete, onChangeProject, editable, projectEditable, dateTimeEnabled, iconTheme, projectFilter }: {
     tasks: Task[];
     onTaskClick: (id: number) => void;
     updateTaskTitle: (id: number, title: string, longDescription?: string, project?: string, timestamp?: string | number, periodicity?: { number: string; unit: string } | null) => void;
     onReorder?: (orderedIds: Task['id'][]) => void;
     onClearDueDates?: (ids: Task['id'][]) => void;
+    onArchive?: (ids: Task['id'][]) => void;
+    onDelete?: (ids: Task['id'][]) => void;
+    onChangeProject?: (ids: Task['id'][], project: string) => void;
     editable: boolean;
     projectEditable: boolean;
     dateTimeEnabled: boolean;
@@ -36,9 +39,32 @@ export const TaskList = ({ tasks, onTaskClick, updateTaskTitle, onReorder, onCle
     const [dragOrder, setDragOrder] = useState<Task['id'][] | null>(null);
     const [draggedId, setDraggedId] = useState<Task['id'] | null>(null);
     const rowRefs = useRef(new Map<Task['id'], HTMLLIElement>());
+    const prevTops = useRef(new Map<Task['id'], number>());
+
+    // FLIP: when a status change moves a task to the top or bottom, every row slides
+    // from its old offset to the new one. offsetTop (not getBoundingClientRect) so
+    // page scroll between renders doesn't look like a move; skipped while dragging
+    // because the drag hit-testing reads the rows' on-screen rects.
+    useLayoutEffect(() => {
+        const animate = dragOrder === null && !window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
+        const tops = new Map<Task['id'], number>();
+        rowRefs.current.forEach((el, id) => {
+            tops.set(id, el.offsetTop);
+            const prev = prevTops.current.get(id);
+            if (!animate || prev === undefined || prev === el.offsetTop) return;
+            el.style.transition = 'none';
+            el.style.transform = `translateY(${prev - el.offsetTop}px)`;
+            void el.offsetHeight;
+            el.style.transition = 'transform 300ms ease';
+            el.style.transform = '';
+        });
+        prevTops.current = tops;
+    });
     const [selectedIds, setSelectedIds] = useState<Task['id'][]>([]);
     const [marquee, setMarquee] = useState<{ left: number; top: number; width: number; height: number } | null>(null);
     const [showSelectionModal, setShowSelectionModal] = useState(false);
+    const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+    const [projectDraft, setProjectDraft] = useState('');
     const suppressClick = useRef(false);
 
     // Mouse only: pressing anywhere on the list and dragging draws a selection area.
@@ -97,8 +123,17 @@ export const TaskList = ({ tasks, onTaskClick, updateTaskTitle, onReorder, onCle
 
     const closeSelection = () => {
         setShowSelectionModal(false);
+        setShowDeleteConfirm(false);
+        setProjectDraft('');
         setSelectedIds([]);
     };
+
+    // Only completed or skipped tasks can be archived: the others in the selection are left alone.
+    const archivableIds = tasks
+        .filter(task => selectedIds.includes(task.id) && !task.archived
+            && (task.status === STATUS_ENUM.DONE || task.status === STATUS_ENUM.SKIPPED))
+        .map(task => task.id);
+    const projects = [...new Set(tasks.map(task => task.project).filter((p): p is string => !!p))].sort();
 
     // Only tasks without a due date can be reordered: dated ones stay sorted by date.
     // Dragging starts from the grip only, so clicks on the row and page scrolling are untouched.
@@ -270,11 +305,9 @@ export const TaskList = ({ tasks, onTaskClick, updateTaskTitle, onReorder, onCle
     orderedTasks = sortByDate(tasks)
         .filter(t => !t.archived);
 
-    const datedTasks = orderedTasks.filter(t => t.timestamp);
-    const undatedTasks = orderedTasks.filter(t => !t.timestamp);
-    const undatedIds = undatedTasks.map(t => t.id);
+    const undatedIds = orderedTasks.filter(t => !t.timestamp).map(t => t.id);
     if (dragOrder) {
-        orderedTasks = [...datedTasks, ...dragOrder.map(id => undatedTasks.find(t => t.id === id) as Task)];
+        orderedTasks = sortByDate(orderedTasks.map(t => t.timestamp ? t : { ...t, position: dragOrder.indexOf(t.id) }));
     }
 
     return (
@@ -302,9 +335,50 @@ export const TaskList = ({ tasks, onTaskClick, updateTaskTitle, onReorder, onCle
                     buttons={[
                         { label: t('common.cancel'), onClick: closeSelection },
                         { label: t('taskList.clearDueDates'), onClick: () => { onClearDueDates(selectedIds); closeSelection(); } },
+                        ...(onArchive && archivableIds.length > 0
+                            ? [{ label: t('taskList.archive', { count: archivableIds.length }), onClick: () => { onArchive(archivableIds); closeSelection(); } }]
+                            : []),
+                        // Deleting can't be undone: it goes through a second confirmation.
+                        ...(onDelete
+                            ? [{ label: t('taskList.delete'), onClick: () => { setShowSelectionModal(false); setShowDeleteConfirm(true); } }]
+                            : []),
                     ]}
                 >
                     <p>{t('taskList.selectionMessage', { count: selectedIds.length })}</p>
+                    {onChangeProject && (
+                        <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                            <input
+                                className="modal-input"
+                                list="selection-projects"
+                                value={projectDraft}
+                                onChange={e => setProjectDraft(e.target.value)}
+                                placeholder={t('taskList.noProject')}
+                                aria-label={t('taskList.projectLabel')}
+                            />
+                            <datalist id="selection-projects">
+                                {projects.map(p => <option key={p} value={p} />)}
+                            </datalist>
+                            <button
+                                type="button"
+                                className="modal-close-btn"
+                                onClick={() => { onChangeProject(selectedIds, projectDraft.trim()); closeSelection(); }}
+                            >
+                                {t('taskList.moveToProject')}
+                            </button>
+                        </div>
+                    )}
+                </Modal>
+            )}
+            {showDeleteConfirm && onDelete && (
+                <Modal
+                    title={t('taskList.deleteTitle')}
+                    onClick={closeSelection}
+                    buttons={[
+                        { label: t('common.cancel'), onClick: closeSelection },
+                        { label: t('taskList.deleteConfirm', { count: selectedIds.length }), onClick: () => { onDelete(selectedIds); closeSelection(); } },
+                    ]}
+                >
+                    <p>{t('taskList.deleteMessage', { count: selectedIds.length })}</p>
                 </Modal>
             )}
             {editable && editTask !== null && (

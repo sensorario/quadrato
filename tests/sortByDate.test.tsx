@@ -22,4 +22,16 @@ describe("sortByDate", () => {
         const tasks = [task(1), task(2, { position: 0 }), task(3), task(4, { position: null })];
         expect(sortByDate(tasks).map(t => t.id)).toEqual([2, 1, 3, 4]);
     });
+
+    it("puts started tasks first, then todo, then done and skipped at the bottom", () => {
+        const tasks = [
+            task(1, { status: 3 }),
+            task(2, { status: 2, timestamp: 1000 }),
+            task(3),
+            task(4, { status: 1 }),
+            task(5, { status: 2 }),
+            task(6, { timestamp: 2000 }),
+        ];
+        expect(sortByDate(tasks).map(t => t.id)).toEqual([4, 6, 3, 2, 5, 1]);
+    });
 });

@@ -206,7 +206,7 @@ describe('TaskList area selection', () => {
 
         dragArea({ x: 10, y: 5 }, { x: 50, y: 25 });
 
-        expect(screen.getByText('Task selezionati: 2. Puoi rimuovere la data di scadenza da tutti.')).toBeInTheDocument();
+        expect(screen.getByText('Task selezionati: 2. Cosa vuoi fare?')).toBeInTheDocument();
     });
 
     it('removes the due date from all the selected tasks', async () => {
@@ -238,5 +238,80 @@ describe('TaskList area selection', () => {
         dragArea({ x: 10, y: 5 }, { x: 50, y: 25 }, 'touch');
 
         expect(screen.queryByText('Rimuovi scadenza')).not.toBeInTheDocument();
+    });
+});
+
+describe('TaskList selection actions', () => {
+    const list = [
+        { id: 1, title: 'First', status: 2, timestamp: 1000, project: 'casa' },
+        { id: 2, title: 'Second', status: 0, timestamp: 2000 },
+        { id: 3, title: 'Third', status: 3 },
+    ];
+
+    const renderList = (props: Partial<React.ComponentProps<typeof TaskList>> = {}) => {
+        const utils = render(
+            <TaskList
+                tasks={list as never}
+                onTaskClick={jest.fn()}
+                updateTaskTitle={() => { }}
+                onClearDueDates={jest.fn()}
+                editable={false}
+                projectEditable={false}
+                dateTimeEnabled={false}
+                iconTheme="default"
+                {...props}
+            />
+        );
+        stackRows(utils.container);
+        return utils;
+    };
+
+    const selectFirstTwo = () => {
+        fireEvent.pointerDown(screen.getByText('First'), { button: 0, clientX: 10, clientY: 5, pointerType: 'mouse' });
+        fireEvent.pointerMove(window, { clientX: 50, clientY: 25, pointerType: 'mouse' });
+        fireEvent.pointerUp(window, { pointerType: 'mouse' });
+    };
+
+    it('archives only the completed or skipped tasks of the selection', async () => {
+        const onArchive = jest.fn();
+        renderList({ onArchive });
+
+        selectFirstTwo();
+        fireEvent.click(screen.getByText('Archivia completati e saltati (1)'));
+
+        await waitFor(() => expect(onArchive).toHaveBeenCalledWith([1]));
+    });
+
+    it('offers no archiving when nothing selected is completed or skipped', () => {
+        renderList({ onArchive: jest.fn(), tasks: list.map(t => ({ ...t, status: 0 })) as never });
+
+        selectFirstTwo();
+
+        expect(screen.queryByText(/Archivia/)).not.toBeInTheDocument();
+    });
+
+    it('deletes only after a second confirmation', async () => {
+        const onDelete = jest.fn();
+        renderList({ onDelete });
+
+        selectFirstTwo();
+        fireEvent.click(screen.getByText('Elimina'));
+        expect(onDelete).not.toHaveBeenCalled();
+
+        fireEvent.click(await screen.findByText('Elimina (2)'));
+        await waitFor(() => expect(onDelete).toHaveBeenCalledTimes(1));
+        expect([...onDelete.mock.calls[0][0]].sort()).toEqual([1, 2]);
+    });
+
+    it('moves the selected tasks to the chosen project', () => {
+        const onChangeProject = jest.fn();
+        renderList({ onChangeProject });
+
+        selectFirstTwo();
+        fireEvent.change(screen.getByLabelText('Progetto'), { target: { value: ' spesa ' } });
+        fireEvent.click(screen.getByText('Sposta nel progetto'));
+
+        expect([...onChangeProject.mock.calls[0][0]].sort()).toEqual([1, 2]);
+        expect(onChangeProject.mock.calls[0][1]).toBe('spesa');
     });
 });

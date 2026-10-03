@@ -110,8 +110,16 @@
     "viewDetailAria": "タスクの詳細を見る",
     "dragHandle": "ドラッグして並べ替え",
     "selectionTitle": "選択したタスク",
-    "selectionMessage": "選択したタスク: {{count}}件。すべての期限を削除できます。",
-    "clearDueDates": "期限を削除"
+    "selectionMessage": "選択したタスク: {{count}} 件。どうしますか？",
+    "clearDueDates": "期限を削除",
+    "archive": "完了・スキップをアーカイブ ({{count}})",
+    "delete": "削除",
+    "deleteTitle": "タスクを削除しますか？",
+    "deleteMessage": "削除するタスク: {{count}} 件。元に戻せません。",
+    "deleteConfirm": "削除 ({{count}})",
+    "projectLabel": "プロジェクト",
+    "noProject": "プロジェクトなし",
+    "moveToProject": "プロジェクトに移動"
   },
   "footer": {
     "addAria": "新しいタスクを追加",

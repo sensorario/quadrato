@@ -110,8 +110,16 @@
     "viewDetailAria": "Vedi dettaglio task",
     "dragHandle": "Trascina per riordinare",
     "selectionTitle": "Task selezionati",
-    "selectionMessage": "Task selezionati: {{count}}. Puoi rimuovere la data di scadenza da tutti.",
-    "clearDueDates": "Rimuovi scadenza"
+    "selectionMessage": "Task selezionati: {{count}}. Cosa vuoi fare?",
+    "clearDueDates": "Rimuovi scadenza",
+    "archive": "Archivia completati e saltati ({{count}})",
+    "delete": "Elimina",
+    "deleteTitle": "Eliminare i task?",
+    "deleteMessage": "Task da eliminare: {{count}}. L'operazione non si può annullare.",
+    "deleteConfirm": "Elimina ({{count}})",
+    "projectLabel": "Progetto",
+    "noProject": "Nessun progetto",
+    "moveToProject": "Sposta nel progetto"
   },
   "footer": {
     "addAria": "Aggiungi nuovo task",

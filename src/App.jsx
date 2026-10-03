@@ -616,6 +616,70 @@ function App() {
         });
     };
 
+    const handleArchiveTasks = async (ids) => {
+        const selected = tasks.filter((task) => ids.includes(task.id));
+        const processed = archiveCompletedAndSkippedTasks({ tasks: selected });
+        await persistArchivedTasks({
+            originalTasks: selected,
+            updatedTasks: processed,
+            token,
+        });
+        // Reload so archived tasks disappear and periodic renewals get their server ids.
+        getConfigRepository().fetchData((tasks) => setTasks(tasks));
+    };
+
+    const handleDeleteTasks = (ids) => {
+        const updated = tasks.filter((task) => !ids.includes(task.id));
+        setTasks(updated);
+        getConfigRepository().setTasks(updated);
+
+        ids.forEach((id) => {
+            fetch(`https://api.simonegentili.com/quadrato/task/${id}`, {
+                method: "DELETE",
+                headers: getAuthHeader(),
+            })
+                .then((res) => {
+                    if (res.status === 401) {
+                        setToken(null);
+                        throw new Error("Unauthorized");
+                    }
+                })
+                .catch(() => {});
+        });
+    };
+
+    const handleChangeProject = async (ids, project) => {
+        const moved = tasks.filter(
+            (task) => ids.includes(task.id) && (task.project ?? "") !== project
+        );
+        const updated = tasks.map((task) =>
+            moved.includes(task) ? { ...task, project } : task
+        );
+        setTasks(updated);
+        getConfigRepository().setTasks(updated);
+
+        // One at a time: a new project is created by the first task that names it,
+        // parallel requests could each create their own copy.
+        for (const task of moved) {
+            try {
+                const res = await fetch(`https://api.simonegentili.com/quadrato/task/${task.id}`, {
+                    method: "PUT",
+                    body: JSON.stringify({ project }),
+                    headers: {
+                        "Content-Type": "application/json",
+                        ...getAuthHeader(),
+                    },
+                });
+                if (res.status === 401) {
+                    setToken(null);
+                    return;
+                }
+            } catch {
+                // keep going with the other tasks
+            }
+        }
+    };
+
     const handleAddTask = (values) => {
         const newTask = {
             // simulate uuid with timestamp and random number
@@ -696,6 +760,9 @@ function App() {
             updateTaskTitle={updateTaskTitle}
             onReorder={handleReorder}
             onClearDueDates={handleClearDueDates}
+            onArchive={handleArchiveTasks}
+            onDelete={handleDeleteTasks}
+            onChangeProject={handleChangeProject}
             editable={editable}
             projectEditable={projectGroupable}
             dateTimeEnabled={dateTimeEnabled}
@@ -1835,6 +1902,9 @@ function App() {
                         updateTaskTitle={updateTaskTitle}
                         onReorder={handleReorder}
                         onClearDueDates={handleClearDueDates}
+                        onArchive={handleArchiveTasks}
+                        onDelete={handleDeleteTasks}
+                        onChangeProject={handleChangeProject}
                         editable={editable}
                         projectEditable={projectGroupable}
                         dateTimeEnabled={dateTimeEnabled}

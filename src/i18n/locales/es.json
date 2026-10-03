@@ -110,8 +110,16 @@
     "viewDetailAria": "Ver detalle de la tarea",
     "dragHandle": "Arrastra para reordenar",
     "selectionTitle": "Tareas seleccionadas",
-    "selectionMessage": "Tareas seleccionadas: {{count}}. Puedes quitar la fecha de vencimiento de todas.",
-    "clearDueDates": "Quitar vencimiento"
+    "selectionMessage": "Tareas seleccionadas: {{count}}. ¿Qué quieres hacer?",
+    "clearDueDates": "Quitar vencimiento",
+    "archive": "Archivar completadas y omitidas ({{count}})",
+    "delete": "Eliminar",
+    "deleteTitle": "¿Eliminar las tareas?",
+    "deleteMessage": "Tareas que eliminar: {{count}}. No se puede deshacer.",
+    "deleteConfirm": "Eliminar ({{count}})",
+    "projectLabel": "Proyecto",
+    "noProject": "Sin proyecto",
+    "moveToProject": "Mover al proyecto"
   },
   "footer": {
     "addAria": "Añadir nueva tarea",
