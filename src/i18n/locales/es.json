@@ -124,7 +124,10 @@
     "searchProject": "Buscar un proyecto",
     "newProject": "Nuevo proyecto: {{name}}",
     "subtasksOpen": "Completa primero las subtareas: esta tarea se cerrará sola con la última.",
-    "deleteSkipsParents": "Las tareas con subtareas no se pueden eliminar, excluidas: {{count}}."
+    "deleteSkipsParents": "Las tareas con subtareas no se pueden eliminar, excluidas: {{count}}.",
+    "workspaceLabel": "Espacio de trabajo",
+    "parentTitle": "Título de la nueva tarea principal",
+    "createParent": "Crear tarea principal"
   },
   "footer": {
     "addAria": "Añadir nueva tarea",

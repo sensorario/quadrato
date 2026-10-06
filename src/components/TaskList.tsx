@@ -3,6 +3,8 @@ import { useTranslation } from "react-i18next";
 import { getStatusIcons, STATUS_ENUM } from "../utils";
 import { Icon } from "@sensorario/sg-components";
 import TaskModal from "./TaskModal";
+import TaskTitle from "./TaskTitle";
+import { toPlainText } from "../utils/toPlainText";
 import { Modal } from "./Modal";
 import FormatDate from "./FormatDate";
 import { Task } from "../types/commonTypes";
@@ -14,7 +16,7 @@ import { navigate } from "../Router";
 export type OwnProject = { id: string; name: string; workspace: string; workspaceUuid: string };
 
 // @todo #44 extract task type in a common file and fix dateTime to timestamp
-export const TaskList = ({ tasks, onTaskClick, updateTaskTitle, onReorder, onClearDueDates, onArchive, onDelete, onChangeProject, loadProjects, currentWorkspace, workspaceProjects, editable, projectEditable, dateTimeEnabled, iconTheme, projectFilter }: {
+export const TaskList = ({ tasks, onTaskClick, updateTaskTitle, onReorder, onClearDueDates, onArchive, onDelete, onChangeProject, onCreateParent, loadProjects, currentWorkspace, workspaces, workspaceProjects, editable, projectEditable, dateTimeEnabled, iconTheme, projectFilter }: {
     tasks: Task[];
     onTaskClick: (id: number) => void;
     updateTaskTitle: (id: number, title: string, longDescription?: string, project?: string, timestamp?: string | number, periodicity?: { number: string; unit: string } | null) => void;
@@ -23,8 +25,10 @@ export const TaskList = ({ tasks, onTaskClick, updateTaskTitle, onReorder, onCle
     onArchive?: (ids: Task['id'][]) => void;
     onDelete?: (ids: Task['id'][]) => void;
     onChangeProject?: (ids: Task['id'][], project: string, workspaceUuid?: string) => void;
+    onCreateParent?: (ids: Task['id'][], title: string, project: string, workspaceUuid?: string) => void;
     loadProjects?: () => Promise<OwnProject[]>;
     currentWorkspace?: string;
+    workspaces?: { id: string; name: string }[];
     // All projects of the current workspace: `tasks` may be only the filtered ones on screen.
     workspaceProjects?: string[];
     editable: boolean;
@@ -73,8 +77,10 @@ export const TaskList = ({ tasks, onTaskClick, updateTaskTitle, onReorder, onCle
     const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
     const [projectQuery, setProjectQuery] = useState('');
     const [ownProjects, setOwnProjects] = useState<OwnProject[] | null>(null);
-    // workspaceUuid undefined means the current workspace.
-    const [chosenProject, setChosenProject] = useState<{ name: string; workspaceUuid?: string } | null>(null);
+    // undefined means the current workspace.
+    const [workspaceUuid, setWorkspaceUuid] = useState<string | undefined>(undefined);
+    const [chosenProject, setChosenProject] = useState<string | null>(null);
+    const [parentTitle, setParentTitle] = useState('');
 
     useEffect(() => {
         if (!showSelectionModal || !onChangeProject || !loadProjects) return;
@@ -144,7 +150,9 @@ export const TaskList = ({ tasks, onTaskClick, updateTaskTitle, onReorder, onCle
         setShowSelectionModal(false);
         setShowDeleteConfirm(false);
         setProjectQuery('');
+        setWorkspaceUuid(undefined);
         setChosenProject(null);
+        setParentTitle('');
         setSelectedIds([]);
     };
 
@@ -159,19 +167,18 @@ export const TaskList = ({ tasks, onTaskClick, updateTaskTitle, onReorder, onCle
     const projects = [...new Set(tasks.map(task => task.project).filter((p): p is string => !!p))].sort();
     // The API lists only workspaces the user owns: the projects of the tasks on screen are added
     // so a shared workspace (or no API list at all, when logged out) still offers its own.
-    const ownOptions = (ownProjects ?? []).map(p => ({ key: p.id, name: p.name, workspace: p.workspace, workspaceUuid: p.workspace === currentWorkspace ? undefined : p.workspaceUuid }));
-    const projectOptions: { key: string; name: string; workspace?: string; workspaceUuid?: string }[] = [
-        ...ownOptions,
-        ...(workspaceProjects ?? projects)
-            .filter(name => !ownOptions.some(p => !p.workspaceUuid && p.name === name))
-            .map(name => ({ key: name, name, workspace: ownProjects ? currentWorkspace : undefined })),
-    ];
+    const otherWorkspaces = (workspaces ?? []).filter(w => w?.id && w.name !== currentWorkspace);
+    const ownOptions = (ownProjects ?? []).map(p => ({ name: p.name, workspaceUuid: p.workspace === currentWorkspace ? undefined : p.workspaceUuid }));
+    const projectOptions = workspaceUuid
+        ? ownOptions.filter(p => p.workspaceUuid === workspaceUuid).map(p => p.name)
+        : [...new Set([...ownOptions.filter(p => !p.workspaceUuid).map(p => p.name), ...(workspaceProjects ?? projects)])];
     const query = projectQuery.trim();
     const matchingProjects = projectOptions
-        .filter(p => p.name.toLowerCase().includes(query.toLowerCase()))
-        .sort((a, b) => Number(!!a.workspaceUuid) - Number(!!b.workspaceUuid) || (a.workspace ?? '').localeCompare(b.workspace ?? '') || a.name.localeCompare(b.name));
-    const canCreateProject = query !== '' && !matchingProjects.some(p => !p.workspaceUuid && p.name.toLowerCase() === query.toLowerCase());
-    const isChosen = (name: string, workspaceUuid?: string) => chosenProject?.name === name && chosenProject?.workspaceUuid === workspaceUuid;
+        .filter(name => name.toLowerCase().includes(query.toLowerCase()))
+        .sort((a, b) => a.localeCompare(b));
+    const canCreateProject = query !== '' && !matchingProjects.some(name => name.toLowerCase() === query.toLowerCase());
+    const isChosen = (name: string) => chosenProject === name;
+    const hasDueDate = tasks.some(task => selectedIds.includes(task.id) && !!task.timestamp);
     const projectOptionStyle = (chosen: boolean): React.CSSProperties => ({
         width: '100%', textAlign: 'left', border: 'none', borderRadius: '6px', padding: '6px 8px', cursor: 'pointer',
         display: 'flex', justifyContent: 'space-between', gap: '8px', color: 'inherit', font: 'inherit',
@@ -245,24 +252,7 @@ export const TaskList = ({ tasks, onTaskClick, updateTaskTitle, onReorder, onCle
         setEditTask(null);
     };
 
-    // @todo define task type
-    const taskTypeRegex = /^\[(feature|bug|pay|spike)\]\s*/i;
-
     const handler = (task: Task, depth: number, rows: TreeRow[]) => {
-        let title = task.title;
-        const taskTypeMatch = taskTypeRegex.exec(title);
-        const taskTypeIcons: Record<string, React.ReactElement> = { feature: <Icon name="sparkle" aria-hidden={false} aria-label="feature" style={{ color: '#5480e6' }} />, bug: <Icon name="bug" aria-hidden={false} aria-label="bug" style={{ color: '#e2727d' }} />, pay: <Icon name="credit-card" aria-hidden={false} aria-label="pay" style={{ color: '#2e9e5b' }} />, spike: <Icon name="books" aria-hidden={false} aria-label="spike" style={{ color: '#9b6bd1' }} /> };
-        const taskTypeIcon = taskTypeMatch ? taskTypeIcons[taskTypeMatch[1].toLowerCase()] : null;
-        if (taskTypeMatch) {
-            title = title.slice(taskTypeMatch[0].length);
-        }
-        // @todo #45 define url type
-        // The capturing group makes split() keep each URL at the odd indexes.
-        const titleParts = title.split(/(https?:\/\/[^\s]+)/).map((part, i) =>
-            i % 2 === 1
-                ? <a key={i} href={part} className="task-link" target="_blank" rel="noopener noreferrer">{part}</a>
-                : part
-        );
         const isExpired = dateTimeEnabled && task.timestamp && new Date(task.timestamp) < new Date();
 
 
@@ -339,8 +329,7 @@ export const TaskList = ({ tasks, onTaskClick, updateTaskTitle, onReorder, onCle
                     </span>
 
                     <span style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px' }} title={t('taskList.edit')} onClick={e => { e.stopPropagation(); handleEditClick(task); }}>
-                        {taskTypeIcon}
-                        <span>{titleParts}</span>
+                        <TaskTitle title={task.title} />
                     </span>
 
                     <button
@@ -396,7 +385,9 @@ export const TaskList = ({ tasks, onTaskClick, updateTaskTitle, onReorder, onCle
                     onClick={closeSelection}
                     buttons={[
                         { label: t('common.cancel'), onClick: closeSelection },
-                        { label: t('taskList.clearDueDates'), onClick: () => { onClearDueDates(selectedIds); closeSelection(); } },
+                        ...(hasDueDate
+                            ? [{ label: t('taskList.clearDueDates'), onClick: () => { onClearDueDates(selectedIds); closeSelection(); } }]
+                            : []),
                         ...(onArchive && archivableIds.length > 0
                             ? [{ label: t('taskList.archive', { count: archivableIds.length }), onClick: () => { onArchive(archivableIds); closeSelection(); } }]
                             : []),
@@ -409,6 +400,18 @@ export const TaskList = ({ tasks, onTaskClick, updateTaskTitle, onReorder, onCle
                     <p>{t('taskList.selectionMessage', { count: selectedIds.length })}</p>
                     {onChangeProject && (
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                            {otherWorkspaces.length > 0 && (
+                                <select
+                                    className="modal-input"
+                                    style={{ marginBottom: 0 }}
+                                    value={workspaceUuid ?? ''}
+                                    onChange={e => { setWorkspaceUuid(e.target.value || undefined); setProjectQuery(''); setChosenProject(null); }}
+                                    aria-label={t('taskList.workspaceLabel')}
+                                >
+                                    <option value="">{currentWorkspace}</option>
+                                    {otherWorkspaces.map(w => <option key={w.id} value={w.id}>{w.name}</option>)}
+                                </select>
+                            )}
                             <input
                                 className="modal-input"
                                 style={{ marginBottom: 0 }}
@@ -420,22 +423,21 @@ export const TaskList = ({ tasks, onTaskClick, updateTaskTitle, onReorder, onCle
                             <ul aria-label={t('taskList.projectLabel')} style={{ listStyle: 'none', margin: 0, padding: 0, maxHeight: '220px', overflowY: 'auto' }}>
                                 {query === '' && (
                                     <li>
-                                        <button type="button" aria-pressed={isChosen('')} style={projectOptionStyle(isChosen(''))} onClick={() => setChosenProject({ name: '' })}>
+                                        <button type="button" aria-pressed={isChosen('')} style={projectOptionStyle(isChosen(''))} onClick={() => setChosenProject('')}>
                                             <em>{t('taskList.noProject')}</em>
                                         </button>
                                     </li>
                                 )}
-                                {matchingProjects.map(p => (
-                                    <li key={p.key}>
-                                        <button type="button" aria-pressed={isChosen(p.name, p.workspaceUuid)} style={projectOptionStyle(isChosen(p.name, p.workspaceUuid))} onClick={() => setChosenProject({ name: p.name, workspaceUuid: p.workspaceUuid })}>
-                                            <span>{p.name}</span>
-                                            {p.workspace && <span style={{ color: '#888' }}>{p.workspace}</span>}
+                                {matchingProjects.map(name => (
+                                    <li key={name}>
+                                        <button type="button" aria-pressed={isChosen(name)} style={projectOptionStyle(isChosen(name))} onClick={() => setChosenProject(name)}>
+                                            <span>{name}</span>
                                         </button>
                                     </li>
                                 ))}
                                 {canCreateProject && (
                                     <li>
-                                        <button type="button" aria-pressed={isChosen(query)} style={projectOptionStyle(isChosen(query))} onClick={() => setChosenProject({ name: query })}>
+                                        <button type="button" aria-pressed={isChosen(query)} style={projectOptionStyle(isChosen(query))} onClick={() => setChosenProject(query)}>
                                             {t('taskList.newProject', { name: query })}
                                         </button>
                                     </li>
@@ -445,10 +447,30 @@ export const TaskList = ({ tasks, onTaskClick, updateTaskTitle, onReorder, onCle
                                 type="button"
                                 className="modal-close-btn"
                                 disabled={chosenProject === null}
-                                onClick={() => { if (chosenProject) { onChangeProject(selectedIds, chosenProject.name, chosenProject.workspaceUuid); closeSelection(); } }}
+                                onClick={() => { if (chosenProject !== null) { onChangeProject(selectedIds, chosenProject, workspaceUuid); closeSelection(); } }}
                             >
                                 {t('taskList.moveToProject')}
                             </button>
+                            {onCreateParent && (
+                                <>
+                                    <input
+                                        className="modal-input"
+                                        style={{ marginBottom: 0 }}
+                                        value={parentTitle}
+                                        onChange={e => setParentTitle(e.target.value)}
+                                        placeholder={t('taskList.parentTitle')}
+                                        aria-label={t('taskList.parentTitle')}
+                                    />
+                                    <button
+                                        type="button"
+                                        className="modal-close-btn"
+                                        disabled={chosenProject === null || toPlainText(parentTitle).trim() === ''}
+                                        onClick={() => { if (chosenProject !== null) { onCreateParent(selectedIds, toPlainText(parentTitle).trim(), chosenProject, workspaceUuid); closeSelection(); } }}
+                                    >
+                                        {t('taskList.createParent')}
+                                    </button>
+                                </>
+                            )}
                         </div>
                     )}
                 </Modal>

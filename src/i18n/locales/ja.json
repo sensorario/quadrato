@@ -124,7 +124,10 @@
     "searchProject": "プロジェクトを検索",
     "newProject": "新しいプロジェクト: {{name}}",
     "subtasksOpen": "先にサブタスクを完了してください。最後のサブタスクが終わるとこのタスクも自動で完了します。",
-    "deleteSkipsParents": "サブタスクのあるタスクは削除できないため除外しました: {{count}} 件"
+    "deleteSkipsParents": "サブタスクのあるタスクは削除できないため除外しました: {{count}} 件",
+    "workspaceLabel": "ワークスペース",
+    "parentTitle": "新しい親タスクのタイトル",
+    "createParent": "親タスクを作成"
   },
   "footer": {
     "addAria": "新しいタスクを追加",

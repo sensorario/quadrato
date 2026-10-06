@@ -124,7 +124,10 @@
     "searchProject": "Rechercher un projet",
     "newProject": "Nouveau projet : {{name}}",
     "subtasksOpen": "Termine d'abord les sous-tâches : cette tâche se fermera toute seule avec la dernière.",
-    "deleteSkipsParents": "Les tâches avec des sous-tâches ne peuvent pas être supprimées, exclues : {{count}}."
+    "deleteSkipsParents": "Les tâches avec des sous-tâches ne peuvent pas être supprimées, exclues : {{count}}.",
+    "workspaceLabel": "Espace de travail",
+    "parentTitle": "Titre de la nouvelle tâche parente",
+    "createParent": "Créer une tâche parente"
   },
   "footer": {
     "addAria": "Ajouter une nouvelle tâche",

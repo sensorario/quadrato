@@ -739,6 +739,73 @@ function App() {
         }
     };
 
+    const handleCreateParent = async (ids, title, project, workspaceUuid) => {
+        const target = workspaceUuid
+            ? workspaces.find((workspace) => workspace?.id === workspaceUuid)
+            : null;
+        const headers = { "Content-Type": "application/json", ...getAuthHeader() };
+        const put = async (id, body) => {
+            const res = await fetch(`https://api.simonegentili.com/quadrato/task/${id}`, {
+                method: "PUT",
+                body: JSON.stringify(body),
+                headers,
+            });
+            if (res.status === 401) setToken(null);
+            return res.status !== 401;
+        };
+
+        // The API only creates tasks in the current workspace: for another one the
+        // parent starts here without a project (so none gets created here) and moves below.
+        const created = await fetch("https://api.simonegentili.com/quadrato/task", {
+            method: "POST",
+            body: JSON.stringify({ title, project: target ? "" : project, status: 0, archived: false }),
+            headers,
+        });
+        if (created.status === 401) {
+            setToken(null);
+            return;
+        }
+        const parent = (await created.json())?.task;
+        if (!parent?.id) return;
+
+        const oldParentIds = tasks
+            .filter((task) => ids.includes(task.id) && task.parentId != null)
+            .map((task) => task.parentId);
+        const nested = reconcileAncestors(
+            [
+                ...tasks.map((task) =>
+                    ids.includes(task.id)
+                        ? { ...task, parentId: parent.id, ...(target ? {} : { project }) }
+                        : task
+                ),
+                parent,
+            ],
+            [parent.id, ...oldParentIds]
+        );
+
+        // Sequential, and before the move: the API checks the parent in the current workspace.
+        const before = new Map([...tasks, parent].map((task) => [task.id, task]));
+        for (const task of nested) {
+            const old = before.get(task.id);
+            const body = {};
+            ["status", "parentId", "project"].forEach((field) => {
+                if ((old?.[field] ?? null) !== (task[field] ?? null)) body[field] = task[field] ?? null;
+            });
+            if (Object.keys(body).length > 0 && !(await put(task.id, body))) return;
+        }
+
+        let updated = nested;
+        if (target) {
+            const movedIds = new Set([parent.id, ...descendantIds(nested, parent.id)]);
+            for (const id of movedIds) {
+                if (!(await put(id, { project, workspace: target.name, workspaceUuid: target.id }))) return;
+            }
+            updated = nested.filter((task) => !movedIds.has(task.id));
+        }
+        setTasks(updated);
+        getConfigRepository().setTasks(updated);
+    };
+
     const handleAddTask = (values) => {
         const newTask = {
             // simulate uuid with timestamp and random number
@@ -822,8 +889,10 @@ function App() {
             onArchive={handleArchiveTasks}
             onDelete={handleDeleteTasks}
             onChangeProject={handleChangeProject}
+            onCreateParent={token ? handleCreateParent : undefined}
             loadProjects={token ? loadOwnProjects : undefined}
             currentWorkspace={ws}
+            workspaces={workspaces}
             workspaceProjects={getActiveProjects(tasks)}
             editable={editable}
             projectEditable={projectGroupable}

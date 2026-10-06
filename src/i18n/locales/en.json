@@ -124,7 +124,10 @@
     "searchProject": "Search a project",
     "newProject": "New project: {{name}}",
     "subtasksOpen": "Complete the subtasks first: this task closes by itself with the last one.",
-    "deleteSkipsParents": "Tasks with subtasks can't be deleted, left out: {{count}}."
+    "deleteSkipsParents": "Tasks with subtasks can't be deleted, left out: {{count}}.",
+    "workspaceLabel": "Workspace",
+    "parentTitle": "Title of the new parent task",
+    "createParent": "Create parent task"
   },
   "footer": {
     "addAria": "Add new task",

@@ -5,6 +5,7 @@ import { Task } from '../types/commonTypes';
 import { getConfigRepository } from '../repositories';
 import { navigate } from '../Router';
 import FormatDate from '../components/FormatDate';
+import TaskTitle from '../components/TaskTitle';
 import { STATUS_ENUM } from '../utils';
 
 const UNIT_KEYS: Record<string, string> = { minuti: 'minutes', giorni: 'days', settimane: 'weeks', mesi: 'months', anni: 'years' };
@@ -239,7 +240,7 @@ export const TaskDetailPage = ({ taskId }: TaskDetailPageProps) => {
             <div style={containerStyle}>
                 <Breadcrumb task={task} />
 
-                <h2 style={{ margin: '0 0 8px', fontSize: '22px' }}>{task.title}</h2>
+                <h2 style={{ margin: '0 0 8px', fontSize: '22px', display: 'flex', alignItems: 'center', gap: '8px' }}><TaskTitle title={task.title} iconSize={36} /></h2>
 
                 <span style={labelStyle}>{t('taskDetailPage.status')}</span>
                 <span style={valueStyle}>{statusLabel[task.status] ?? task.status}</span>

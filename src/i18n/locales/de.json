@@ -124,7 +124,10 @@
     "searchProject": "Projekt suchen",
     "newProject": "Neues Projekt: {{name}}",
     "subtasksOpen": "Erledige zuerst die Unteraufgaben: Diese Aufgabe schließt sich mit der letzten von selbst.",
-    "deleteSkipsParents": "Aufgaben mit Unteraufgaben können nicht gelöscht werden, ausgelassen: {{count}}."
+    "deleteSkipsParents": "Aufgaben mit Unteraufgaben können nicht gelöscht werden, ausgelassen: {{count}}.",
+    "workspaceLabel": "Workspace",
+    "parentTitle": "Titel der neuen übergeordneten Aufgabe",
+    "createParent": "Übergeordnete Aufgabe erstellen"
   },
   "footer": {
     "addAria": "Neue Aufgabe hinzufügen",

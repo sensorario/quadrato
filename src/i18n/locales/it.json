@@ -124,7 +124,10 @@
     "searchProject": "Cerca un progetto",
     "newProject": "Nuovo progetto: {{name}}",
     "subtasksOpen": "Completa prima i sotto-task: questo task si chiuderà da solo con l'ultimo.",
-    "deleteSkipsParents": "Task con sotto-task non eliminabili, esclusi: {{count}}."
+    "deleteSkipsParents": "Task con sotto-task non eliminabili, esclusi: {{count}}.",
+    "workspaceLabel": "Workspace",
+    "parentTitle": "Titolo del nuovo task padre",
+    "createParent": "Crea task padre"
   },
   "footer": {
     "addAria": "Aggiungi nuovo task",

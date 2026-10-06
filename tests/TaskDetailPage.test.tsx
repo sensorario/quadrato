@@ -5,6 +5,7 @@ import { TaskDetailPage } from '../src/pages/TaskDetailPage';
 
 jest.mock('@sensorario/sg-components', () => ({
     QuadratoHeader: () => <div data-testid="header" />,
+    Icon: (props: any) => <span aria-label={props['aria-label']} />,
 }));
 
 const mockNavigate = jest.fn();

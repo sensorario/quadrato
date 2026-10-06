@@ -410,29 +410,73 @@ describe('TaskList selection actions', () => {
         { id: 'p-3', name: 'Blog', workspace: 'lavoro', workspaceUuid: 'ws-lavoro' },
     ];
 
-    it('lists the projects of every own workspace, filtered by the search field', async () => {
-        renderList({ onChangeProject: jest.fn(), loadProjects: () => Promise.resolve(ownProjects), currentWorkspace: 'default' });
+    const workspaces = [
+        { id: 'ws-default', name: 'default' },
+        { id: 'ws-lavoro', name: 'lavoro' },
+    ];
+
+    it('lists only the projects of the chosen workspace, filtered by the search field', async () => {
+        renderList({ onChangeProject: jest.fn(), loadProjects: () => Promise.resolve(ownProjects), currentWorkspace: 'default', workspaces });
 
         selectFirstTwo();
-        expect(await screen.findByText('Blog')).toBeInTheDocument();
+        expect(await screen.findByText('casa')).toBeInTheDocument();
+        expect(screen.queryByText('Blog')).not.toBeInTheDocument();
 
+        fireEvent.change(screen.getByRole('combobox', { name: 'Workspace' }), { target: { value: 'ws-lavoro' } });
         fireEvent.change(screen.getByRole('textbox', { name: 'Progetto' }), { target: { value: 'ca' } });
 
-        expect(screen.getByText('casa')).toBeInTheDocument();
         expect(screen.getByText('Cantiere')).toBeInTheDocument();
         expect(screen.queryByText('Blog')).not.toBeInTheDocument();
+        expect(screen.queryByText('casa')).not.toBeInTheDocument();
     });
 
     it('passes the target workspace when the project lives in another one', async () => {
         const onChangeProject = jest.fn();
-        renderList({ onChangeProject, loadProjects: () => Promise.resolve(ownProjects), currentWorkspace: 'default' });
+        renderList({ onChangeProject, loadProjects: () => Promise.resolve(ownProjects), currentWorkspace: 'default', workspaces });
 
         selectFirstTwo();
-        fireEvent.click(await screen.findByText('Cantiere'));
+        await screen.findByText('casa');
+        fireEvent.change(screen.getByRole('combobox', { name: 'Workspace' }), { target: { value: 'ws-lavoro' } });
+        fireEvent.click(screen.getByText('Cantiere'));
         fireEvent.click(screen.getByText('Sposta nel progetto'));
 
         expect(onChangeProject.mock.calls[0][1]).toBe('Cantiere');
         expect(onChangeProject.mock.calls[0][2]).toBe('ws-lavoro');
+    });
+
+    it('creates a new parent for the selection in the chosen workspace and project', async () => {
+        const onCreateParent = jest.fn();
+        renderList({ onChangeProject: jest.fn(), onCreateParent, loadProjects: () => Promise.resolve(ownProjects), currentWorkspace: 'default', workspaces });
+
+        selectFirstTwo();
+        await screen.findByText('casa');
+        fireEvent.change(screen.getByRole('combobox', { name: 'Workspace' }), { target: { value: 'ws-lavoro' } });
+        fireEvent.click(screen.getByText('Blog'));
+        fireEvent.change(screen.getByRole('textbox', { name: 'Titolo del nuovo task padre' }), { target: { value: ' Rifare il blog ' } });
+        fireEvent.click(screen.getByText('Crea task padre'));
+
+        expect([...onCreateParent.mock.calls[0][0]].sort()).toEqual([1, 2]);
+        expect(onCreateParent.mock.calls[0].slice(1)).toEqual(['Rifare il blog', 'Blog', 'ws-lavoro']);
+    });
+
+    it('does not create a parent without a title', () => {
+        const onCreateParent = jest.fn();
+        renderList({ onChangeProject: jest.fn(), onCreateParent });
+
+        selectFirstTwo();
+        fireEvent.click(screen.getByText('Nessun progetto'));
+        fireEvent.click(screen.getByText('Crea task padre'));
+
+        expect(onCreateParent).not.toHaveBeenCalled();
+    });
+
+    it('hides "Rimuovi scadenza" when no selected task has a due date', () => {
+        renderList({ tasks: list.map(t => ({ ...t, timestamp: undefined })) as never });
+
+        selectFirstTwo();
+
+        expect(screen.getByText('Task selezionati')).toBeInTheDocument();
+        expect(screen.queryByText('Rimuovi scadenza')).not.toBeInTheDocument();
     });
 
     it('keeps a project of the current workspace inside it', async () => {
