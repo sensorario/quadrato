@@ -244,6 +244,7 @@
     "deleteConfirm": "Delete this task? This cannot be undone.",
     "deleteFailed": "Failed to delete the task.",
     "deleteHasSubtasks": "This task has subtasks: delete or move them before deleting it.",
+    "parent": "Parent task",
     "subtasks": "Subtasks",
     "noSubtasks": "No subtasks",
     "newSubtask": "Title of the new subtask",

@@ -85,6 +85,21 @@ describe('TaskDetailPage subtasks', () => {
         expect(JSON.parse(put[1].body)).toEqual({ status: 0 });
     });
 
+    it('shows the parent and opens it when clicked', () => {
+        render(<TaskDetailPage taskId="g1" />);
+
+        expect(screen.getByText('Task padre')).toBeInTheDocument();
+        fireEvent.click(screen.getByRole('button', { name: 'Child one' }));
+
+        expect(mockNavigate).toHaveBeenCalledWith('/task/c1');
+    });
+
+    it('shows no parent field for a top-level task', () => {
+        render(<TaskDetailPage taskId="p" />);
+
+        expect(screen.queryByText('Task padre')).not.toBeInTheDocument();
+    });
+
     it('shows a placeholder when there are no subtasks', () => {
         render(<TaskDetailPage taskId="x" />);
 

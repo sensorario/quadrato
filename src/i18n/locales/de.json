@@ -244,6 +244,7 @@
     "deleteConfirm": "Diese Aufgabe löschen? Dies kann nicht rückgängig gemacht werden.",
     "deleteFailed": "Die Aufgabe konnte nicht gelöscht werden.",
     "deleteHasSubtasks": "Diese Aufgabe hat Unteraufgaben: Lösche oder verschiebe sie, bevor du sie löschst.",
+    "parent": "Übergeordnete Aufgabe",
     "subtasks": "Unteraufgaben",
     "noSubtasks": "Keine Unteraufgaben",
     "newSubtask": "Titel der neuen Unteraufgabe",

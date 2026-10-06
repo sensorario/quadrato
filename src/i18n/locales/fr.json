@@ -244,6 +244,7 @@
     "deleteConfirm": "Supprimer cette tâche ? Cette action est irréversible.",
     "deleteFailed": "Impossible de supprimer la tâche.",
     "deleteHasSubtasks": "Cette tâche a des sous-tâches : supprime-les ou déplace-les avant de la supprimer.",
+    "parent": "Tâche parente",
     "subtasks": "Sous-tâches",
     "noSubtasks": "Aucune sous-tâche",
     "newSubtask": "Titre de la nouvelle sous-tâche",

@@ -244,6 +244,7 @@
     "deleteConfirm": "Eliminare questo task? L'operazione non può essere annullata.",
     "deleteFailed": "Impossibile eliminare il task.",
     "deleteHasSubtasks": "Questo task ha dei sotto-task: eliminali o spostali prima di eliminarlo.",
+    "parent": "Task padre",
     "subtasks": "Sotto-task",
     "noSubtasks": "Nessun sotto-task",
     "newSubtask": "Titolo del nuovo sotto-task",

@@ -297,6 +297,23 @@ export const TaskDetailPage = ({ taskId }: TaskDetailPageProps) => {
 
                 <h2 style={{ margin: '0 0 8px', fontSize: '22px', display: 'flex', alignItems: 'center', gap: '8px' }}><TaskTitle title={task.title} iconSize={36} /></h2>
 
+                {(() => {
+                    const parent = task.parentId != null ? allTasks.find(t => t.id === task.parentId) : undefined;
+                    if (!parent) return null;
+                    return (
+                        <>
+                            <span style={labelStyle}>{t('taskDetailPage.parent')}</span>
+                            <button
+                                type="button"
+                                onClick={() => navigate(`/task/${parent.id}`)}
+                                style={{ ...valueStyle, background: 'none', border: 'none', padding: 0, cursor: 'pointer', font: 'inherit', fontSize: '15px', color: '#007bff', display: 'flex', alignItems: 'center', gap: '6px', textAlign: 'left' }}
+                            >
+                                <TaskTitle title={parent.title} />
+                            </button>
+                        </>
+                    );
+                })()}
+
                 <span style={labelStyle}>{t('taskDetailPage.status')}</span>
                 <span style={valueStyle}>{statusLabel[task.status] ?? task.status}</span>
 

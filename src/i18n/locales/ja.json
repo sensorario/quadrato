@@ -238,6 +238,7 @@
     "deleteConfirm": "このタスクを削除しますか？この操作は元に戻せません。",
     "deleteFailed": "タスクの削除に失敗しました。",
     "deleteHasSubtasks": "このタスクにはサブタスクがあります。削除する前にサブタスクを削除または移動してください。",
+    "parent": "親タスク",
     "subtasks": "サブタスク",
     "noSubtasks": "サブタスクはありません",
     "newSubtask": "新しいサブタスクのタイトル",
