@@ -243,7 +243,12 @@
     "deleting": "Wird gelöscht...",
     "deleteConfirm": "Diese Aufgabe löschen? Dies kann nicht rückgängig gemacht werden.",
     "deleteFailed": "Die Aufgabe konnte nicht gelöscht werden.",
-    "deleteHasSubtasks": "Diese Aufgabe hat Unteraufgaben: Lösche oder verschiebe sie, bevor du sie löschst."
+    "deleteHasSubtasks": "Diese Aufgabe hat Unteraufgaben: Lösche oder verschiebe sie, bevor du sie löschst.",
+    "subtasks": "Unteraufgaben",
+    "noSubtasks": "Keine Unteraufgaben",
+    "newSubtask": "Titel der neuen Unteraufgabe",
+    "addSubtask": "Unteraufgabe hinzufügen",
+    "addSubtaskFailed": "Die Unteraufgabe konnte nicht hinzugefügt werden."
   },
   "expiredTasks": {
     "loading": "Abgelaufene Aufgaben werden geladen...",

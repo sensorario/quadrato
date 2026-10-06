@@ -243,7 +243,12 @@
     "deleting": "Eliminazione...",
     "deleteConfirm": "Eliminare questo task? L'operazione non può essere annullata.",
     "deleteFailed": "Impossibile eliminare il task.",
-    "deleteHasSubtasks": "Questo task ha dei sotto-task: eliminali o spostali prima di eliminarlo."
+    "deleteHasSubtasks": "Questo task ha dei sotto-task: eliminali o spostali prima di eliminarlo.",
+    "subtasks": "Sotto-task",
+    "noSubtasks": "Nessun sotto-task",
+    "newSubtask": "Titolo del nuovo sotto-task",
+    "addSubtask": "Aggiungi sotto-task",
+    "addSubtaskFailed": "Non è stato possibile aggiungere il sotto-task."
   },
   "expiredTasks": {
     "loading": "Caricamento task scaduti...",

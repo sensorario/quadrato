@@ -243,7 +243,12 @@
     "deleting": "Deleting...",
     "deleteConfirm": "Delete this task? This cannot be undone.",
     "deleteFailed": "Failed to delete the task.",
-    "deleteHasSubtasks": "This task has subtasks: delete or move them before deleting it."
+    "deleteHasSubtasks": "This task has subtasks: delete or move them before deleting it.",
+    "subtasks": "Subtasks",
+    "noSubtasks": "No subtasks",
+    "newSubtask": "Title of the new subtask",
+    "addSubtask": "Add subtask",
+    "addSubtaskFailed": "The subtask could not be added."
   },
   "expiredTasks": {
     "loading": "Loading expired tasks...",

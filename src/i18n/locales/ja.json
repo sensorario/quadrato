@@ -237,7 +237,12 @@
     "deleting": "削除中...",
     "deleteConfirm": "このタスクを削除しますか？この操作は元に戻せません。",
     "deleteFailed": "タスクの削除に失敗しました。",
-    "deleteHasSubtasks": "このタスクにはサブタスクがあります。削除する前にサブタスクを削除または移動してください。"
+    "deleteHasSubtasks": "このタスクにはサブタスクがあります。削除する前にサブタスクを削除または移動してください。",
+    "subtasks": "サブタスク",
+    "noSubtasks": "サブタスクはありません",
+    "newSubtask": "新しいサブタスクのタイトル",
+    "addSubtask": "サブタスクを追加",
+    "addSubtaskFailed": "サブタスクを追加できませんでした。"
   },
   "expiredTasks": {
     "loading": "期限切れタスクを読み込み中...",

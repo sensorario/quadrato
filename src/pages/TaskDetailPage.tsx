@@ -7,6 +7,8 @@ import { navigate } from '../Router';
 import FormatDate from '../components/FormatDate';
 import TaskTitle from '../components/TaskTitle';
 import { STATUS_ENUM } from '../utils';
+import { descendantIds, flattenTree, reconcileAncestors } from '../utils/taskTree';
+import { toPlainText } from '../utils/toPlainText';
 
 const UNIT_KEYS: Record<string, string> = { minuti: 'minutes', giorni: 'days', settimane: 'weeks', mesi: 'months', anni: 'years' };
 
@@ -74,6 +76,9 @@ export const TaskDetailPage = ({ taskId }: TaskDetailPageProps) => {
         [STATUS_ENUM.SKIPPED]: t('taskDetailPage.statusSkipped'),
     };
     const [task, setTask] = useState<Task | null>(null);
+    const [allTasks, setAllTasks] = useState<Task[]>([]);
+    const [newSubtask, setNewSubtask] = useState('');
+    const [addingSubtask, setAddingSubtask] = useState(false);
     const [notFound, setNotFound] = useState(false);
     const [isAuthenticated, setIsAuthenticated] = useState(
         () => Boolean(localStorage.getItem('simonegentili.com-access-token'))
@@ -87,6 +92,7 @@ export const TaskDetailPage = ({ taskId }: TaskDetailPageProps) => {
         const repo = getConfigRepository();
         repo.onDataLoaded(() => {
             const tasks: Task[] = (repo as any).getTasks ? (repo as any).getTasks() : [];
+            setAllTasks(tasks);
             const found = tasks.find(matchTask);
             if (found) {
                 setTask(found);
@@ -102,6 +108,7 @@ export const TaskDetailPage = ({ taskId }: TaskDetailPageProps) => {
         if (raw) {
             try {
                 const tasks: Task[] = JSON.parse(raw);
+                setAllTasks(tasks);
                 const found = tasks.find(matchTask);
                 if (found) {
                     setTask(found);
@@ -164,6 +171,54 @@ export const TaskDetailPage = ({ taskId }: TaskDetailPageProps) => {
             alert(t('taskDetailPage.deleteFailed'));
         } finally {
             setDeleting(false);
+        }
+    };
+
+    const handleAddSubtask = async () => {
+        const title = toPlainText(newSubtask).trim();
+        if (!task || title === '') return;
+
+        const headers = {
+            'Content-Type': 'application/json',
+            ...(localStorage.getItem('simonegentili.com-access-token')
+                ? { Authorization: `Bearer ${localStorage.getItem('simonegentili.com-access-token')}` }
+                : {}),
+        };
+        setAddingSubtask(true);
+        try {
+            const res = await fetch('https://api.simonegentili.com/quadrato/task', {
+                method: 'POST',
+                headers,
+                body: JSON.stringify({ title, project: task.project ?? '', parentId: task.id, status: STATUS_ENUM.TODO, archived: false }),
+            });
+            if (res.status === 401) {
+                localStorage.removeItem('simonegentili.com-access-token');
+                setIsAuthenticated(false);
+                return;
+            }
+            const created = (await res.json())?.task;
+            if (!res.ok || !created?.id) throw new Error(String(res.status));
+
+            // A closed task with a new open subtask is open again, as the list does it.
+            const reconciled = reconcileAncestors([...allTasks, created], [task.id]);
+            const before = new Map(allTasks.map(t => [t.id, t]));
+            for (const t of reconciled) {
+                const old = before.get(t.id);
+                if (old && old.status !== t.status) {
+                    await fetch(`https://api.simonegentili.com/quadrato/task/${t.id}`, {
+                        method: 'PUT',
+                        headers,
+                        body: JSON.stringify({ status: t.status }),
+                    });
+                }
+            }
+
+            setNewSubtask('');
+            getConfigRepository().fetchData();
+        } catch {
+            alert(t('taskDetailPage.addSubtaskFailed'));
+        } finally {
+            setAddingSubtask(false);
         }
     };
 
@@ -274,6 +329,52 @@ export const TaskDetailPage = ({ taskId }: TaskDetailPageProps) => {
                         <p style={{ ...valueStyle, whiteSpace: 'pre-wrap', lineHeight: '1.5' }}>{task.longDescription}</p>
                     </>
                 )}
+
+                <span style={labelStyle}>{t('taskDetailPage.subtasks')}</span>
+                {(() => {
+                    // The task itself isn't in the list, so its direct children come out at depth 0.
+                    const ids = new Set(descendantIds(allTasks, task.id));
+                    const rows = flattenTree(allTasks.filter(t => ids.has(t.id) && !t.archived));
+                    if (rows.length === 0) {
+                        return <p style={{ ...valueStyle, color: '#999' }}>{t('taskDetailPage.noSubtasks')}</p>;
+                    }
+                    return (
+                        <ul aria-label={t('taskDetailPage.subtasks')} style={{ listStyle: 'none', margin: '4px 0 0', padding: 0 }}>
+                            {rows.map(({ task: sub, depth }) => (
+                                <li key={sub.id} style={{ paddingLeft: depth * 20, margin: '4px 0' }}>
+                                    <button
+                                        type="button"
+                                        onClick={() => navigate(`/task/${sub.id}`)}
+                                        style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer', font: 'inherit', fontSize: '15px', color: '#222', display: 'flex', alignItems: 'center', gap: '6px', textAlign: 'left' }}
+                                    >
+                                        <span style={{ fontSize: '12px', color: '#888', minWidth: '84px' }}>{statusLabel[sub.status] ?? sub.status}</span>
+                                        <TaskTitle title={sub.title} />
+                                    </button>
+                                </li>
+                            ))}
+                        </ul>
+                    );
+                })()}
+                <div style={{ display: 'flex', gap: '8px', marginTop: '8px' }}>
+                    <input
+                        className="modal-input"
+                        style={{ marginBottom: 0, flex: 1 }}
+                        value={newSubtask}
+                        onChange={e => setNewSubtask(e.target.value)}
+                        onKeyDown={e => { if (e.key === 'Enter') handleAddSubtask(); }}
+                        placeholder={t('taskDetailPage.newSubtask')}
+                        aria-label={t('taskDetailPage.newSubtask')}
+                        disabled={addingSubtask}
+                    />
+                    <button
+                        type="button"
+                        className="modal-close-btn"
+                        onClick={handleAddSubtask}
+                        disabled={addingSubtask || toPlainText(newSubtask).trim() === ''}
+                    >
+                        {t('taskDetailPage.addSubtask')}
+                    </button>
+                </div>
 
                 <div style={{ marginTop: '24px', paddingTop: '16px', borderTop: '1px solid #eee', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                     <span style={{ fontSize: '12px', color: '#999' }}>

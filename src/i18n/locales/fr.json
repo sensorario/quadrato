@@ -243,7 +243,12 @@
     "deleting": "Suppression...",
     "deleteConfirm": "Supprimer cette tâche ? Cette action est irréversible.",
     "deleteFailed": "Impossible de supprimer la tâche.",
-    "deleteHasSubtasks": "Cette tâche a des sous-tâches : supprime-les ou déplace-les avant de la supprimer."
+    "deleteHasSubtasks": "Cette tâche a des sous-tâches : supprime-les ou déplace-les avant de la supprimer.",
+    "subtasks": "Sous-tâches",
+    "noSubtasks": "Aucune sous-tâche",
+    "newSubtask": "Titre de la nouvelle sous-tâche",
+    "addSubtask": "Ajouter une sous-tâche",
+    "addSubtaskFailed": "La sous-tâche n'a pas pu être ajoutée."
   },
   "expiredTasks": {
     "loading": "Chargement des tâches expirées...",
