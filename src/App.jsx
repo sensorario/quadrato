@@ -684,10 +684,12 @@ function App() {
         return Array.isArray(json?.projects) ? json.projects : [];
     }, [token]);
 
-    const handleChangeProject = async (ids, project, workspaceUuid) => {
-        const target = workspaceUuid
+    // targetOverride: a workspace created a moment ago, not yet in the `workspaces` state.
+    // An undefined project keeps each task's own (JSON.stringify leaves it out of the body).
+    const handleChangeProject = async (ids, project, workspaceUuid, targetOverride) => {
+        const target = targetOverride ?? (workspaceUuid
             ? workspaces.find((workspace) => workspace?.id === workspaceUuid)
-            : null;
+            : null);
 
         // Into another workspace the subtasks go along, otherwise they'd be left
         // behind under a parent that's no longer here. A task whose parent stays
@@ -738,6 +740,31 @@ function App() {
                 // keep going with the other tasks
             }
         }
+    };
+
+    // The API names workspaces uniquely across all users: a taken name comes back as 409.
+    const handleMoveToNewWorkspace = async (ids, name) => {
+        const headers = { "Content-Type": "application/json", ...getAuthHeader() };
+        const created = await fetch("https://api.simonegentili.com/quadrato/workspaces", {
+            method: "POST",
+            body: JSON.stringify({ name }),
+            headers,
+        });
+        if (created.status === 401) {
+            setToken(null);
+            return "error";
+        }
+        if (created.status === 409) return "exists";
+        if (!created.ok) return "error";
+
+        const listed = await fetch("https://api.simonegentili.com/quadrato/workspaces", { headers });
+        const json = await listed.json();
+        const list = Array.isArray(json?.workspaces) ? json.workspaces : [];
+        const target = list.find((workspace) => workspace?.name === name && workspace?.id);
+        if (!target) return "error";
+        setWorkspaces(list);
+        await handleChangeProject(ids, undefined, target.id, target);
+        return "ok";
     };
 
     // The API renames archived tasks too: here only the loaded ones, the colour and the filter follow.
