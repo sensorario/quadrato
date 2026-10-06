@@ -9,6 +9,7 @@ import ConfirmModal from "./components/ConfirmModal";
 import HelpModal from "./components/HelpModal";
 import { Modal } from "./components/Modal";
 import TaskModal from "./components/TaskModal";
+import RenameProjectModal from "./components/RenameProjectModal";
 import { Palette24 } from "./types/Palette24";
 import TabbedContent from "./components/TabbedContent";
 import InfoPanel from "./components/InfoPanel";
@@ -739,6 +740,30 @@ function App() {
         }
     };
 
+    // The API renames archived tasks too: here only the loaded ones, the colour and the filter follow.
+    const handleRenameProject = async (from, to) => {
+        const res = await fetch("https://api.simonegentili.com/quadrato/projects", {
+            method: "PATCH",
+            body: JSON.stringify({ from, to }),
+            headers: { "Content-Type": "application/json", ...getAuthHeader() },
+        });
+        if (res.status === 401) {
+            setToken(null);
+            return;
+        }
+        if (!res.ok) return;
+
+        const updated = tasks.map((task) =>
+            task.project === from ? { ...task, project: to } : task
+        );
+        setTasks(updated);
+        getConfigRepository().setTasks(updated);
+
+        const color = getConfigRepository().getProjectColors()[from];
+        if (color) getConfigRepository().setProjectColor(to, color);
+        if (projectFilter === from) setProjectFilter(to);
+    };
+
     const handleCreateParent = async (ids, title, project, workspaceUuid) => {
         const target = workspaceUuid
             ? workspaces.find((workspace) => workspace?.id === workspaceUuid)
@@ -1011,6 +1036,7 @@ function App() {
 
         // Palette Modal state
         const [paletteModalProject, setPaletteModalProject] = useState(null);
+        const [renamingProject, setRenamingProject] = useState(null);
 
         const PaletteModal = ({ project, onClose }) => (
             <Modal
@@ -1090,6 +1116,27 @@ function App() {
                                 <span style={{ marginRight: "8px", flex: "1" }}>
                                     {String(project)}
                                 </span>
+                                {token && (
+                                    <button
+                                        type="button"
+                                        style={{
+                                            background: "none",
+                                            border: "none",
+                                            cursor: "pointer",
+                                            color: "#5480e6",
+                                            marginRight: "8px",
+                                            display: "flex",
+                                            alignItems: "center",
+                                        }}
+                                        title={t("app.renameProjectButton")}
+                                        aria-label={t("app.renameProjectButton")}
+                                        onClick={() =>
+                                            setRenamingProject(String(project))
+                                        }
+                                    >
+                                        <Icon name="edit" size={18} />
+                                    </button>
+                                )}
                                 <button
                                     style={{
                                         width: 24,
@@ -1302,6 +1349,13 @@ function App() {
                     <PaletteModal
                         project={paletteModalProject}
                         onClose={() => setPaletteModalProject(null)}
+                    />
+                )}
+                {renamingProject !== null && (
+                    <RenameProjectModal
+                        project={renamingProject}
+                        onSave={(name) => handleRenameProject(renamingProject, name)}
+                        onClose={() => setRenamingProject(null)}
                     />
                 )}
             </>
@@ -1700,7 +1754,10 @@ function App() {
                                         }}
                                     >
                                         {workspace.name} (
-                                        {workspace.tasks_count ?? 0})
+                                        {/* The tasks in the list: archived ones have their own column. */}
+                                        {stats
+                                            .filter(({ state }) => state !== "ARCHIVED")
+                                            .reduce((sum, { count }) => sum + count, 0)})
                                     </button>
                                     {iconCount > 0 && (
                                         <div

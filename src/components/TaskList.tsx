@@ -330,14 +330,6 @@ export const TaskList = ({ tasks, onTaskClick, updateTaskTitle, onReorder, onCle
                         {projectEditable && task.project && task.project !== projectFilter && (
                             <span style={{ margin: '0', color: '#666' }}>({task.project})</span>
                         )}
-                        {task.createdAt != null && (() => {
-                            const age = taskAge(task.createdAt, Math.floor(Date.now() / 1000));
-                            return (
-                                <span style={{ margin: '0', color: '#999' }} title={new Date(task.createdAt * 1000).toLocaleString()}>
-                                    {t(`taskList.age.${age.unit}`, { count: age.count })}
-                                </span>
-                            );
-                        })()}
                     </span>
 
                     <span style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px' }} title={t('taskList.edit')} onClick={e => { e.stopPropagation(); handleEditClick(task); }}>
@@ -355,6 +347,15 @@ export const TaskList = ({ tasks, onTaskClick, updateTaskTitle, onReorder, onCle
 
 
                 </span>
+                {/* Outside the flex: 1 title area, so it sits at the right edge of every row. */}
+                {task.createdAt != null && (() => {
+                    const age = taskAge(task.createdAt, Math.floor(Date.now() / 1000));
+                    return (
+                        <span style={{ flexShrink: 0, marginLeft: '8px', color: '#999', whiteSpace: 'nowrap' }} title={new Date(task.createdAt * 1000).toLocaleString()}>
+                            {t(`taskList.age.${age.unit}`, { count: age.count })}
+                        </span>
+                    );
+                })()}
             </li>
         );
     };
