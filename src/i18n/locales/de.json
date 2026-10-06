@@ -127,7 +127,22 @@
     "deleteSkipsParents": "Aufgaben mit Unteraufgaben können nicht gelöscht werden, ausgelassen: {{count}}.",
     "workspaceLabel": "Workspace",
     "parentTitle": "Titel der neuen übergeordneten Aufgabe",
-    "createParent": "Übergeordnete Aufgabe erstellen"
+    "createParent": "Übergeordnete Aufgabe erstellen",
+    "age": {
+      "justNow": "gerade eben",
+      "minutes_one": "{{count}} Minute",
+      "minutes_other": "{{count}} Minuten",
+      "hours_one": "{{count}} Stunde",
+      "hours_other": "{{count}} Stunden",
+      "days_one": "{{count}} Tag",
+      "days_other": "{{count}} Tage",
+      "weeks_one": "{{count}} Woche",
+      "weeks_other": "{{count}} Wochen",
+      "months_one": "{{count}} Monat",
+      "months_other": "{{count}} Monate",
+      "years_one": "{{count}} Jahr",
+      "years_other": "{{count}} Jahre"
+    }
   },
   "footer": {
     "addAria": "Neue Aufgabe hinzufügen",

@@ -127,7 +127,22 @@
     "deleteSkipsParents": "Las tareas con subtareas no se pueden eliminar, excluidas: {{count}}.",
     "workspaceLabel": "Espacio de trabajo",
     "parentTitle": "Título de la nueva tarea principal",
-    "createParent": "Crear tarea principal"
+    "createParent": "Crear tarea principal",
+    "age": {
+      "justNow": "ahora",
+      "minutes_one": "{{count}} minuto",
+      "minutes_other": "{{count}} minutos",
+      "hours_one": "{{count}} hora",
+      "hours_other": "{{count}} horas",
+      "days_one": "{{count}} día",
+      "days_other": "{{count}} días",
+      "weeks_one": "{{count}} semana",
+      "weeks_other": "{{count}} semanas",
+      "months_one": "{{count}} mes",
+      "months_other": "{{count}} meses",
+      "years_one": "{{count}} año",
+      "years_other": "{{count}} años"
+    }
   },
   "footer": {
     "addAria": "Añadir nueva tarea",

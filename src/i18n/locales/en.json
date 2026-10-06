@@ -127,7 +127,22 @@
     "deleteSkipsParents": "Tasks with subtasks can't be deleted, left out: {{count}}.",
     "workspaceLabel": "Workspace",
     "parentTitle": "Title of the new parent task",
-    "createParent": "Create parent task"
+    "createParent": "Create parent task",
+    "age": {
+      "justNow": "just now",
+      "minutes_one": "{{count}} minute",
+      "minutes_other": "{{count}} minutes",
+      "hours_one": "{{count}} hour",
+      "hours_other": "{{count}} hours",
+      "days_one": "{{count}} day",
+      "days_other": "{{count}} days",
+      "weeks_one": "{{count}} week",
+      "weeks_other": "{{count}} weeks",
+      "months_one": "{{count}} month",
+      "months_other": "{{count}} months",
+      "years_one": "{{count}} year",
+      "years_other": "{{count}} years"
+    }
   },
   "footer": {
     "addAria": "Add new task",

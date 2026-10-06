@@ -559,6 +559,15 @@ select:focus-visible,
     transform: scale(0.96);
 }
 
+.modal-close-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    background: var(--color-primary-soft);
+    color: var(--color-primary-strong);
+    box-shadow: none;
+    transform: none;
+}
+
 .modal-long-description,
 .modal-input-wrapper {
     display: flex;

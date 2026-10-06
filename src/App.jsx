@@ -1015,7 +1015,7 @@ function App() {
         const PaletteModal = ({ project, onClose }) => (
             <Modal
                 title={t("app.chooseColorTitle")}
-                onclick={onClose}
+                onClick={onClose}
                 icon={
                     <span
                         style={{
@@ -1110,12 +1110,6 @@ function App() {
                             </li>
                         ))}
                     </ul>
-                    {paletteModalProject && (
-                        <PaletteModal
-                            project={paletteModalProject}
-                            onClose={() => setPaletteModalProject(null)}
-                        />
-                    )}
                 </div>
             );
         };
@@ -1302,6 +1296,13 @@ function App() {
                         />
                         <InfoPanel />
                     </Modal>
+                )}
+                {/* A sibling of the settings modal, not nested in it: an overlay inside another modal's box isn't reliably visible. */}
+                {paletteModalProject && (
+                    <PaletteModal
+                        project={paletteModalProject}
+                        onClose={() => setPaletteModalProject(null)}
+                    />
                 )}
             </>
         );
@@ -2046,6 +2047,11 @@ function App() {
                         onArchive={handleArchiveTasks}
                         onDelete={handleDeleteTasks}
                         onChangeProject={handleChangeProject}
+                        onCreateParent={token ? handleCreateParent : undefined}
+                        loadProjects={token ? loadOwnProjects : undefined}
+                        currentWorkspace={ws}
+                        workspaces={workspaces}
+                        workspaceProjects={getActiveProjects(tasks)}
                         editable={editable}
                         projectEditable={projectGroupable}
                         dateTimeEnabled={dateTimeEnabled}

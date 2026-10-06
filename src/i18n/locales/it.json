@@ -127,7 +127,22 @@
     "deleteSkipsParents": "Task con sotto-task non eliminabili, esclusi: {{count}}.",
     "workspaceLabel": "Workspace",
     "parentTitle": "Titolo del nuovo task padre",
-    "createParent": "Crea task padre"
+    "createParent": "Crea task padre",
+    "age": {
+      "justNow": "adesso",
+      "minutes_one": "{{count}} minuto",
+      "minutes_other": "{{count}} minuti",
+      "hours_one": "{{count}} ora",
+      "hours_other": "{{count}} ore",
+      "days_one": "{{count}} giorno",
+      "days_other": "{{count}} giorni",
+      "weeks_one": "{{count}} settimana",
+      "weeks_other": "{{count}} settimane",
+      "months_one": "{{count}} mese",
+      "months_other": "{{count}} mesi",
+      "years_one": "{{count}} anno",
+      "years_other": "{{count}} anni"
+    }
   },
   "footer": {
     "addAria": "Aggiungi nuovo task",

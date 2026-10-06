@@ -13,6 +13,8 @@ export type Task = {
     periodicity?: Periodicity;
     position?: number | null;
     parentId?: number | null;
+    // Unix seconds; missing on tasks created before the API recorded it.
+    createdAt?: number | null;
 };
 
 export type HandleAddAnotherModalParams = {

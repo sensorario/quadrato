@@ -127,7 +127,22 @@
     "deleteSkipsParents": "Les tâches avec des sous-tâches ne peuvent pas être supprimées, exclues : {{count}}.",
     "workspaceLabel": "Espace de travail",
     "parentTitle": "Titre de la nouvelle tâche parente",
-    "createParent": "Créer une tâche parente"
+    "createParent": "Créer une tâche parente",
+    "age": {
+      "justNow": "à l'instant",
+      "minutes_one": "{{count}} minute",
+      "minutes_other": "{{count}} minutes",
+      "hours_one": "{{count}} heure",
+      "hours_other": "{{count}} heures",
+      "days_one": "{{count}} jour",
+      "days_other": "{{count}} jours",
+      "weeks_one": "{{count}} semaine",
+      "weeks_other": "{{count}} semaines",
+      "months_one": "{{count}} mois",
+      "months_other": "{{count}} mois",
+      "years_one": "{{count}} an",
+      "years_other": "{{count}} ans"
+    }
   },
   "footer": {
     "addAria": "Ajouter une nouvelle tâche",

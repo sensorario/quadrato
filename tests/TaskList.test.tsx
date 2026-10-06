@@ -470,6 +470,28 @@ describe('TaskList selection actions', () => {
         expect(onCreateParent).not.toHaveBeenCalled();
     });
 
+    it('creates the parent without a chosen project, in the project the selection shares', () => {
+        const onCreateParent = jest.fn();
+        renderList({ onChangeProject: jest.fn(), onCreateParent, tasks: list.map(t => ({ ...t, project: 'casa' })) as never });
+
+        selectFirstTwo();
+        fireEvent.change(screen.getByRole('textbox', { name: 'Titolo del nuovo task padre' }), { target: { value: 'Padre' } });
+        fireEvent.click(screen.getByText('Crea task padre'));
+
+        expect(onCreateParent.mock.calls[0].slice(1)).toEqual(['Padre', 'casa', undefined]);
+    });
+
+    it('creates the parent with no project when the selection mixes projects', () => {
+        const onCreateParent = jest.fn();
+        renderList({ onChangeProject: jest.fn(), onCreateParent });
+
+        selectFirstTwo();
+        fireEvent.change(screen.getByRole('textbox', { name: 'Titolo del nuovo task padre' }), { target: { value: 'Padre' } });
+        fireEvent.click(screen.getByText('Crea task padre'));
+
+        expect(onCreateParent.mock.calls[0].slice(1)).toEqual(['Padre', '', undefined]);
+    });
+
     it('hides "Rimuovi scadenza" when no selected task has a due date', () => {
         renderList({ tasks: list.map(t => ({ ...t, timestamp: undefined })) as never });
 
@@ -517,5 +539,34 @@ describe('TaskList title rendering', () => {
         const link = screen.getByRole('link', { name: 'https://example.com/doc' });
         expect(link).toHaveAttribute('href', 'https://example.com/doc');
         expect(link).toHaveAttribute('target', '_blank');
+    });
+});
+
+describe('TaskList task age', () => {
+    const renderTask = (task: object) => render(
+        <TaskList
+            tasks={[{ id: 1, title: 'Old task', status: 0, ...task }] as never}
+            onTaskClick={() => { }}
+            updateTaskTitle={() => { }}
+            editable={false}
+            projectEditable={false}
+            dateTimeEnabled={false}
+            iconTheme="default"
+        />
+    );
+
+    it('shows how long ago the task was created', () => {
+        renderTask({ createdAt: Math.floor(Date.now() / 1000) - 3 * 86400 });
+        expect(screen.getByText('3 giorni')).toBeInTheDocument();
+    });
+
+    it('uses the singular for one unit', () => {
+        renderTask({ createdAt: Math.floor(Date.now() / 1000) - 3600 });
+        expect(screen.getByText('1 ora')).toBeInTheDocument();
+    });
+
+    it('shows nothing for tasks without a creation time', () => {
+        renderTask({});
+        expect(screen.queryByText(/giorn|ore|minut|adesso/)).not.toBeInTheDocument();
     });
 });

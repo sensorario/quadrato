@@ -5,6 +5,7 @@ import { Icon } from "@sensorario/sg-components";
 import TaskModal from "./TaskModal";
 import TaskTitle from "./TaskTitle";
 import { toPlainText } from "../utils/toPlainText";
+import { taskAge } from "../utils/taskAge";
 import { Modal } from "./Modal";
 import FormatDate from "./FormatDate";
 import { Task } from "../types/commonTypes";
@@ -179,6 +180,9 @@ export const TaskList = ({ tasks, onTaskClick, updateTaskTitle, onReorder, onCle
     const canCreateProject = query !== '' && !matchingProjects.some(name => name.toLowerCase() === query.toLowerCase());
     const isChosen = (name: string) => chosenProject === name;
     const hasDueDate = tasks.some(task => selectedIds.includes(task.id) && !!task.timestamp);
+    // With no project picked the parent stays with its children: their project when they share one.
+    const selectedProjects = [...new Set(tasks.filter(task => selectedIds.includes(task.id)).map(task => task.project ?? ''))];
+    const parentProject = chosenProject ?? (!workspaceUuid && selectedProjects.length === 1 ? selectedProjects[0] : '');
     const projectOptionStyle = (chosen: boolean): React.CSSProperties => ({
         width: '100%', textAlign: 'left', border: 'none', borderRadius: '6px', padding: '6px 8px', cursor: 'pointer',
         display: 'flex', justifyContent: 'space-between', gap: '8px', color: 'inherit', font: 'inherit',
@@ -326,6 +330,14 @@ export const TaskList = ({ tasks, onTaskClick, updateTaskTitle, onReorder, onCle
                         {projectEditable && task.project && task.project !== projectFilter && (
                             <span style={{ margin: '0', color: '#666' }}>({task.project})</span>
                         )}
+                        {task.createdAt != null && (() => {
+                            const age = taskAge(task.createdAt, Math.floor(Date.now() / 1000));
+                            return (
+                                <span style={{ margin: '0', color: '#999' }} title={new Date(task.createdAt * 1000).toLocaleString()}>
+                                    {t(`taskList.age.${age.unit}`, { count: age.count })}
+                                </span>
+                            );
+                        })()}
                     </span>
 
                     <span style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px' }} title={t('taskList.edit')} onClick={e => { e.stopPropagation(); handleEditClick(task); }}>
@@ -464,8 +476,8 @@ export const TaskList = ({ tasks, onTaskClick, updateTaskTitle, onReorder, onCle
                                     <button
                                         type="button"
                                         className="modal-close-btn"
-                                        disabled={chosenProject === null || toPlainText(parentTitle).trim() === ''}
-                                        onClick={() => { if (chosenProject !== null) { onCreateParent(selectedIds, toPlainText(parentTitle).trim(), chosenProject, workspaceUuid); closeSelection(); } }}
+                                        disabled={toPlainText(parentTitle).trim() === ''}
+                                        onClick={() => { onCreateParent(selectedIds, toPlainText(parentTitle).trim(), parentProject, workspaceUuid); closeSelection(); }}
                                     >
                                         {t('taskList.createParent')}
                                     </button>

@@ -127,7 +127,16 @@
     "deleteSkipsParents": "サブタスクのあるタスクは削除できないため除外しました: {{count}} 件",
     "workspaceLabel": "ワークスペース",
     "parentTitle": "新しい親タスクのタイトル",
-    "createParent": "親タスクを作成"
+    "createParent": "親タスクを作成",
+    "age": {
+      "justNow": "たった今",
+      "minutes_other": "{{count}}分",
+      "hours_other": "{{count}}時間",
+      "days_other": "{{count}}日",
+      "weeks_other": "{{count}}週間",
+      "months_other": "{{count}}か月",
+      "years_other": "{{count}}年"
+    }
   },
   "footer": {
     "addAria": "新しいタスクを追加",
