@@ -449,6 +449,7 @@ describe('TaskList selection actions', () => {
         renderList({ onChangeProject: jest.fn(), onCreateParent, loadProjects: () => Promise.resolve(ownProjects), currentWorkspace: 'default', workspaces });
 
         selectFirstTwo();
+        fireEvent.click(screen.getByRole('tab', { name: 'Task padre' }));
         await screen.findByText('casa');
         fireEvent.change(screen.getByRole('combobox', { name: 'Workspace' }), { target: { value: 'ws-lavoro' } });
         fireEvent.click(screen.getByText('Blog'));
@@ -464,6 +465,7 @@ describe('TaskList selection actions', () => {
         renderList({ onChangeProject: jest.fn(), onCreateParent });
 
         selectFirstTwo();
+        fireEvent.click(screen.getByRole('tab', { name: 'Task padre' }));
         fireEvent.click(screen.getByText('Nessun progetto'));
         fireEvent.click(screen.getByText('Crea task padre'));
 
@@ -475,6 +477,7 @@ describe('TaskList selection actions', () => {
         renderList({ onChangeProject: jest.fn(), onCreateParent, tasks: list.map(t => ({ ...t, project: 'casa' })) as never });
 
         selectFirstTwo();
+        fireEvent.click(screen.getByRole('tab', { name: 'Task padre' }));
         fireEvent.change(screen.getByRole('textbox', { name: 'Titolo del nuovo task padre' }), { target: { value: 'Padre' } });
         fireEvent.click(screen.getByText('Crea task padre'));
 
@@ -486,10 +489,51 @@ describe('TaskList selection actions', () => {
         renderList({ onChangeProject: jest.fn(), onCreateParent });
 
         selectFirstTwo();
+        fireEvent.click(screen.getByRole('tab', { name: 'Task padre' }));
         fireEvent.change(screen.getByRole('textbox', { name: 'Titolo del nuovo task padre' }), { target: { value: 'Padre' } });
         fireEvent.click(screen.getByText('Crea task padre'));
 
         expect(onCreateParent.mock.calls[0].slice(1)).toEqual(['Padre', '', undefined]);
+    });
+
+    it('shows one action per tab, the move one first', () => {
+        renderList({ onChangeProject: jest.fn(), onCreateParent: jest.fn(), onMoveToNewWorkspace: jest.fn() });
+
+        selectFirstTwo();
+
+        expect(screen.getAllByRole('tab').map(tab => tab.textContent)).toEqual(['Sposta', 'Task padre', 'Nuovo workspace']);
+        expect(screen.getByText('Sposta nel progetto')).toBeInTheDocument();
+        expect(screen.queryByText('Crea task padre')).not.toBeInTheDocument();
+
+        fireEvent.click(screen.getByRole('tab', { name: 'Nuovo workspace' }));
+        expect(screen.queryByText('Sposta nel progetto')).not.toBeInTheDocument();
+        expect(screen.queryByRole('list', { name: 'Progetto' })).not.toBeInTheDocument();
+    });
+
+    it('moves the selection to a new workspace', async () => {
+        const onMoveToNewWorkspace = jest.fn().mockResolvedValue('ok');
+        renderList({ onChangeProject: jest.fn(), onMoveToNewWorkspace });
+
+        selectFirstTwo();
+        fireEvent.click(screen.getByRole('tab', { name: 'Nuovo workspace' }));
+        fireEvent.change(screen.getByRole('textbox', { name: 'Nome del nuovo workspace' }), { target: { value: ' Cantina ' } });
+        fireEvent.click(screen.getByText('Sposta nel nuovo workspace'));
+
+        await waitFor(() => expect(screen.queryByText('Task selezionati')).not.toBeInTheDocument());
+        expect([...onMoveToNewWorkspace.mock.calls[0][0]].sort()).toEqual([1, 2]);
+        expect(onMoveToNewWorkspace.mock.calls[0][1]).toBe('Cantina');
+    });
+
+    it('keeps the modal open and says so when the workspace name is taken', async () => {
+        renderList({ onChangeProject: jest.fn(), onMoveToNewWorkspace: jest.fn().mockResolvedValue('exists') });
+
+        selectFirstTwo();
+        fireEvent.click(screen.getByRole('tab', { name: 'Nuovo workspace' }));
+        fireEvent.change(screen.getByRole('textbox', { name: 'Nome del nuovo workspace' }), { target: { value: 'lavoro' } });
+        fireEvent.click(screen.getByText('Sposta nel nuovo workspace'));
+
+        expect(await screen.findByRole('alert')).toHaveTextContent('Esiste già un workspace con questo nome.');
+        expect(screen.getByText('Task selezionati')).toBeInTheDocument();
     });
 
     it('hides "Rimuovi scadenza" when no selected task has a due date', () => {

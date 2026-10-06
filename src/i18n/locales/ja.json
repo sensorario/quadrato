@@ -131,6 +131,13 @@
     "workspaceLabel": "ワークスペース",
     "parentTitle": "新しい親タスクのタイトル",
     "createParent": "親タスクを作成",
+    "tabMove": "移動",
+    "tabParent": "親タスク",
+    "tabNewWorkspace": "新しいワークスペース",
+    "newWorkspaceName": "新しいワークスペースの名前",
+    "moveToNewWorkspace": "新しいワークスペースへ移動",
+    "newWorkspaceExists": "この名前のワークスペースは既に存在します。",
+    "newWorkspaceFailed": "ワークスペースを作成できませんでした。",
     "age": {
       "justNow": "たった今",
       "minutes_other": "{{count}}分",

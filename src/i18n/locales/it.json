@@ -131,6 +131,13 @@
     "workspaceLabel": "Workspace",
     "parentTitle": "Titolo del nuovo task padre",
     "createParent": "Crea task padre",
+    "tabMove": "Sposta",
+    "tabParent": "Task padre",
+    "tabNewWorkspace": "Nuovo workspace",
+    "newWorkspaceName": "Nome del nuovo workspace",
+    "moveToNewWorkspace": "Sposta nel nuovo workspace",
+    "newWorkspaceExists": "Esiste già un workspace con questo nome.",
+    "newWorkspaceFailed": "Non è stato possibile creare il workspace.",
     "age": {
       "justNow": "adesso",
       "minutes_one": "{{count}} minuto",

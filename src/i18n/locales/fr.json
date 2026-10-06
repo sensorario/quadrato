@@ -131,6 +131,13 @@
     "workspaceLabel": "Espace de travail",
     "parentTitle": "Titre de la nouvelle tâche parente",
     "createParent": "Créer une tâche parente",
+    "tabMove": "Déplacer",
+    "tabParent": "Tâche parente",
+    "tabNewWorkspace": "Nouvel espace",
+    "newWorkspaceName": "Nom du nouvel espace de travail",
+    "moveToNewWorkspace": "Déplacer vers le nouvel espace de travail",
+    "newWorkspaceExists": "Un espace de travail porte déjà ce nom.",
+    "newWorkspaceFailed": "L'espace de travail n'a pas pu être créé.",
     "age": {
       "justNow": "à l'instant",
       "minutes_one": "{{count}} minute",

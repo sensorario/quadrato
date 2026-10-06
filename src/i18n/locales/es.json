@@ -131,6 +131,13 @@
     "workspaceLabel": "Espacio de trabajo",
     "parentTitle": "Título de la nueva tarea principal",
     "createParent": "Crear tarea principal",
+    "tabMove": "Mover",
+    "tabParent": "Tarea principal",
+    "tabNewWorkspace": "Nuevo espacio",
+    "newWorkspaceName": "Nombre del nuevo espacio de trabajo",
+    "moveToNewWorkspace": "Mover al nuevo espacio de trabajo",
+    "newWorkspaceExists": "Ya existe un espacio de trabajo con este nombre.",
+    "newWorkspaceFailed": "No se pudo crear el espacio de trabajo.",
     "age": {
       "justNow": "ahora",
       "minutes_one": "{{count}} minuto",

@@ -131,6 +131,13 @@
     "workspaceLabel": "Workspace",
     "parentTitle": "Titel der neuen übergeordneten Aufgabe",
     "createParent": "Übergeordnete Aufgabe erstellen",
+    "tabMove": "Verschieben",
+    "tabParent": "Übergeordnete Aufgabe",
+    "tabNewWorkspace": "Neuer Workspace",
+    "newWorkspaceName": "Name des neuen Workspace",
+    "moveToNewWorkspace": "In den neuen Workspace verschieben",
+    "newWorkspaceExists": "Ein Workspace mit diesem Namen existiert bereits.",
+    "newWorkspaceFailed": "Der Workspace konnte nicht erstellt werden.",
     "age": {
       "justNow": "gerade eben",
       "minutes_one": "{{count}} Minute",

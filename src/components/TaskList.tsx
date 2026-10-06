@@ -17,7 +17,7 @@ import { navigate } from "../Router";
 export type OwnProject = { id: string; name: string; workspace: string; workspaceUuid: string };
 
 // @todo #44 extract task type in a common file and fix dateTime to timestamp
-export const TaskList = ({ tasks, onTaskClick, updateTaskTitle, onReorder, onClearDueDates, onArchive, onDelete, onChangeProject, onCreateParent, loadProjects, currentWorkspace, workspaces, workspaceProjects, editable, projectEditable, dateTimeEnabled, iconTheme, projectFilter }: {
+export const TaskList = ({ tasks, onTaskClick, updateTaskTitle, onReorder, onClearDueDates, onArchive, onDelete, onChangeProject, onCreateParent, onMoveToNewWorkspace, loadProjects, currentWorkspace, workspaces, workspaceProjects, editable, projectEditable, dateTimeEnabled, iconTheme, projectFilter }: {
     tasks: Task[];
     onTaskClick: (id: number) => void;
     updateTaskTitle: (id: number, title: string, longDescription?: string, project?: string, timestamp?: string | number, periodicity?: { number: string; unit: string } | null) => void;
@@ -27,6 +27,7 @@ export const TaskList = ({ tasks, onTaskClick, updateTaskTitle, onReorder, onCle
     onDelete?: (ids: Task['id'][]) => void;
     onChangeProject?: (ids: Task['id'][], project: string, workspaceUuid?: string) => void;
     onCreateParent?: (ids: Task['id'][], title: string, project: string, workspaceUuid?: string) => void;
+    onMoveToNewWorkspace?: (ids: Task['id'][], name: string) => Promise<'ok' | 'exists' | 'error'>;
     loadProjects?: () => Promise<OwnProject[]>;
     currentWorkspace?: string;
     workspaces?: { id: string; name: string }[];
@@ -82,6 +83,10 @@ export const TaskList = ({ tasks, onTaskClick, updateTaskTitle, onReorder, onCle
     const [workspaceUuid, setWorkspaceUuid] = useState<string | undefined>(undefined);
     const [chosenProject, setChosenProject] = useState<string | null>(null);
     const [parentTitle, setParentTitle] = useState('');
+    const [selectionTab, setSelectionTab] = useState<'move' | 'parent' | 'newWorkspace'>('move');
+    const [newWorkspaceName, setNewWorkspaceName] = useState('');
+    const [newWorkspaceError, setNewWorkspaceError] = useState<string | null>(null);
+    const [movingToNewWorkspace, setMovingToNewWorkspace] = useState(false);
 
     useEffect(() => {
         if (!showSelectionModal || !onChangeProject || !loadProjects) return;
@@ -154,6 +159,9 @@ export const TaskList = ({ tasks, onTaskClick, updateTaskTitle, onReorder, onCle
         setWorkspaceUuid(undefined);
         setChosenProject(null);
         setParentTitle('');
+        setSelectionTab('move');
+        setNewWorkspaceName('');
+        setNewWorkspaceError(null);
         setSelectedIds([]);
     };
 
@@ -188,6 +196,59 @@ export const TaskList = ({ tasks, onTaskClick, updateTaskTitle, onReorder, onCle
         display: 'flex', justifyContent: 'space-between', gap: '8px', color: 'inherit', font: 'inherit',
         background: chosen ? 'rgba(84, 128, 230, 0.15)' : 'none',
     });
+
+    const destinationPicker = (
+        <>
+            {otherWorkspaces.length > 0 && (
+                <select
+                    className="modal-input"
+                    style={{ marginBottom: 0 }}
+                    value={workspaceUuid ?? ''}
+                    onChange={e => { setWorkspaceUuid(e.target.value || undefined); setProjectQuery(''); setChosenProject(null); }}
+                    aria-label={t('taskList.workspaceLabel')}
+                >
+                    <option value="">{currentWorkspace}</option>
+                    {otherWorkspaces.map(w => <option key={w.id} value={w.id}>{w.name}</option>)}
+                </select>
+            )}
+            <input
+                className="modal-input"
+                style={{ marginBottom: 0 }}
+                value={projectQuery}
+                onChange={e => { setProjectQuery(e.target.value); setChosenProject(null); }}
+                placeholder={t('taskList.searchProject')}
+                aria-label={t('taskList.projectLabel')}
+            />
+            <ul aria-label={t('taskList.projectLabel')} style={{ listStyle: 'none', margin: 0, padding: 0, maxHeight: '220px', overflowY: 'auto' }}>
+                {query === '' && (
+                    <li>
+                        <button type="button" aria-pressed={isChosen('')} style={projectOptionStyle(isChosen(''))} onClick={() => setChosenProject('')}>
+                            <em>{t('taskList.noProject')}</em>
+                        </button>
+                    </li>
+                )}
+                {matchingProjects.map(name => (
+                    <li key={name}>
+                        <button type="button" aria-pressed={isChosen(name)} style={projectOptionStyle(isChosen(name))} onClick={() => setChosenProject(name)}>
+                            <span>{name}</span>
+                        </button>
+                    </li>
+                ))}
+                {canCreateProject && (
+                    <li>
+                        <button type="button" aria-pressed={isChosen(query)} style={projectOptionStyle(isChosen(query))} onClick={() => setChosenProject(query)}>
+                            {t('taskList.newProject', { name: query })}
+                        </button>
+                    </li>
+                )}
+            </ul>
+        </>
+    );
+    const selectionTabs: { key: 'move' | 'parent' | 'newWorkspace'; title: string }[] = [
+        { key: 'move', title: t('taskList.tabMove') },
+        ...(onCreateParent ? [{ key: 'parent' as const, title: t('taskList.tabParent') }] : []),
+        ...(onMoveToNewWorkspace ? [{ key: 'newWorkspace' as const, title: t('taskList.tabNewWorkspace') }] : []),
+    ];
 
     // Dragging starts from the grip only, so clicks on the row and page scrolling are untouched.
     // Up and down picks the place, a small move sideways picks the level: right of the row
@@ -412,60 +473,25 @@ export const TaskList = ({ tasks, onTaskClick, updateTaskTitle, onReorder, onCle
                 >
                     <p>{t('taskList.selectionMessage', { count: selectedIds.length })}</p>
                     {onChangeProject && (
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                            {otherWorkspaces.length > 0 && (
-                                <select
-                                    className="modal-input"
-                                    style={{ marginBottom: 0 }}
-                                    value={workspaceUuid ?? ''}
-                                    onChange={e => { setWorkspaceUuid(e.target.value || undefined); setProjectQuery(''); setChosenProject(null); }}
-                                    aria-label={t('taskList.workspaceLabel')}
-                                >
-                                    <option value="">{currentWorkspace}</option>
-                                    {otherWorkspaces.map(w => <option key={w.id} value={w.id}>{w.name}</option>)}
-                                </select>
-                            )}
-                            <input
-                                className="modal-input"
-                                style={{ marginBottom: 0 }}
-                                value={projectQuery}
-                                onChange={e => { setProjectQuery(e.target.value); setChosenProject(null); }}
-                                placeholder={t('taskList.searchProject')}
-                                aria-label={t('taskList.projectLabel')}
-                            />
-                            <ul aria-label={t('taskList.projectLabel')} style={{ listStyle: 'none', margin: 0, padding: 0, maxHeight: '220px', overflowY: 'auto' }}>
-                                {query === '' && (
-                                    <li>
-                                        <button type="button" aria-pressed={isChosen('')} style={projectOptionStyle(isChosen(''))} onClick={() => setChosenProject('')}>
-                                            <em>{t('taskList.noProject')}</em>
-                                        </button>
-                                    </li>
-                                )}
-                                {matchingProjects.map(name => (
-                                    <li key={name}>
-                                        <button type="button" aria-pressed={isChosen(name)} style={projectOptionStyle(isChosen(name))} onClick={() => setChosenProject(name)}>
-                                            <span>{name}</span>
-                                        </button>
-                                    </li>
+                        <div className="tabbed-content">
+                            <div className="tabs" role="tablist">
+                                {selectionTabs.map(tab => (
+                                    <div
+                                        key={tab.key}
+                                        role="tab"
+                                        tabIndex={0}
+                                        aria-selected={selectionTab === tab.key}
+                                        className={`tab ${selectionTab === tab.key ? 'active' : ''}`}
+                                        onClick={() => setSelectionTab(tab.key)}
+                                        onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') setSelectionTab(tab.key); }}
+                                    >
+                                        <span>{tab.title}</span>
+                                    </div>
                                 ))}
-                                {canCreateProject && (
-                                    <li>
-                                        <button type="button" aria-pressed={isChosen(query)} style={projectOptionStyle(isChosen(query))} onClick={() => setChosenProject(query)}>
-                                            {t('taskList.newProject', { name: query })}
-                                        </button>
-                                    </li>
-                                )}
-                            </ul>
-                            <button
-                                type="button"
-                                className="modal-close-btn"
-                                disabled={chosenProject === null}
-                                onClick={() => { if (chosenProject !== null) { onChangeProject(selectedIds, chosenProject, workspaceUuid); closeSelection(); } }}
-                            >
-                                {t('taskList.moveToProject')}
-                            </button>
-                            {onCreateParent && (
-                                <>
+                            </div>
+                            {/* Only the active tab is rendered: the move and parent tabs share the destination picker. */}
+                            <div className="tab-content active" role="tabpanel" style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                                {selectionTab === 'parent' && onCreateParent && (
                                     <input
                                         className="modal-input"
                                         style={{ marginBottom: 0 }}
@@ -474,6 +500,19 @@ export const TaskList = ({ tasks, onTaskClick, updateTaskTitle, onReorder, onCle
                                         placeholder={t('taskList.parentTitle')}
                                         aria-label={t('taskList.parentTitle')}
                                     />
+                                )}
+                                {selectionTab !== 'newWorkspace' && destinationPicker}
+                                {selectionTab === 'move' && (
+                                    <button
+                                        type="button"
+                                        className="modal-close-btn"
+                                        disabled={chosenProject === null}
+                                        onClick={() => { if (chosenProject !== null) { onChangeProject(selectedIds, chosenProject, workspaceUuid); closeSelection(); } }}
+                                    >
+                                        {t('taskList.moveToProject')}
+                                    </button>
+                                )}
+                                {selectionTab === 'parent' && onCreateParent && (
                                     <button
                                         type="button"
                                         className="modal-close-btn"
@@ -482,8 +521,35 @@ export const TaskList = ({ tasks, onTaskClick, updateTaskTitle, onReorder, onCle
                                     >
                                         {t('taskList.createParent')}
                                     </button>
-                                </>
-                            )}
+                                )}
+                                {selectionTab === 'newWorkspace' && onMoveToNewWorkspace && (
+                                    <>
+                                        <input
+                                            className="modal-input"
+                                            style={{ marginBottom: 0 }}
+                                            value={newWorkspaceName}
+                                            onChange={e => { setNewWorkspaceName(e.target.value); setNewWorkspaceError(null); }}
+                                            placeholder={t('taskList.newWorkspaceName')}
+                                            aria-label={t('taskList.newWorkspaceName')}
+                                        />
+                                        {newWorkspaceError && <p role="alert" style={{ margin: 0, color: '#c0392b' }}>{newWorkspaceError}</p>}
+                                        <button
+                                            type="button"
+                                            className="modal-close-btn"
+                                            disabled={toPlainText(newWorkspaceName).trim() === '' || movingToNewWorkspace}
+                                            onClick={async () => {
+                                                setMovingToNewWorkspace(true);
+                                                const result = await onMoveToNewWorkspace(selectedIds, toPlainText(newWorkspaceName).trim());
+                                                setMovingToNewWorkspace(false);
+                                                if (result === 'ok') closeSelection();
+                                                else setNewWorkspaceError(t(result === 'exists' ? 'taskList.newWorkspaceExists' : 'taskList.newWorkspaceFailed'));
+                                            }}
+                                        >
+                                            {t('taskList.moveToNewWorkspace')}
+                                        </button>
+                                    </>
+                                )}
+                            </div>
                         </div>
                     )}
                 </Modal>

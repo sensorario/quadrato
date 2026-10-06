@@ -942,6 +942,7 @@ function App() {
             onDelete={handleDeleteTasks}
             onChangeProject={handleChangeProject}
             onCreateParent={token ? handleCreateParent : undefined}
+            onMoveToNewWorkspace={token ? handleMoveToNewWorkspace : undefined}
             loadProjects={token ? loadOwnProjects : undefined}
             currentWorkspace={ws}
             workspaces={workspaces}
@@ -2132,6 +2133,7 @@ function App() {
                         onDelete={handleDeleteTasks}
                         onChangeProject={handleChangeProject}
                         onCreateParent={token ? handleCreateParent : undefined}
+                        onMoveToNewWorkspace={token ? handleMoveToNewWorkspace : undefined}
                         loadProjects={token ? loadOwnProjects : undefined}
                         currentWorkspace={ws}
                         workspaces={workspaces}
