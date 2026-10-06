@@ -1,4 +1,4 @@
-import React, { SetStateAction, useLayoutEffect, useRef, useState } from "react";
+import React, { SetStateAction, useEffect, useLayoutEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { getStatusIcons, STATUS_ENUM } from "../utils";
 import { Icon } from "@sensorario/sg-components";
@@ -7,19 +7,26 @@ import { Modal } from "./Modal";
 import FormatDate from "./FormatDate";
 import { Task } from "../types/commonTypes";
 import { getConfigRepository } from "../repositories";
-import sortByDate from "../utils/filterTaskByVisibilityRange";
+import { childrenOf, descendantIds, flattenTree, hasOpenDescendants, INDENT_PX, projectDrop, TreeRow } from "../utils/taskTree";
 import { navigate } from "../Router";
 
+// A project in one of the user's own workspaces, as listed by GET /quadrato/projects.
+export type OwnProject = { id: string; name: string; workspace: string; workspaceUuid: string };
+
 // @todo #44 extract task type in a common file and fix dateTime to timestamp
-export const TaskList = ({ tasks, onTaskClick, updateTaskTitle, onReorder, onClearDueDates, onArchive, onDelete, onChangeProject, editable, projectEditable, dateTimeEnabled, iconTheme, projectFilter }: {
+export const TaskList = ({ tasks, onTaskClick, updateTaskTitle, onReorder, onClearDueDates, onArchive, onDelete, onChangeProject, loadProjects, currentWorkspace, workspaceProjects, editable, projectEditable, dateTimeEnabled, iconTheme, projectFilter }: {
     tasks: Task[];
     onTaskClick: (id: number) => void;
     updateTaskTitle: (id: number, title: string, longDescription?: string, project?: string, timestamp?: string | number, periodicity?: { number: string; unit: string } | null) => void;
-    onReorder?: (orderedIds: Task['id'][]) => void;
+    onReorder?: (taskId: Task['id'], parentId: Task['id'] | null, siblingIds: Task['id'][]) => void;
     onClearDueDates?: (ids: Task['id'][]) => void;
     onArchive?: (ids: Task['id'][]) => void;
     onDelete?: (ids: Task['id'][]) => void;
-    onChangeProject?: (ids: Task['id'][], project: string) => void;
+    onChangeProject?: (ids: Task['id'][], project: string, workspaceUuid?: string) => void;
+    loadProjects?: () => Promise<OwnProject[]>;
+    currentWorkspace?: string;
+    // All projects of the current workspace: `tasks` may be only the filtered ones on screen.
+    workspaceProjects?: string[];
     editable: boolean;
     projectEditable: boolean;
     dateTimeEnabled: boolean;
@@ -36,7 +43,7 @@ export const TaskList = ({ tasks, onTaskClick, updateTaskTitle, onReorder, onCle
 
     const [hoveredId, setHoveredId] = useState<number | null>(null);
     const [editTask, setEditTask] = useState<Task | null>(null);
-    const [dragOrder, setDragOrder] = useState<Task['id'][] | null>(null);
+    const [drag, setDrag] = useState<{ insertIndex: number; depth: number; parentId: Task['id'] | null } | null>(null);
     const [draggedId, setDraggedId] = useState<Task['id'] | null>(null);
     const rowRefs = useRef(new Map<Task['id'], HTMLLIElement>());
     const prevTops = useRef(new Map<Task['id'], number>());
@@ -46,7 +53,7 @@ export const TaskList = ({ tasks, onTaskClick, updateTaskTitle, onReorder, onCle
     // page scroll between renders doesn't look like a move; skipped while dragging
     // because the drag hit-testing reads the rows' on-screen rects.
     useLayoutEffect(() => {
-        const animate = dragOrder === null && !window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
+        const animate = drag === null && !window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
         const tops = new Map<Task['id'], number>();
         rowRefs.current.forEach((el, id) => {
             tops.set(id, el.offsetTop);
@@ -64,7 +71,19 @@ export const TaskList = ({ tasks, onTaskClick, updateTaskTitle, onReorder, onCle
     const [marquee, setMarquee] = useState<{ left: number; top: number; width: number; height: number } | null>(null);
     const [showSelectionModal, setShowSelectionModal] = useState(false);
     const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
-    const [projectDraft, setProjectDraft] = useState('');
+    const [projectQuery, setProjectQuery] = useState('');
+    const [ownProjects, setOwnProjects] = useState<OwnProject[] | null>(null);
+    // workspaceUuid undefined means the current workspace.
+    const [chosenProject, setChosenProject] = useState<{ name: string; workspaceUuid?: string } | null>(null);
+
+    useEffect(() => {
+        if (!showSelectionModal || !onChangeProject || !loadProjects) return;
+        let cancelled = false;
+        loadProjects()
+            .then(list => { if (!cancelled) setOwnProjects(list); })
+            .catch(() => { });
+        return () => { cancelled = true; };
+    }, [showSelectionModal, onChangeProject, loadProjects]);
     const suppressClick = useRef(false);
 
     // Mouse only: pressing anywhere on the list and dragging draws a selection area.
@@ -124,42 +143,82 @@ export const TaskList = ({ tasks, onTaskClick, updateTaskTitle, onReorder, onCle
     const closeSelection = () => {
         setShowSelectionModal(false);
         setShowDeleteConfirm(false);
-        setProjectDraft('');
+        setProjectQuery('');
+        setChosenProject(null);
         setSelectedIds([]);
     };
 
     // Only completed or skipped tasks can be archived: the others in the selection are left alone.
-    const archivableIds = tasks
-        .filter(task => selectedIds.includes(task.id) && !task.archived
-            && (task.status === STATUS_ENUM.DONE || task.status === STATUS_ENUM.SKIPPED))
-        .map(task => task.id);
+    // A closed parent takes its subtasks along (they're closed too), so none is left orphaned.
+    const isClosed = (task: Task) => task.status === STATUS_ENUM.DONE || task.status === STATUS_ENUM.SKIPPED;
+    const archivableIds = [...new Set(tasks
+        .filter(task => selectedIds.includes(task.id) && !task.archived && isClosed(task))
+        .flatMap(task => [task.id, ...descendantIds(tasks, task.id)]))];
+    // A task that still has subtasks can't be deleted.
+    const deletableIds = selectedIds.filter(id => childrenOf(tasks, id).length === 0);
     const projects = [...new Set(tasks.map(task => task.project).filter((p): p is string => !!p))].sort();
+    // The API lists only workspaces the user owns: the projects of the tasks on screen are added
+    // so a shared workspace (or no API list at all, when logged out) still offers its own.
+    const ownOptions = (ownProjects ?? []).map(p => ({ key: p.id, name: p.name, workspace: p.workspace, workspaceUuid: p.workspace === currentWorkspace ? undefined : p.workspaceUuid }));
+    const projectOptions: { key: string; name: string; workspace?: string; workspaceUuid?: string }[] = [
+        ...ownOptions,
+        ...(workspaceProjects ?? projects)
+            .filter(name => !ownOptions.some(p => !p.workspaceUuid && p.name === name))
+            .map(name => ({ key: name, name, workspace: ownProjects ? currentWorkspace : undefined })),
+    ];
+    const query = projectQuery.trim();
+    const matchingProjects = projectOptions
+        .filter(p => p.name.toLowerCase().includes(query.toLowerCase()))
+        .sort((a, b) => Number(!!a.workspaceUuid) - Number(!!b.workspaceUuid) || (a.workspace ?? '').localeCompare(b.workspace ?? '') || a.name.localeCompare(b.name));
+    const canCreateProject = query !== '' && !matchingProjects.some(p => !p.workspaceUuid && p.name.toLowerCase() === query.toLowerCase());
+    const isChosen = (name: string, workspaceUuid?: string) => chosenProject?.name === name && chosenProject?.workspaceUuid === workspaceUuid;
+    const projectOptionStyle = (chosen: boolean): React.CSSProperties => ({
+        width: '100%', textAlign: 'left', border: 'none', borderRadius: '6px', padding: '6px 8px', cursor: 'pointer',
+        display: 'flex', justifyContent: 'space-between', gap: '8px', color: 'inherit', font: 'inherit',
+        background: chosen ? 'rgba(84, 128, 230, 0.15)' : 'none',
+    });
 
-    // Only tasks without a due date can be reordered: dated ones stay sorted by date.
     // Dragging starts from the grip only, so clicks on the row and page scrolling are untouched.
-    const startDrag = (e: React.PointerEvent, task: Task, undatedIds: Task['id'][]) => {
+    // Up and down picks the place, a small move sideways picks the level: right of the row
+    // above makes it a subtask of that row, left brings it back up. Subtasks move along.
+    const startDrag = (e: React.PointerEvent, task: Task, rows: TreeRow[]) => {
         if (!onReorder || e.button !== 0) return;
         e.preventDefault();
         e.stopPropagation();
-        let order = undatedIds;
+        const subtree = new Set([task.id, ...descendantIds(rows.map(r => r.task), task.id)]);
+        const others = rows.filter(r => !subtree.has(r.task.id));
+        const startIndex = rows.findIndex(r => r.task.id === task.id);
+        const startDepth = rows[startIndex].depth;
+        const startX = e.clientX;
+        const start = { insertIndex: startIndex, ...projectDrop(others, startIndex, startDepth, 0) };
+        let state = start;
         setDraggedId(task.id);
-        setDragOrder(order);
+        setDrag(state);
 
         const onMove = (ev: PointerEvent) => {
-            const others = order.filter(id => id !== task.id);
-            let index = others.findIndex(id => {
-                const rect = rowRefs.current.get(id)?.getBoundingClientRect();
+            let index = others.findIndex(r => {
+                const rect = rowRefs.current.get(r.task.id)?.getBoundingClientRect();
                 return rect !== undefined && ev.clientY < rect.top + rect.height / 2;
             });
             if (index === -1) index = others.length;
-            const next = [...others.slice(0, index), task.id, ...others.slice(index)];
-            if (next.some((id, i) => id !== order[i])) {
-                order = next;
-                setDragOrder(next);
+            const next = { insertIndex: index, ...projectDrop(others, index, startDepth, ev.clientX - startX) };
+            if (next.insertIndex !== state.insertIndex || next.depth !== state.depth) {
+                state = next;
+                setDrag(next);
             }
         };
         const onUp = () => {
-            if (order.some((id, i) => id !== undatedIds[i])) onReorder(order);
+            if (state.insertIndex !== start.insertIndex || state.parentId !== start.parentId) {
+                const ids = new Set(rows.map(r => r.task.id));
+                const parentOf = (t: Task) => (t.parentId != null && ids.has(t.parentId) ? t.parentId : null);
+                const ordered = [
+                    ...others.slice(0, state.insertIndex).map(r => r.task),
+                    task,
+                    ...others.slice(state.insertIndex).map(r => r.task),
+                ];
+                const siblings = ordered.filter(t => t === task || parentOf(t) === state.parentId).map(t => t.id);
+                onReorder(task.id, state.parentId, siblings);
+            }
             cleanup();
         };
         const cleanup = () => {
@@ -167,7 +226,7 @@ export const TaskList = ({ tasks, onTaskClick, updateTaskTitle, onReorder, onCle
             window.removeEventListener('pointerup', onUp);
             window.removeEventListener('pointercancel', cleanup);
             setDraggedId(null);
-            setDragOrder(null);
+            setDrag(null);
         };
 
         window.addEventListener('pointermove', onMove);
@@ -187,24 +246,23 @@ export const TaskList = ({ tasks, onTaskClick, updateTaskTitle, onReorder, onCle
     };
 
     // @todo define task type
-    const taskTypeRegex = /^\[(feature|bug|pay)\]\s*/i;
+    const taskTypeRegex = /^\[(feature|bug|pay|spike)\]\s*/i;
 
-    const handler = (task: Task, undatedIds: Task['id'][]) => {
+    const handler = (task: Task, depth: number, rows: TreeRow[]) => {
         let title = task.title;
         const taskTypeMatch = taskTypeRegex.exec(title);
-        const taskTypeIcons: Record<string, React.ReactElement> = { feature: <Icon name="sparkle" aria-hidden={false} aria-label="feature" style={{ color: '#5480e6' }} />, bug: <Icon name="bug" aria-hidden={false} aria-label="bug" style={{ color: '#e2727d' }} />, pay: <Icon name="credit-card" aria-hidden={false} aria-label="pay" style={{ color: '#2e9e5b' }} /> };
+        const taskTypeIcons: Record<string, React.ReactElement> = { feature: <Icon name="sparkle" aria-hidden={false} aria-label="feature" style={{ color: '#5480e6' }} />, bug: <Icon name="bug" aria-hidden={false} aria-label="bug" style={{ color: '#e2727d' }} />, pay: <Icon name="credit-card" aria-hidden={false} aria-label="pay" style={{ color: '#2e9e5b' }} />, spike: <Icon name="books" aria-hidden={false} aria-label="spike" style={{ color: '#9b6bd1' }} /> };
         const taskTypeIcon = taskTypeMatch ? taskTypeIcons[taskTypeMatch[1].toLowerCase()] : null;
         if (taskTypeMatch) {
             title = title.slice(taskTypeMatch[0].length);
         }
-        const urlRegex = /(https?:\/\/[^\s]+)/g;
-        const hasLink = urlRegex.test(title);
-        if (hasLink) {
-            // @todo #45 define url type
-            title = title.replace(urlRegex, (url: string) => {
-                return `<a href="${url}" class="task-link" target="_blank" rel="noopener noreferrer">${url}</a>`;
-            });
-        }
+        // @todo #45 define url type
+        // The capturing group makes split() keep each URL at the odd indexes.
+        const titleParts = title.split(/(https?:\/\/[^\s]+)/).map((part, i) =>
+            i % 2 === 1
+                ? <a key={i} href={part} className="task-link" target="_blank" rel="noopener noreferrer">{part}</a>
+                : part
+        );
         const isExpired = dateTimeEnabled && task.timestamp && new Date(task.timestamp) < new Date();
 
 
@@ -218,7 +276,8 @@ export const TaskList = ({ tasks, onTaskClick, updateTaskTitle, onReorder, onCle
             }
         }
 
-        const draggable = onReorder !== undefined && !task.timestamp;
+        const draggable = onReorder !== undefined;
+        const blocked = hasOpenDescendants(tasks, task.id);
         const isDragged = draggedId === task.id;
         const isSelected = selectedIds.includes(task.id);
 
@@ -231,7 +290,7 @@ export const TaskList = ({ tasks, onTaskClick, updateTaskTitle, onReorder, onCle
                 onMouseLeave={() => setHoveredId(null)}
                 style={{
                     display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-                    padding: '4px', borderBottom: '1px solid #eee', cursor: isDragged ? 'grabbing' : 'pointer',
+                    padding: '4px', paddingLeft: `${4 + depth * INDENT_PX}px`, borderBottom: '1px solid #eee', cursor: isDragged ? 'grabbing' : 'pointer',
                     ...(isSelected && { background: '#e8f0fe' }),
                     ...(isDragged && { opacity: 0.6, background: '#f3f7ff', boxShadow: '0 2px 6px rgba(0,0,0,0.12)' })
                 }}
@@ -239,7 +298,7 @@ export const TaskList = ({ tasks, onTaskClick, updateTaskTitle, onReorder, onCle
             >
                 {draggable && (
                     <span
-                        onPointerDown={e => startDrag(e, task, undatedIds)}
+                        onPointerDown={e => startDrag(e, task, rows)}
                         title={t('taskList.dragHandle')}
                         aria-label={t('taskList.dragHandle')}
                         style={{ display: 'flex', alignItems: 'center', flexShrink: 0, color: '#aaa', cursor: isDragged ? 'grabbing' : 'grab', touchAction: 'none', padding: '0 2px' }}
@@ -262,7 +321,7 @@ export const TaskList = ({ tasks, onTaskClick, updateTaskTitle, onReorder, onCle
                         gap: '4px'
                     }}>
 
-                    <span onClick={() => onTaskClick(task.id)} style={{ flexShrink: 0, verticalAlign: 'middle', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                    <span onClick={() => onTaskClick(task.id)} title={blocked ? t('taskList.subtasksOpen') : undefined} style={{ flexShrink: 0, verticalAlign: 'middle', display: 'flex', alignItems: 'center', gap: '4px' }}>
                         {projectEditable && <svg width="18" height="18" style={{ flexShrink: 0, verticalAlign: 'middle' }}>
                             <rect width="18" height="18" rx="3" fill={task.project && projectColors[task.project] ? projectColors[task.project] : '#ccc'} />
                         </svg>}
@@ -281,7 +340,7 @@ export const TaskList = ({ tasks, onTaskClick, updateTaskTitle, onReorder, onCle
 
                     <span style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px' }} title={t('taskList.edit')} onClick={e => { e.stopPropagation(); handleEditClick(task); }}>
                         {taskTypeIcon}
-                        <span dangerouslySetInnerHTML={{ __html: title }} />
+                        <span>{titleParts}</span>
                     </span>
 
                     <button
@@ -299,15 +358,18 @@ export const TaskList = ({ tasks, onTaskClick, updateTaskTitle, onReorder, onCle
         );
     };
 
-    // Ordina i task se dataTimeEnabled
-
-    let orderedTasks: Task[] = [];
-    orderedTasks = sortByDate(tasks)
-        .filter(t => !t.archived);
-
-    const undatedIds = orderedTasks.filter(t => !t.timestamp).map(t => t.id);
-    if (dragOrder) {
-        orderedTasks = sortByDate(orderedTasks.map(t => t.timestamp ? t : { ...t, position: dragOrder.indexOf(t.id) }));
+    const rows = flattenTree(tasks.filter(t => !t.archived));
+    let displayRows = rows;
+    if (drag && draggedId !== null) {
+        const subtree = new Set([draggedId, ...descendantIds(tasks, draggedId)]);
+        const others = rows.filter(r => !subtree.has(r.task.id));
+        const moving = rows.filter(r => subtree.has(r.task.id));
+        const shift = drag.depth - (moving[0]?.depth ?? 0);
+        displayRows = [
+            ...others.slice(0, drag.insertIndex),
+            ...moving.map(r => ({ ...r, depth: r.depth + shift })),
+            ...others.slice(drag.insertIndex),
+        ];
     }
 
     return (
@@ -317,7 +379,7 @@ export const TaskList = ({ tasks, onTaskClick, updateTaskTitle, onReorder, onCle
                 onPointerDown={startMarquee}
                 onClickCapture={e => { if (suppressClick.current) { e.stopPropagation(); e.preventDefault(); } }}
             >
-                {orderedTasks.map(task => handler(task, undatedIds))}
+                {displayRows.map(r => handler(r.task, r.depth, rows))}
             </ul>
             {marquee && (
                 <div
@@ -339,29 +401,51 @@ export const TaskList = ({ tasks, onTaskClick, updateTaskTitle, onReorder, onCle
                             ? [{ label: t('taskList.archive', { count: archivableIds.length }), onClick: () => { onArchive(archivableIds); closeSelection(); } }]
                             : []),
                         // Deleting can't be undone: it goes through a second confirmation.
-                        ...(onDelete
+                        ...(onDelete && deletableIds.length > 0
                             ? [{ label: t('taskList.delete'), onClick: () => { setShowSelectionModal(false); setShowDeleteConfirm(true); } }]
                             : []),
                     ]}
                 >
                     <p>{t('taskList.selectionMessage', { count: selectedIds.length })}</p>
                     {onChangeProject && (
-                        <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                             <input
                                 className="modal-input"
-                                list="selection-projects"
-                                value={projectDraft}
-                                onChange={e => setProjectDraft(e.target.value)}
-                                placeholder={t('taskList.noProject')}
+                                style={{ marginBottom: 0 }}
+                                value={projectQuery}
+                                onChange={e => { setProjectQuery(e.target.value); setChosenProject(null); }}
+                                placeholder={t('taskList.searchProject')}
                                 aria-label={t('taskList.projectLabel')}
                             />
-                            <datalist id="selection-projects">
-                                {projects.map(p => <option key={p} value={p} />)}
-                            </datalist>
+                            <ul aria-label={t('taskList.projectLabel')} style={{ listStyle: 'none', margin: 0, padding: 0, maxHeight: '220px', overflowY: 'auto' }}>
+                                {query === '' && (
+                                    <li>
+                                        <button type="button" aria-pressed={isChosen('')} style={projectOptionStyle(isChosen(''))} onClick={() => setChosenProject({ name: '' })}>
+                                            <em>{t('taskList.noProject')}</em>
+                                        </button>
+                                    </li>
+                                )}
+                                {matchingProjects.map(p => (
+                                    <li key={p.key}>
+                                        <button type="button" aria-pressed={isChosen(p.name, p.workspaceUuid)} style={projectOptionStyle(isChosen(p.name, p.workspaceUuid))} onClick={() => setChosenProject({ name: p.name, workspaceUuid: p.workspaceUuid })}>
+                                            <span>{p.name}</span>
+                                            {p.workspace && <span style={{ color: '#888' }}>{p.workspace}</span>}
+                                        </button>
+                                    </li>
+                                ))}
+                                {canCreateProject && (
+                                    <li>
+                                        <button type="button" aria-pressed={isChosen(query)} style={projectOptionStyle(isChosen(query))} onClick={() => setChosenProject({ name: query })}>
+                                            {t('taskList.newProject', { name: query })}
+                                        </button>
+                                    </li>
+                                )}
+                            </ul>
                             <button
                                 type="button"
                                 className="modal-close-btn"
-                                onClick={() => { onChangeProject(selectedIds, projectDraft.trim()); closeSelection(); }}
+                                disabled={chosenProject === null}
+                                onClick={() => { if (chosenProject) { onChangeProject(selectedIds, chosenProject.name, chosenProject.workspaceUuid); closeSelection(); } }}
                             >
                                 {t('taskList.moveToProject')}
                             </button>
@@ -375,10 +459,13 @@ export const TaskList = ({ tasks, onTaskClick, updateTaskTitle, onReorder, onCle
                     onClick={closeSelection}
                     buttons={[
                         { label: t('common.cancel'), onClick: closeSelection },
-                        { label: t('taskList.deleteConfirm', { count: selectedIds.length }), onClick: () => { onDelete(selectedIds); closeSelection(); } },
+                        { label: t('taskList.deleteConfirm', { count: deletableIds.length }), onClick: () => { onDelete(deletableIds); closeSelection(); } },
                     ]}
                 >
-                    <p>{t('taskList.deleteMessage', { count: selectedIds.length })}</p>
+                    <p>{t('taskList.deleteMessage', { count: deletableIds.length })}</p>
+                    {deletableIds.length < selectedIds.length && (
+                        <p>{t('taskList.deleteSkipsParents', { count: selectedIds.length - deletableIds.length })}</p>
+                    )}
                 </Modal>
             )}
             {editable && editTask !== null && (

@@ -31,6 +31,7 @@
     "featureLabel": "Feature",
     "bugLabel": "Fehler",
     "payLabel": "Zahlung",
+    "spikeLabel": "Spike (Recherche)",
     "workspaceLabel": "Arbeitsbereich: {{name}}",
     "registeredUsersCount": "{{count}} registrierte Benutzer",
     "loggedInAs": "Angemeldet als {{name}}",
@@ -119,7 +120,11 @@
     "deleteConfirm": "Löschen ({{count}})",
     "projectLabel": "Projekt",
     "noProject": "Kein Projekt",
-    "moveToProject": "In Projekt verschieben"
+    "moveToProject": "In Projekt verschieben",
+    "searchProject": "Projekt suchen",
+    "newProject": "Neues Projekt: {{name}}",
+    "subtasksOpen": "Erledige zuerst die Unteraufgaben: Diese Aufgabe schließt sich mit der letzten von selbst.",
+    "deleteSkipsParents": "Aufgaben mit Unteraufgaben können nicht gelöscht werden, ausgelassen: {{count}}."
   },
   "footer": {
     "addAria": "Neue Aufgabe hinzufügen",
@@ -209,7 +214,8 @@
     "delete": "Aufgabe löschen",
     "deleting": "Wird gelöscht...",
     "deleteConfirm": "Diese Aufgabe löschen? Dies kann nicht rückgängig gemacht werden.",
-    "deleteFailed": "Die Aufgabe konnte nicht gelöscht werden."
+    "deleteFailed": "Die Aufgabe konnte nicht gelöscht werden.",
+    "deleteHasSubtasks": "Diese Aufgabe hat Unteraufgaben: Lösche oder verschiebe sie, bevor du sie löschst."
   },
   "expiredTasks": {
     "loading": "Abgelaufene Aufgaben werden geladen...",
@@ -230,6 +236,7 @@
     "shortcutNewTask": "Neue Aufgabe",
     "shortcutArchive": "Abgeschlossene und übersprungene archivieren",
     "shortcutHelp": "Hilfe anzeigen",
+    "shortcutZen": "Zen-Modus ein-/ausschalten",
     "shortcutClose": "Hilfe- oder Neue-Aufgabe-Fenster schließen",
     "legendIntro": "Die Pandas stellen den Status der Aufgabe dar.",
     "todo": "Aufgabe zu erledigen",

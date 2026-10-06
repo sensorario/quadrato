@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import "./App.css";
 import TaskList from "./components/TaskList";
@@ -14,6 +14,7 @@ import TabbedContent from "./components/TabbedContent";
 import InfoPanel from "./components/InfoPanel";
 import { archiveCompletedAndSkippedTasks } from "./functions/archiveCompletedAndSkippedTasks";
 import { persistArchivedTasks } from "./functions/persistArchivedTasks";
+import { childrenOf, descendantIds, hasOpenDescendants, reconcileAncestors } from "./utils/taskTree";
 import { getActiveProjects } from "./functions/getActiveProjects";
 import { getConfigRepository } from "./repositories";
 import { navigate } from "./Router";
@@ -383,37 +384,39 @@ function App() {
                           }
                         : task;
 
-                // Send PUT request to update the task on the server
-                if (task.id === id && !putSent) {
-                    putSent = true;
-                    const url = `https://api.simonegentili.com/quadrato/task/${task.id}`;
-                    const options = {
-                        method: "PUT",
-                        body: JSON.stringify(taskObj),
-                        headers: {
-                            "Content-Type": "application/json",
-                            ...getAuthHeader(),
-                        },
-                    };
-                    fetch(url, options)
-                        .then((res) => {
-                            if (res.status === 401) {
-                                setToken(null);
-                                throw new Error("Unauthorized");
-                            }
-                            return res.json();
-                        })
-                        .then((json) => {
-                            console.log({ json });
-                        })
-                        .catch(() => {});
-                }
-
                 return taskObj;
             });
 
-            getConfigRepository().setTasks(updated);
-            return updated;
+            // A new due date may have to push its parents later, and a parent's own
+            // due date can't come before its subtasks': the rules apply before saving,
+            // so the edited task is sent once, already with its final due date.
+            const reconciled = reconcileAncestors(updated, [id]);
+            if (!putSent) {
+                putSent = true;
+                const edited = reconciled.find((task) => task.id === id);
+                fetch(`https://api.simonegentili.com/quadrato/task/${id}`, {
+                    method: "PUT",
+                    body: JSON.stringify(edited),
+                    headers: {
+                        "Content-Type": "application/json",
+                        ...getAuthHeader(),
+                    },
+                })
+                    .then((res) => {
+                        if (res.status === 401) {
+                            setToken(null);
+                            throw new Error("Unauthorized");
+                        }
+                        return res.json();
+                    })
+                    .catch(() => {});
+                persistChanges(
+                    updated.filter((task) => task.id !== id),
+                    reconciled.filter((task) => task.id !== id)
+                );
+            }
+            getConfigRepository().setTasks(reconciled);
+            return reconciled;
         });
     };
 
@@ -495,6 +498,11 @@ function App() {
                 e.preventDefault();
                 setShowHelp(true);
             }
+            if (e.ctrlKey && e.shiftKey && e.key === "Z") {
+                e.preventDefault();
+                // Functional update: this listener is registered once, so zenMode here would be stale.
+                setZenMode((current) => !current);
+            }
             if (e.key === "Escape") {
                 if (showHelp) {
                     setShowHelp(false);
@@ -518,62 +526,22 @@ function App() {
         getConfigRepository().fetchData((tasks) => setTasks(tasks));
     }, [ws]);
 
-    const handleClick = (id) => {
-        setTasks((tasks) => {
-            const updated = tasks.map((task) => {
-                if (task.id === id) {
-                    const updatedTask = {
-                        ...task,
-                        status: (task.status + 1) % 4,
-                    };
+    const SYNCED_FIELDS = ["status", "timestamp", "parentId", "position"];
 
-                    // Send PUT request to update the task status on the server
-                    const url = `https://api.simonegentili.com/quadrato/task/${task.id}`;
-                    const options = {
-                        method: "PUT",
-                        body: JSON.stringify(updatedTask),
-                        headers: {
-                            "Content-Type": "application/json",
-                            ...getAuthHeader(),
-                        },
-                    };
-                    fetch(url, options)
-                        .then((res) => {
-                            if (res.status === 401) {
-                                setToken(null);
-                                throw new Error("Unauthorized");
-                            }
-                            return res.json();
-                        })
-                        .then((json) => {
-                            console.log({ json });
-                        })
-                        .catch(() => {});
-
-                    return updatedTask;
-                }
-                return task;
+    // Sends each changed task only the fields that actually changed.
+    const persistChanges = (before, after) => {
+        const previous = new Map(before.map((task) => [task.id, task]));
+        after.forEach((task) => {
+            const old = previous.get(task.id);
+            if (!old || old === task) return;
+            const body = {};
+            SYNCED_FIELDS.forEach((field) => {
+                if ((old[field] ?? null) !== (task[field] ?? null)) body[field] = task[field] ?? null;
             });
-            getConfigRepository().setTasks(updated);
-            return updated;
-        });
-    };
-
-    const handleReorder = (orderedIds) => {
-        const positions = new Map(orderedIds.map((id, index) => [id, index]));
-        const moved = tasks.filter(
-            (task) => positions.has(task.id) && task.position !== positions.get(task.id)
-        );
-        const updated = tasks.map((task) =>
-            positions.has(task.id) ? { ...task, position: positions.get(task.id) } : task
-        );
-        setTasks(updated);
-        getConfigRepository().setTasks(updated);
-
-        moved.forEach((task) => {
+            if (Object.keys(body).length === 0) return;
             fetch(`https://api.simonegentili.com/quadrato/task/${task.id}`, {
                 method: "PUT",
-                body: JSON.stringify({ position: positions.get(task.id) }),
+                body: JSON.stringify(body),
                 headers: {
                     "Content-Type": "application/json",
                     ...getAuthHeader(),
@@ -587,6 +555,51 @@ function App() {
                 })
                 .catch(() => {});
         });
+    };
+
+    const applyChanges = (updated) => {
+        persistChanges(tasks, updated);
+        setTasks(updated);
+        getConfigRepository().setTasks(updated);
+    };
+
+    const handleClick = (id) => {
+        const task = tasks.find((t) => t.id === id);
+        if (!task) return;
+        let status = (task.status + 1) % 4;
+        // A parent can't be closed by hand while a subtask is still open:
+        // it closes by itself when the last one does.
+        if (
+            (status === STATUS_ENUM.DONE || status === STATUS_ENUM.SKIPPED) &&
+            hasOpenDescendants(tasks, id)
+        ) {
+            status = STATUS_ENUM.TODO;
+        }
+        const updated = tasks.map((t) => (t.id === id ? { ...t, status } : t));
+        applyChanges(
+            reconcileAncestors(updated, task.parentId != null ? [task.parentId] : [])
+        );
+    };
+
+    // A task moves with its subtasks: it may get a new parent (or none) and new
+    // positions among its siblings; both the old and the new parent chains are then
+    // brought back in line with their subtasks (completion and due dates).
+    const handleMoveTask = (id, parentId, siblingIds) => {
+        const oldParentId = tasks.find((t) => t.id === id)?.parentId ?? null;
+        const positions = new Map(siblingIds.map((siblingId, index) => [siblingId, index]));
+        const moved = tasks.map((task) => {
+            let next = task;
+            if (task.id === id && (task.parentId ?? null) !== parentId) {
+                next = { ...next, parentId };
+            }
+            if (positions.has(task.id) && !task.timestamp && task.position !== positions.get(task.id)) {
+                next = { ...next, position: positions.get(task.id) };
+            }
+            return next;
+        });
+        applyChanges(
+            reconcileAncestors(moved, [parentId, oldParentId].filter((p) => p != null))
+        );
     };
 
     const handleClearDueDates = (ids) => {
@@ -629,11 +642,18 @@ function App() {
     };
 
     const handleDeleteTasks = (ids) => {
-        const updated = tasks.filter((task) => !ids.includes(task.id));
+        // A task with subtasks can't be deleted (the API refuses it too).
+        const deletable = ids.filter((id) => childrenOf(tasks, id).length === 0);
+        const parents = tasks
+            .filter((task) => deletable.includes(task.id) && task.parentId != null)
+            .map((task) => task.parentId);
+        const remaining = tasks.filter((task) => !deletable.includes(task.id));
+        const updated = reconcileAncestors(remaining, parents);
+        persistChanges(remaining, updated);
         setTasks(updated);
         getConfigRepository().setTasks(updated);
 
-        ids.forEach((id) => {
+        deletable.forEach((id) => {
             fetch(`https://api.simonegentili.com/quadrato/task/${id}`, {
                 method: "DELETE",
                 headers: getAuthHeader(),
@@ -648,23 +668,62 @@ function App() {
         });
     };
 
-    const handleChangeProject = async (ids, project) => {
+    const loadOwnProjects = useCallback(async () => {
+        const res = await fetch("https://api.simonegentili.com/quadrato/projects", {
+            headers: {
+                "Content-Type": "application/json",
+                ...getAuthHeader(),
+            },
+        });
+        if (res.status === 401) {
+            setToken(null);
+            return [];
+        }
+        const json = await res.json();
+        return Array.isArray(json?.projects) ? json.projects : [];
+    }, [token]);
+
+    const handleChangeProject = async (ids, project, workspaceUuid) => {
+        const target = workspaceUuid
+            ? workspaces.find((workspace) => workspace?.id === workspaceUuid)
+            : null;
+
+        // Into another workspace the subtasks go along, otherwise they'd be left
+        // behind under a parent that's no longer here. A task whose parent stays
+        // becomes top-level over there.
+        const movedIds = target
+            ? new Set(ids.flatMap((id) => [id, ...descendantIds(tasks, id)]))
+            : new Set(ids);
         const moved = tasks.filter(
-            (task) => ids.includes(task.id) && (task.project ?? "") !== project
+            (task) =>
+                movedIds.has(task.id) &&
+                (target || (task.project ?? "") !== project)
         );
-        const updated = tasks.map((task) =>
-            moved.includes(task) ? { ...task, project } : task
-        );
+        const updated = target
+            ? tasks.filter((task) => !movedIds.has(task.id))
+            : tasks.map((task) =>
+                  moved.includes(task) ? { ...task, project } : task
+              );
         setTasks(updated);
         getConfigRepository().setTasks(updated);
 
         // One at a time: a new project is created by the first task that names it,
         // parallel requests could each create their own copy.
         for (const task of moved) {
+            const body = target
+                ? {
+                      project,
+                      workspace: target.name,
+                      workspaceUuid: target.id,
+                      ...(task.parentId != null && !movedIds.has(task.parentId)
+                          ? { parentId: null }
+                          : {}),
+                  }
+                : { project };
             try {
                 const res = await fetch(`https://api.simonegentili.com/quadrato/task/${task.id}`, {
                     method: "PUT",
-                    body: JSON.stringify({ project }),
+                    body: JSON.stringify(body),
                     headers: {
                         "Content-Type": "application/json",
                         ...getAuthHeader(),
@@ -758,11 +817,14 @@ function App() {
             tasks={visible}
             onTaskClick={handleClick}
             updateTaskTitle={updateTaskTitle}
-            onReorder={handleReorder}
+            onReorder={handleMoveTask}
             onClearDueDates={handleClearDueDates}
             onArchive={handleArchiveTasks}
             onDelete={handleDeleteTasks}
             onChangeProject={handleChangeProject}
+            loadProjects={token ? loadOwnProjects : undefined}
+            currentWorkspace={ws}
+            workspaceProjects={getActiveProjects(tasks)}
             editable={editable}
             projectEditable={projectGroupable}
             dateTimeEnabled={dateTimeEnabled}
@@ -1051,6 +1113,16 @@ function App() {
                         >
                             <Icon name="credit-card" style={{ color: "#2e9e5b" }} />
                             <span>{t("app.payLabel")}</span>
+                        </div>
+                        <div
+                            style={{
+                                display: "flex",
+                                alignItems: "center",
+                                gap: "8px",
+                            }}
+                        >
+                            <Icon name="books" style={{ color: "#9b6bd1" }} />
+                            <span>{t("app.spikeLabel")}</span>
                         </div>
                     </div>
                 </div>
@@ -1900,7 +1972,7 @@ function App() {
                         tasks={visibleTasks}
                         onTaskClick={handleClick}
                         updateTaskTitle={updateTaskTitle}
-                        onReorder={handleReorder}
+                        onReorder={handleMoveTask}
                         onClearDueDates={handleClearDueDates}
                         onArchive={handleArchiveTasks}
                         onDelete={handleDeleteTasks}

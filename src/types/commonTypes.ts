@@ -12,6 +12,7 @@ export type Task = {
     archived?: boolean;
     periodicity?: Periodicity;
     position?: number | null;
+    parentId?: number | null;
 };
 
 export type HandleAddAnotherModalParams = {

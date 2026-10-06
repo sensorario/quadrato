@@ -149,6 +149,11 @@ export const TaskDetailPage = ({ taskId }: TaskDetailPageProps) => {
                 return;
             }
 
+            if (res.status === 409) {
+                alert(t('taskDetailPage.deleteHasSubtasks'));
+                return;
+            }
+
             if (!res.ok) {
                 throw new Error(String(res.status));
             }

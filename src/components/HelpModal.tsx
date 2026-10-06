@@ -23,6 +23,7 @@ export const HelpModal = ({ setShowHelp }: { setShowHelp: (show: boolean) => voi
                 <li><strong>Ctrl + Shift + N</strong>: {t('helpModal.shortcutNewTask')}</li>
                 <li><strong>Ctrl + Shift + X</strong>: {t('helpModal.shortcutArchive')}</li>
                 <li><strong>Ctrl + Shift + H</strong>: {t('helpModal.shortcutHelp')}</li>
+                <li><strong>Ctrl + Shift + Z</strong>: {t('helpModal.shortcutZen')}</li>
                 <li><strong>Esc</strong>: {t('helpModal.shortcutClose')}</li>
             </ul>
         </div>

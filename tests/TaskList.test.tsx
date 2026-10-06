@@ -78,6 +78,14 @@ describe('TaskList task type icon', () => {
         expect(screen.queryByText(/\[PAY\]/)).not.toBeInTheDocument();
     });
 
+    it('renders the spike icon and strips the [SPIKE] prefix from the title', () => {
+        renderList('[SPIKE] Compare chart libraries');
+        expect(screen.getByLabelText('spike')).toBeInTheDocument();
+        expect(screen.queryByLabelText('bug')).not.toBeInTheDocument();
+        expect(screen.getByText('Compare chart libraries')).toBeInTheDocument();
+        expect(screen.queryByText(/\[SPIKE\]/)).not.toBeInTheDocument();
+    });
+
     it('renders no type icon when the title has no prefix', () => {
         renderList('Plain task');
         expect(screen.queryByLabelText('bug')).not.toBeInTheDocument();
@@ -139,7 +147,7 @@ describe('TaskList drag and drop', () => {
         fireEvent.pointerMove(window, { clientX: 10, clientY: 35 });
         fireEvent.pointerUp(window);
 
-        expect(onReorder).toHaveBeenCalledWith([2, 1, 3]);
+        expect(onReorder).toHaveBeenCalledWith(1, null, [2, 1, 3]);
     });
 
     it('does not reorder when the grip is released where it was', () => {
@@ -163,11 +171,71 @@ describe('TaskList drag and drop', () => {
         expect(onReorder).not.toHaveBeenCalled();
     });
 
-    it('shows no grip on tasks with a due date', () => {
+    it('shows the grip on tasks with a due date too, so they can be nested', () => {
         renderList([{ id: 9, title: 'Dated', status: 0, timestamp: 1000 }, ...undated], jest.fn());
 
-        expect(within(row('Dated')).queryByLabelText('Trascina per riordinare')).not.toBeInTheDocument();
+        expect(within(row('Dated')).getByLabelText('Trascina per riordinare')).toBeInTheDocument();
         expect(within(row('First')).getByLabelText('Trascina per riordinare')).toBeInTheDocument();
+    });
+
+    it('makes a task a subtask of the row above when dragged slightly to the right', () => {
+        const onReorder = jest.fn();
+        renderList(undated, onReorder);
+
+        fireEvent.pointerDown(grip('Second'), { button: 0, clientX: 10, clientY: 30 });
+        fireEvent.pointerMove(window, { clientX: 40, clientY: 30 });
+        fireEvent.pointerUp(window);
+
+        expect(onReorder).toHaveBeenCalledWith(2, 1, [2]);
+    });
+
+    it('brings a subtask back up a level when dragged to the left', () => {
+        const onReorder = jest.fn();
+        renderList([{ id: 1, title: 'First', status: 0 }, { id: 2, title: 'Second', status: 0, parentId: 1 }], onReorder);
+
+        fireEvent.pointerDown(grip('Second'), { button: 0, clientX: 40, clientY: 30 });
+        fireEvent.pointerMove(window, { clientX: 10, clientY: 30 });
+        fireEvent.pointerUp(window);
+
+        expect(onReorder).toHaveBeenCalledWith(2, null, [1, 2]);
+    });
+
+    it('cannot go above the top level', () => {
+        const onReorder = jest.fn();
+        renderList(undated, onReorder);
+
+        fireEvent.pointerDown(grip('Second'), { button: 0, clientX: 40, clientY: 30 });
+        fireEvent.pointerMove(window, { clientX: 0, clientY: 30 });
+        fireEvent.pointerUp(window);
+
+        expect(onReorder).not.toHaveBeenCalled();
+    });
+
+    it('moves a task together with its subtasks', () => {
+        const onReorder = jest.fn();
+        renderList([
+            { id: 1, title: 'First', status: 0, position: 0 },
+            { id: 2, title: 'Second', status: 0, parentId: 1 },
+            { id: 3, title: 'Third', status: 0, position: 1 },
+        ], onReorder);
+
+        fireEvent.pointerDown(grip('First'), { button: 0, clientX: 10, clientY: 10 });
+        fireEvent.pointerMove(window, { clientX: 10, clientY: 55 });
+        fireEvent.pointerUp(window);
+
+        expect(onReorder).toHaveBeenCalledWith(1, null, [3, 1]);
+    });
+
+    it('indents subtasks by their depth', () => {
+        renderList([
+            { id: 1, title: 'First', status: 0 },
+            { id: 2, title: 'Second', status: 0, parentId: 1 },
+            { id: 3, title: 'Third', status: 0, parentId: 2 },
+        ], jest.fn());
+
+        expect(row('First').style.paddingLeft).toBe('4px');
+        expect(row('Second').style.paddingLeft).toBe('28px');
+        expect(row('Third').style.paddingLeft).toBe('52px');
     });
 });
 
@@ -303,15 +371,107 @@ describe('TaskList selection actions', () => {
         expect([...onDelete.mock.calls[0][0]].sort()).toEqual([1, 2]);
     });
 
-    it('moves the selected tasks to the chosen project', () => {
+    it('moves the selected tasks to a new project typed in the search field', () => {
         const onChangeProject = jest.fn();
         renderList({ onChangeProject });
 
         selectFirstTwo();
-        fireEvent.change(screen.getByLabelText('Progetto'), { target: { value: ' spesa ' } });
+        fireEvent.change(screen.getByRole('textbox', { name: 'Progetto' }), { target: { value: ' spesa ' } });
+        fireEvent.click(screen.getByText('Nuovo progetto: spesa'));
         fireEvent.click(screen.getByText('Sposta nel progetto'));
 
         expect([...onChangeProject.mock.calls[0][0]].sort()).toEqual([1, 2]);
         expect(onChangeProject.mock.calls[0][1]).toBe('spesa');
+        expect(onChangeProject.mock.calls[0][2]).toBeUndefined();
+    });
+
+    it('does nothing until a project is chosen', () => {
+        const onChangeProject = jest.fn();
+        renderList({ onChangeProject });
+
+        selectFirstTwo();
+        fireEvent.click(screen.getByText('Sposta nel progetto'));
+
+        expect(onChangeProject).not.toHaveBeenCalled();
+    });
+
+    it('offers every project of the workspace, not only those of the tasks on screen', () => {
+        renderList({ onChangeProject: jest.fn(), workspaceProjects: ['casa', 'INCANTESIMI'] });
+
+        selectFirstTwo();
+        const picker = screen.getByRole('list', { name: 'Progetto' });
+
+        expect(within(picker).getByText('INCANTESIMI')).toBeInTheDocument();
+    });
+
+    const ownProjects = [
+        { id: 'p-1', name: 'casa', workspace: 'default', workspaceUuid: 'ws-default' },
+        { id: 'p-2', name: 'Cantiere', workspace: 'lavoro', workspaceUuid: 'ws-lavoro' },
+        { id: 'p-3', name: 'Blog', workspace: 'lavoro', workspaceUuid: 'ws-lavoro' },
+    ];
+
+    it('lists the projects of every own workspace, filtered by the search field', async () => {
+        renderList({ onChangeProject: jest.fn(), loadProjects: () => Promise.resolve(ownProjects), currentWorkspace: 'default' });
+
+        selectFirstTwo();
+        expect(await screen.findByText('Blog')).toBeInTheDocument();
+
+        fireEvent.change(screen.getByRole('textbox', { name: 'Progetto' }), { target: { value: 'ca' } });
+
+        expect(screen.getByText('casa')).toBeInTheDocument();
+        expect(screen.getByText('Cantiere')).toBeInTheDocument();
+        expect(screen.queryByText('Blog')).not.toBeInTheDocument();
+    });
+
+    it('passes the target workspace when the project lives in another one', async () => {
+        const onChangeProject = jest.fn();
+        renderList({ onChangeProject, loadProjects: () => Promise.resolve(ownProjects), currentWorkspace: 'default' });
+
+        selectFirstTwo();
+        fireEvent.click(await screen.findByText('Cantiere'));
+        fireEvent.click(screen.getByText('Sposta nel progetto'));
+
+        expect(onChangeProject.mock.calls[0][1]).toBe('Cantiere');
+        expect(onChangeProject.mock.calls[0][2]).toBe('ws-lavoro');
+    });
+
+    it('keeps a project of the current workspace inside it', async () => {
+        const onChangeProject = jest.fn();
+        renderList({ onChangeProject, loadProjects: () => Promise.resolve(ownProjects), currentWorkspace: 'default' });
+
+        selectFirstTwo();
+        const picker = await screen.findByRole('list', { name: 'Progetto' });
+        fireEvent.click(await within(picker).findByRole('button', { name: /^casa/ }));
+        fireEvent.click(screen.getByText('Sposta nel progetto'));
+
+        expect(onChangeProject.mock.calls[0][1]).toBe('casa');
+        expect(onChangeProject.mock.calls[0][2]).toBeUndefined();
+    });
+});
+
+describe('TaskList title rendering', () => {
+    const renderList = (title: string) => render(
+        <TaskList
+            tasks={[{ id: 1, title, status: 0 }]}
+            onTaskClick={() => { }}
+            updateTaskTitle={() => { }}
+            editable={false}
+            projectEditable={false}
+            dateTimeEnabled={false}
+            iconTheme="default"
+        />
+    );
+
+    it('shows html in the title as text instead of rendering it', () => {
+        const { container } = renderList('<img src=x onerror="alert(1)">');
+        expect(container.querySelector('img')).toBeNull();
+        expect(screen.getByText('<img src=x onerror="alert(1)">')).toBeInTheDocument();
+    });
+
+    it('still turns urls in the title into links', () => {
+        renderList('leggi https://example.com/doc subito');
+        const link = screen.getByRole('link', { name: 'https://example.com/doc' });
+        expect(link).toHaveAttribute('href', 'https://example.com/doc');
+        expect(link).toHaveAttribute('target', '_blank');
     });
 });

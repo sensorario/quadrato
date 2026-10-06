@@ -6,6 +6,7 @@ import { Footer } from "./Footer/index";
 import Toggle from "./Toggle";
 import { getConfigRepository } from "../repositories";
 import { handleAddAnotherModal } from "../utils/handleAddAnotherModal";
+import { toPlainText } from "../utils/toPlainText";
 import { Periodicity } from "../types/commonTypes";
 
 const UNIT_KEYS: Record<string, string> = { minuti: "minutes", giorni: "days", settimane: "weeks", mesi: "months", anni: "years" };
@@ -71,8 +72,8 @@ const TaskModal = ({ mode, initialValues, onSave, onClose, projectEditable, date
         if (title.trim() === "") return;
 
         onSave({
-            title,
-            longDescription,
+            title: toPlainText(title),
+            longDescription: toPlainText(longDescription),
             project,
             timestamp,
             periodicity: periodicity.number ? periodicity : null,

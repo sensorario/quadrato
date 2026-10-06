@@ -31,6 +31,7 @@
     "featureLabel": "Fonctionnalité",
     "bugLabel": "Bug",
     "payLabel": "Paiement",
+    "spikeLabel": "Spike (étude)",
     "workspaceLabel": "espace de travail : {{name}}",
     "registeredUsersCount": "{{count}} utilisateurs inscrits",
     "loggedInAs": "Connecté en tant que {{name}}",
@@ -119,7 +120,11 @@
     "deleteConfirm": "Supprimer ({{count}})",
     "projectLabel": "Projet",
     "noProject": "Aucun projet",
-    "moveToProject": "Déplacer vers le projet"
+    "moveToProject": "Déplacer vers le projet",
+    "searchProject": "Rechercher un projet",
+    "newProject": "Nouveau projet : {{name}}",
+    "subtasksOpen": "Termine d'abord les sous-tâches : cette tâche se fermera toute seule avec la dernière.",
+    "deleteSkipsParents": "Les tâches avec des sous-tâches ne peuvent pas être supprimées, exclues : {{count}}."
   },
   "footer": {
     "addAria": "Ajouter une nouvelle tâche",
@@ -209,7 +214,8 @@
     "delete": "Supprimer la tâche",
     "deleting": "Suppression...",
     "deleteConfirm": "Supprimer cette tâche ? Cette action est irréversible.",
-    "deleteFailed": "Impossible de supprimer la tâche."
+    "deleteFailed": "Impossible de supprimer la tâche.",
+    "deleteHasSubtasks": "Cette tâche a des sous-tâches : supprime-les ou déplace-les avant de la supprimer."
   },
   "expiredTasks": {
     "loading": "Chargement des tâches expirées...",
@@ -230,6 +236,7 @@
     "shortcutNewTask": "Nouvelle tâche",
     "shortcutArchive": "Archiver les tâches terminées et ignorées",
     "shortcutHelp": "Afficher l'aide",
+    "shortcutZen": "Activer/désactiver le mode zen",
     "shortcutClose": "Fermer la fenêtre d'aide ou de nouvelle tâche",
     "legendIntro": "Les pandas représentent l'état de la tâche.",
     "todo": "Tâche à faire",

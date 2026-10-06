@@ -31,6 +31,7 @@
     "featureLabel": "Feature",
     "bugLabel": "Bug",
     "payLabel": "Payment",
+    "spikeLabel": "Spike (research)",
     "workspaceLabel": "workspace: {{name}}",
     "registeredUsersCount": "{{count}} registered users",
     "loggedInAs": "Logged in as {{name}}",
@@ -119,7 +120,11 @@
     "deleteConfirm": "Delete ({{count}})",
     "projectLabel": "Project",
     "noProject": "No project",
-    "moveToProject": "Move to project"
+    "moveToProject": "Move to project",
+    "searchProject": "Search a project",
+    "newProject": "New project: {{name}}",
+    "subtasksOpen": "Complete the subtasks first: this task closes by itself with the last one.",
+    "deleteSkipsParents": "Tasks with subtasks can't be deleted, left out: {{count}}."
   },
   "footer": {
     "addAria": "Add new task",
@@ -209,7 +214,8 @@
     "delete": "Delete task",
     "deleting": "Deleting...",
     "deleteConfirm": "Delete this task? This cannot be undone.",
-    "deleteFailed": "Failed to delete the task."
+    "deleteFailed": "Failed to delete the task.",
+    "deleteHasSubtasks": "This task has subtasks: delete or move them before deleting it."
   },
   "expiredTasks": {
     "loading": "Loading expired tasks...",
@@ -230,6 +236,7 @@
     "shortcutNewTask": "New task",
     "shortcutArchive": "Archive completed and skipped",
     "shortcutHelp": "Show help",
+    "shortcutZen": "Toggle zen mode",
     "shortcutClose": "Close help or new task modal",
     "legendIntro": "The pandas represent the task status.",
     "todo": "Task to do",

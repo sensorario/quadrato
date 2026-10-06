@@ -31,6 +31,7 @@
     "featureLabel": "機能",
     "bugLabel": "バグ",
     "payLabel": "支払い",
+    "spikeLabel": "スパイク（調査）",
     "workspaceLabel": "ワークスペース: {{name}}",
     "registeredUsersCount": "登録ユーザー数: {{count}}",
     "loggedInAs": "{{name}} としてログイン中",
@@ -119,7 +120,11 @@
     "deleteConfirm": "削除 ({{count}})",
     "projectLabel": "プロジェクト",
     "noProject": "プロジェクトなし",
-    "moveToProject": "プロジェクトに移動"
+    "moveToProject": "プロジェクトに移動",
+    "searchProject": "プロジェクトを検索",
+    "newProject": "新しいプロジェクト: {{name}}",
+    "subtasksOpen": "先にサブタスクを完了してください。最後のサブタスクが終わるとこのタスクも自動で完了します。",
+    "deleteSkipsParents": "サブタスクのあるタスクは削除できないため除外しました: {{count}} 件"
   },
   "footer": {
     "addAria": "新しいタスクを追加",
@@ -209,7 +214,8 @@
     "delete": "タスクを削除",
     "deleting": "削除中...",
     "deleteConfirm": "このタスクを削除しますか？この操作は元に戻せません。",
-    "deleteFailed": "タスクの削除に失敗しました。"
+    "deleteFailed": "タスクの削除に失敗しました。",
+    "deleteHasSubtasks": "このタスクにはサブタスクがあります。削除する前にサブタスクを削除または移動してください。"
   },
   "expiredTasks": {
     "loading": "期限切れタスクを読み込み中...",
@@ -230,6 +236,7 @@
     "shortcutNewTask": "新しいタスク",
     "shortcutArchive": "完了・スキップしたタスクをアーカイブ",
     "shortcutHelp": "ヘルプを表示",
+    "shortcutZen": "禅モードの切り替え",
     "shortcutClose": "ヘルプまたは新規タスクのモーダルを閉じる",
     "legendIntro": "パンダはタスクの状態を表しています。",
     "todo": "未着手のタスク",

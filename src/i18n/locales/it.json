@@ -31,6 +31,7 @@
     "featureLabel": "Feature",
     "bugLabel": "Bug",
     "payLabel": "Pagamento",
+    "spikeLabel": "Spike (studio)",
     "workspaceLabel": "workspace: {{name}}",
     "registeredUsersCount": "{{count}} utenti registrati",
     "loggedInAs": "Accesso effettuato come {{name}}",
@@ -119,7 +120,11 @@
     "deleteConfirm": "Elimina ({{count}})",
     "projectLabel": "Progetto",
     "noProject": "Nessun progetto",
-    "moveToProject": "Sposta nel progetto"
+    "moveToProject": "Sposta nel progetto",
+    "searchProject": "Cerca un progetto",
+    "newProject": "Nuovo progetto: {{name}}",
+    "subtasksOpen": "Completa prima i sotto-task: questo task si chiuderà da solo con l'ultimo.",
+    "deleteSkipsParents": "Task con sotto-task non eliminabili, esclusi: {{count}}."
   },
   "footer": {
     "addAria": "Aggiungi nuovo task",
@@ -209,7 +214,8 @@
     "delete": "Elimina task",
     "deleting": "Eliminazione...",
     "deleteConfirm": "Eliminare questo task? L'operazione non può essere annullata.",
-    "deleteFailed": "Impossibile eliminare il task."
+    "deleteFailed": "Impossibile eliminare il task.",
+    "deleteHasSubtasks": "Questo task ha dei sotto-task: eliminali o spostali prima di eliminarlo."
   },
   "expiredTasks": {
     "loading": "Caricamento task scaduti...",
@@ -230,6 +236,7 @@
     "shortcutNewTask": "Nuovo task",
     "shortcutArchive": "Archivia completati e skippati",
     "shortcutHelp": "Mostra help",
+    "shortcutZen": "Attiva/disattiva la modalità zen",
     "shortcutClose": "Chiudi modale help o nuovo task",
     "legendIntro": "I panda rappresentano lo stato del task.",
     "todo": "Task da fare",
