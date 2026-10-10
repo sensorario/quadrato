@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { QuadratoHeader } from '@sensorario/sg-components';
 import { Task } from '../types/commonTypes';
@@ -78,7 +78,7 @@ export const TaskDetailPage = ({ taskId }: TaskDetailPageProps) => {
     const [task, setTask] = useState<Task | null>(null);
     const [allTasks, setAllTasks] = useState<Task[]>([]);
     const [newSubtask, setNewSubtask] = useState('');
-    const [addingSubtask, setAddingSubtask] = useState(false);
+    const subtaskInputRef = useRef<HTMLInputElement>(null);
     const [notFound, setNotFound] = useState(false);
     const [isAuthenticated, setIsAuthenticated] = useState(
         () => Boolean(localStorage.getItem('simonegentili.com-access-token'))
@@ -120,6 +120,11 @@ export const TaskDetailPage = ({ taskId }: TaskDetailPageProps) => {
             }
         }
     }, [taskId]);
+
+    // Opening a task, also another one from its subtasks, lands in the new-subtask field.
+    useEffect(() => {
+        subtaskInputRef.current?.focus();
+    }, [task?.id]);
 
     const handleLogin = async (username: string, password: string) => {
         try {
@@ -177,6 +182,12 @@ export const TaskDetailPage = ({ taskId }: TaskDetailPageProps) => {
     const handleAddSubtask = async () => {
         const title = toPlainText(newSubtask).trim();
         if (!task || title === '') return;
+        // Emptied at once and never disabled, so it keeps the focus (also after a click on the
+        // button): the next subtask can be typed while this one is saved. Put back if saving
+        // fails and nothing new was typed.
+        setNewSubtask('');
+        subtaskInputRef.current?.focus();
+        const restore = () => setNewSubtask(current => current === '' ? title : current);
 
         const headers = {
             'Content-Type': 'application/json',
@@ -184,7 +195,6 @@ export const TaskDetailPage = ({ taskId }: TaskDetailPageProps) => {
                 ? { Authorization: `Bearer ${localStorage.getItem('simonegentili.com-access-token')}` }
                 : {}),
         };
-        setAddingSubtask(true);
         try {
             const res = await fetch('https://api.simonegentili.com/quadrato/task', {
                 method: 'POST',
@@ -194,6 +204,7 @@ export const TaskDetailPage = ({ taskId }: TaskDetailPageProps) => {
             if (res.status === 401) {
                 localStorage.removeItem('simonegentili.com-access-token');
                 setIsAuthenticated(false);
+                restore();
                 return;
             }
             const created = (await res.json())?.task;
@@ -213,12 +224,10 @@ export const TaskDetailPage = ({ taskId }: TaskDetailPageProps) => {
                 }
             }
 
-            setNewSubtask('');
             getConfigRepository().fetchData();
         } catch {
+            restore();
             alert(t('taskDetailPage.addSubtaskFailed'));
-        } finally {
-            setAddingSubtask(false);
         }
     };
 
@@ -374,6 +383,7 @@ export const TaskDetailPage = ({ taskId }: TaskDetailPageProps) => {
                 })()}
                 <div style={{ display: 'flex', gap: '8px', marginTop: '8px' }}>
                     <input
+                        ref={subtaskInputRef}
                         className="modal-input"
                         style={{ marginBottom: 0, flex: 1 }}
                         value={newSubtask}
@@ -381,13 +391,12 @@ export const TaskDetailPage = ({ taskId }: TaskDetailPageProps) => {
                         onKeyDown={e => { if (e.key === 'Enter') handleAddSubtask(); }}
                         placeholder={t('taskDetailPage.newSubtask')}
                         aria-label={t('taskDetailPage.newSubtask')}
-                        disabled={addingSubtask}
                     />
                     <button
                         type="button"
                         className="modal-close-btn"
                         onClick={handleAddSubtask}
-                        disabled={addingSubtask || toPlainText(newSubtask).trim() === ''}
+                        disabled={toPlainText(newSubtask).trim() === ''}
                     >
                         {t('taskDetailPage.addSubtask')}
                     </button>

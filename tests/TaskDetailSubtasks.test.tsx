@@ -85,6 +85,72 @@ describe('TaskDetailPage subtasks', () => {
         expect(JSON.parse(put[1].body)).toEqual({ status: 0 });
     });
 
+    it('puts the focus in the new-subtask field when the task opens', () => {
+        render(<TaskDetailPage taskId="p" />);
+
+        expect(screen.getByRole('textbox', { name: 'Titolo del nuovo sotto-task' })).toHaveFocus();
+    });
+
+    it('empties the field on Enter and keeps the focus there, to type the next one at once', async () => {
+        global.fetch = jest.fn().mockImplementation((url: string, options: any) =>
+            Promise.resolve({
+                ok: true,
+                status: 201,
+                json: async () => options.method === 'POST'
+                    ? { task: { id: `new-${JSON.parse(options.body).title}`, title: JSON.parse(options.body).title, status: 0, parentId: 'p' } }
+                    : {},
+            })
+        );
+        render(<TaskDetailPage taskId="p" />);
+        const input = screen.getByRole('textbox', { name: 'Titolo del nuovo sotto-task' });
+
+        fireEvent.change(input, { target: { value: 'Primo' } });
+        fireEvent.keyDown(input, { key: 'Enter' });
+        expect(input).toHaveValue('');
+        expect(input).toHaveFocus();
+
+        fireEvent.change(input, { target: { value: 'Secondo' } });
+        fireEvent.keyDown(input, { key: 'Enter' });
+
+        await waitFor(() => expect(mockFetchData).toHaveBeenCalledTimes(2));
+        const titles = (global.fetch as jest.Mock).mock.calls
+            .filter(([, o]) => o.method === 'POST')
+            .map(([, o]) => JSON.parse(o.body).title);
+        expect(titles).toEqual(['Primo', 'Secondo']);
+        expect(input).toHaveFocus();
+    });
+
+    it('brings the focus back to the field after adding with the button', async () => {
+        global.fetch = jest.fn().mockResolvedValue({
+            ok: true,
+            status: 201,
+            json: async () => ({ task: { id: 'new', title: 'Primo', status: 0, parentId: 'p' } }),
+        });
+        render(<TaskDetailPage taskId="p" />);
+        const input = screen.getByRole('textbox', { name: 'Titolo del nuovo sotto-task' });
+
+        fireEvent.change(input, { target: { value: 'Primo' } });
+        const button = screen.getByText('Aggiungi sotto-task');
+        button.focus();
+        fireEvent.click(button);
+
+        expect(input).toHaveFocus();
+        await waitFor(() => expect(mockFetchData).toHaveBeenCalled());
+    });
+
+    it('puts the title back when the subtask cannot be added', async () => {
+        global.fetch = jest.fn().mockResolvedValue({ ok: false, status: 500, json: async () => ({}) });
+        const alert = jest.spyOn(window, 'alert').mockImplementation(() => { });
+        render(<TaskDetailPage taskId="p" />);
+        const input = screen.getByRole('textbox', { name: 'Titolo del nuovo sotto-task' });
+
+        fireEvent.change(input, { target: { value: 'Primo' } });
+        fireEvent.keyDown(input, { key: 'Enter' });
+
+        await waitFor(() => expect(alert).toHaveBeenCalled());
+        expect(input).toHaveValue('Primo');
+    });
+
     it('shows the parent and opens it when clicked', () => {
         render(<TaskDetailPage taskId="g1" />);
 
