@@ -754,3 +754,82 @@ select:focus-visible,
         display: flex;
     }
 }
+
+/* The list's tabs: all the tasks, those due on a day, the overdue ones with how many they are. */
+.list-tabs {
+    margin-bottom: 12px;
+}
+
+.list-tab-count {
+    display: inline-block;
+    min-width: 20px;
+    margin-left: 6px;
+    padding: 0 6px;
+    border-radius: 999px;
+    background: var(--color-surface-alt);
+    color: var(--color-ink-muted);
+    font-size: 12px;
+    font-weight: 600;
+    line-height: 20px;
+    text-align: center;
+}
+
+.list-tab-count-late {
+    background: var(--color-coral);
+    color: #fff;
+}
+
+.list-tab-empty {
+    padding: 24px 0;
+    color: var(--color-ink-muted);
+    text-align: center;
+}
+
+/* As Nutrimondo's: ‹ the day before, the day shown, the day after ›. */
+.day-nav {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    margin-bottom: 8px;
+}
+
+.day-nav-step {
+    padding: 2px 10px;
+    border: 0;
+    border-radius: 6px;
+    background: none;
+    color: var(--color-ink-muted);
+    font-size: 20px;
+    line-height: 1;
+    cursor: pointer;
+}
+
+.day-nav-step:hover {
+    background: var(--color-surface-alt);
+    color: var(--color-ink);
+}
+
+.day-nav-current {
+    padding: 4px 12px;
+    border: 0;
+    border-radius: 8px;
+    background: none;
+    color: var(--color-primary-strong);
+    font: inherit;
+    font-weight: 500;
+    cursor: pointer;
+}
+
+.day-nav-current:hover {
+    background: var(--color-primary-soft);
+}
+
+.day-nav-today {
+    background: var(--color-mint-soft);
+    color: #1e8e5a;
+}
+
+.expired-elsewhere {
+    margin-top: 16px;
+}

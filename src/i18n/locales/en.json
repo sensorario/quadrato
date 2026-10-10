@@ -254,10 +254,8 @@
     "addSubtaskFailed": "The subtask could not be added."
   },
   "expiredTasks": {
-    "loading": "Loading expired tasks...",
-    "fetchError": "Error fetching /quadrato/workspaces",
     "none": "No expired tasks",
-    "title": "Expired tasks",
+    "elsewhere": "In other workspaces",
     "viewDetail": "View task detail"
   },
   "helpModal": {
@@ -296,5 +294,20 @@
   "taskProjectSelector": {
     "allTasks": "all tasks",
     "noProject": "no project"
+  },
+  "listTabs": {
+    "label": "Task list",
+    "all": "All",
+    "byDay": "By date",
+    "expired": "Expired",
+    "expiredCount_one": "{{count}} expired task",
+    "expiredCount_other": "{{count}} expired tasks"
+  },
+  "dayTasks": {
+    "today": "Today",
+    "previousDay": "Previous day",
+    "nextDay": "Next day",
+    "backToToday": "Back to today",
+    "none": "No task due on this day"
   }
 }

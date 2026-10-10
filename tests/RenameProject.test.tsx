@@ -6,6 +6,7 @@ jest.mock('@sensorario/sg-components', () => ({
     QuadratoHeader: () => <div />,
     SGFooter: () => <div />,
     LanguageSwitcher: () => <div />,
+    Tabs: () => <div />,
     Icon: (props: any) => <span aria-label={props['aria-label'] ?? props.name} />,
 }));
 jest.mock('../src/components/InfoPanel', () => () => null);

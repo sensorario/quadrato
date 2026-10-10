@@ -254,10 +254,8 @@
     "addSubtaskFailed": "Non è stato possibile aggiungere il sotto-task."
   },
   "expiredTasks": {
-    "loading": "Caricamento task scaduti...",
-    "fetchError": "Errore nella fetch /quadrato/workspaces",
     "none": "Nessun task scaduto",
-    "title": "Task scaduti",
+    "elsewhere": "In altri workspace",
     "viewDetail": "Vedi dettaglio task"
   },
   "helpModal": {
@@ -296,5 +294,20 @@
   "taskProjectSelector": {
     "allTasks": "tutti i task",
     "noProject": "nessun progetto"
+  },
+  "listTabs": {
+    "label": "Elenco dei task",
+    "all": "Tutti",
+    "byDay": "Per data",
+    "expired": "Scaduti",
+    "expiredCount_one": "{{count}} task scaduto",
+    "expiredCount_other": "{{count}} task scaduti"
+  },
+  "dayTasks": {
+    "today": "Oggi",
+    "previousDay": "Giorno precedente",
+    "nextDay": "Giorno successivo",
+    "backToToday": "Torna a oggi",
+    "none": "Nessun task da concludere in questo giorno"
   }
 }

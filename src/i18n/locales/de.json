@@ -254,10 +254,8 @@
     "addSubtaskFailed": "Die Unteraufgabe konnte nicht hinzugefügt werden."
   },
   "expiredTasks": {
-    "loading": "Abgelaufene Aufgaben werden geladen...",
-    "fetchError": "Fehler beim Abrufen von /quadrato/workspaces",
     "none": "Keine abgelaufenen Aufgaben",
-    "title": "Abgelaufene Aufgaben",
+    "elsewhere": "In anderen Workspaces",
     "viewDetail": "Aufgabendetails anzeigen"
   },
   "helpModal": {
@@ -296,5 +294,20 @@
   "taskProjectSelector": {
     "allTasks": "alle Aufgaben",
     "noProject": "kein Projekt"
+  },
+  "listTabs": {
+    "label": "Aufgabenliste",
+    "all": "Alle",
+    "byDay": "Nach Datum",
+    "expired": "Abgelaufen",
+    "expiredCount_one": "{{count}} abgelaufene Aufgabe",
+    "expiredCount_other": "{{count}} abgelaufene Aufgaben"
+  },
+  "dayTasks": {
+    "today": "Heute",
+    "previousDay": "Vorheriger Tag",
+    "nextDay": "Nächster Tag",
+    "backToToday": "Zurück zu heute",
+    "none": "Keine Aufgabe an diesem Tag fällig"
   }
 }

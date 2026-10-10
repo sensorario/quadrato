@@ -248,10 +248,8 @@
     "addSubtaskFailed": "サブタスクを追加できませんでした。"
   },
   "expiredTasks": {
-    "loading": "期限切れタスクを読み込み中...",
-    "fetchError": "/quadrato/workspaces の取得エラー",
     "none": "期限切れのタスクはありません",
-    "title": "期限切れのタスク",
+    "elsewhere": "他のワークスペース",
     "viewDetail": "タスクの詳細を見る"
   },
   "helpModal": {
@@ -290,5 +288,20 @@
   "taskProjectSelector": {
     "allTasks": "すべてのタスク",
     "noProject": "プロジェクトなし"
+  },
+  "listTabs": {
+    "label": "タスク一覧",
+    "all": "すべて",
+    "byDay": "日付別",
+    "expired": "期限切れ",
+    "expiredCount_one": "期限切れのタスク {{count}} 件",
+    "expiredCount_other": "期限切れのタスク {{count}} 件"
+  },
+  "dayTasks": {
+    "today": "今日",
+    "previousDay": "前の日",
+    "nextDay": "次の日",
+    "backToToday": "今日に戻る",
+    "none": "この日が期限のタスクはありません"
   }
 }

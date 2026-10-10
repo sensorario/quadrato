@@ -1,14 +1,12 @@
 
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Icon } from '@sensorario/sg-components';
 
-const ExpiredTasks = () => {
+// The overdue tasks of the other workspaces (the API's expired_tasks): a click on the
+// workspace name switches to it.
+const ExpiredTasks = ({ tasks }) => {
     const { t } = useTranslation();
-    const [expiredTasks, setExpiredTasks] = useState([]);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(null);
-    const token = localStorage.getItem('simonegentili.com-access-token');
 
     const handleWorkspaceClick = (workspaceName) => {
         const token = localStorage.getItem('simonegentili.com-access-token');
@@ -29,49 +27,13 @@ const ExpiredTasks = () => {
             });
     };
 
-    if (token && loading) {
-        setTimeout(() => {
-            fetch('https://api.simonegentili.com/quadrato/workspaces', {
-                method: 'GET',
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                    'Content-Type': 'application/json',
-                },
-            })
-                .then(res => {
-                    if (res.status === 401) {
-                        localStorage.removeItem('simonegentili.com-access-token');
-                    }
-                    return res.json()
-                })
-                .then(json => {
-                    console.log('check expired tasks')
-                    console.log({ ArrayIsArray: Array.isArray(json.expired_tasks) })
-                    console.log({ json })
-                    if (Array.isArray(json.expired_tasks)) {
-                        setExpiredTasks(json.expired_tasks);
-                    } else {
-                        setExpiredTasks([]);
-                    }
-                    setLoading(false);
-                })
-                .catch(() => {
-                    document.location.reload();
-                    setError(t('expiredTasks.fetchError'));
-                    setLoading(false);
-                });
-        }, 1000);
-    }
-
-    if (loading) return <div>{t('expiredTasks.loading')}</div>;
-    if (error) return <div>{error}</div>;
-    if (!expiredTasks || expiredTasks.length === 0) return <><div>{t('expiredTasks.none')}</div><div>&nbsp;</div></>;
+    if (tasks.length === 0) return null;
 
     return (
-        <div>
-            <h3>{t('expiredTasks.title')}</h3>
+        <div className="expired-elsewhere">
+            <h3>{t('expiredTasks.elsewhere')}</h3>
             <ul>
-                {expiredTasks.map((task, idx) => (
+                {tasks.map((task, idx) => (
                     <li key={task.id || task.uuid || idx}>
                         <span
                             style={{ cursor: 'pointer' }}
@@ -95,7 +57,6 @@ const ExpiredTasks = () => {
                     </li>
                 ))}
             </ul>
-            <div>&nbsp;</div>
         </div>
     );
 }

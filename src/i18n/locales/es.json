@@ -254,10 +254,8 @@
     "addSubtaskFailed": "No se pudo añadir la subtarea."
   },
   "expiredTasks": {
-    "loading": "Cargando tareas vencidas...",
-    "fetchError": "Error al obtener /quadrato/workspaces",
     "none": "No hay tareas vencidas",
-    "title": "Tareas vencidas",
+    "elsewhere": "En otros workspaces",
     "viewDetail": "Ver detalle de la tarea"
   },
   "helpModal": {
@@ -296,5 +294,20 @@
   "taskProjectSelector": {
     "allTasks": "todas las tareas",
     "noProject": "sin proyecto"
+  },
+  "listTabs": {
+    "label": "Lista de tareas",
+    "all": "Todas",
+    "byDay": "Por fecha",
+    "expired": "Vencidas",
+    "expiredCount_one": "{{count}} tarea vencida",
+    "expiredCount_other": "{{count}} tareas vencidas"
+  },
+  "dayTasks": {
+    "today": "Hoy",
+    "previousDay": "Día anterior",
+    "nextDay": "Día siguiente",
+    "backToToday": "Volver a hoy",
+    "none": "Ninguna tarea vence este día"
   }
 }

@@ -19,8 +19,10 @@ import { childrenOf, descendantIds, hasOpenDescendants, reconcileAncestors } fro
 import { getActiveProjects } from "./functions/getActiveProjects";
 import { getConfigRepository } from "./repositories";
 import { navigate } from "./Router";
-import { Icon, LanguageSwitcher, QuadratoHeader, SGFooter } from "@sensorario/sg-components";
+import { Icon, LanguageSwitcher, QuadratoHeader, SGFooter, Tabs } from "@sensorario/sg-components";
 import ExpiredTasks from "./components/ExpiredTasks";
+import DayNavigator from "./components/DayNavigator";
+import { dayKey, dueDay, isOverdue } from "./utils/taskDays";
 import LogoutConfirmModal from "./components/LogoutConfirmModal";
 
 // Header di autorizzazione da allegare alle richieste autenticate verso l'API
@@ -236,6 +238,11 @@ function App() {
     const [ws, setWs] = useState("default");
     // workspaces ora è un array di oggetti workspace (non solo nomi)
     const [workspaces, setWorkspaces] = useState([]);
+    // The overdue tasks of every workspace, as GET /quadrato/workspaces lists them.
+    const [expiredTasks, setExpiredTasks] = useState([]);
+    // The list's tabs: "all" of them, those due on `day` (the default, today) or the "expired" ones.
+    const [listTab, setListTab] = useState("day");
+    const [day, setDay] = useState(() => dayKey(new Date()));
     const [registeredUsersCount, setRegisteredUsersCount] = useState(null);
     const [workspaceFilter, setWorkspaceFilter] = useState("");
     const [deletingWorkspace, setDeletingWorkspace] = useState(null);
@@ -337,6 +344,7 @@ function App() {
                     ? json.workspaces
                     : [];
                 setWorkspaces(list);
+                setExpiredTasks(Array.isArray(json?.expired_tasks) ? json.expired_tasks : []);
                 // scorri tutti i workspace e quello che ha come chave current, a true setta ws
                 const currentWorkspace = list.find(
                     (workspace) => workspace?.current === true
@@ -2072,27 +2080,46 @@ function App() {
         </Modal>
     );
 
-    const visibleTasks = (() => {
-        let filtered =
-            projectFilter === "ALL"
-                ? unarchivedTasks
-                : projectFilter === null
-                  ? unarchivedTasks.filter((t) => !t.project)
-                  : projectFilter
-                    ? unarchivedTasks.filter((t) => t.project === projectFilter)
-                    : unarchivedTasks;
-        const now = new Date();
-        return filtered.filter((t) => {
-            if (!t.timestamp) return true;
-            // Gestisce sia timestamp numerici che stringhe
-            const dt =
-                typeof t.timestamp === "number"
-                    ? new Date(t.timestamp)
-                    : new Date(t.timestamp);
-            if (showExpired && dt < now) return true;
-            return dt >= now; // mostra tutti i task futuri
-        });
-    })();
+    // The project filter, then each tab its own part: all of them, those due on `day`, the overdue ones.
+    const projectTasks =
+        projectFilter === "ALL"
+            ? unarchivedTasks
+            : projectFilter === null
+              ? unarchivedTasks.filter((t) => !t.project)
+              : projectFilter
+                ? unarchivedTasks.filter((t) => t.project === projectFilter)
+                : unarchivedTasks;
+    const now = new Date();
+    const dayTasks = projectTasks.filter((t) => !t.archived && dueDay(t) === day);
+    const overdueTasks = projectTasks.filter((t) => isOverdue(t, now));
+    // This workspace's overdue tasks are the live ones above; the API's list gives the others'.
+    const expiredElsewhere = expiredTasks.filter((task) => task.workspace !== ws);
+    const expiredCount = overdueTasks.length + expiredElsewhere.length;
+
+    const taskListOf = (list) => (
+        <TaskList
+            tasks={list}
+            onTaskClick={handleClick}
+            pendingStatuses={pendingStatuses}
+            updateTaskTitle={updateTaskTitle}
+            onReorder={handleMoveTask}
+            onClearDueDates={handleClearDueDates}
+            onArchive={handleArchiveTasks}
+            onDelete={handleDeleteTasks}
+            onChangeProject={handleChangeProject}
+            onCreateParent={token ? handleCreateParent : undefined}
+            onMoveToNewWorkspace={token ? handleMoveToNewWorkspace : undefined}
+            loadProjects={token ? loadOwnProjects : undefined}
+            currentWorkspace={ws}
+            workspaces={workspaces}
+            workspaceProjects={getActiveProjects(tasks)}
+            editable={editable}
+            projectEditable={projectGroupable}
+            dateTimeEnabled={dateTimeEnabled}
+            iconTheme={iconTheme}
+            projectFilter={projectFilter}
+        />
+    );
 
     return (
         <>
@@ -2155,30 +2182,46 @@ function App() {
                         {projectGroupable && DefinedTaskProject}
                     </div>
 
-                    <ExpiredTasks />
-
-                    <TaskList
-                        tasks={visibleTasks}
-                        onTaskClick={handleClick}
-                        pendingStatuses={pendingStatuses}
-                        updateTaskTitle={updateTaskTitle}
-                        onReorder={handleMoveTask}
-                        onClearDueDates={handleClearDueDates}
-                        onArchive={handleArchiveTasks}
-                        onDelete={handleDeleteTasks}
-                        onChangeProject={handleChangeProject}
-                        onCreateParent={token ? handleCreateParent : undefined}
-                        onMoveToNewWorkspace={token ? handleMoveToNewWorkspace : undefined}
-                        loadProjects={token ? loadOwnProjects : undefined}
-                        currentWorkspace={ws}
-                        workspaces={workspaces}
-                        workspaceProjects={getActiveProjects(tasks)}
-                        editable={editable}
-                        projectEditable={projectGroupable}
-                        dateTimeEnabled={dateTimeEnabled}
-                        iconTheme={iconTheme}
-                        projectFilter={projectFilter}
+                    <Tabs
+                        className="list-tabs"
+                        items={[
+                            { value: "all", label: t("listTabs.all") },
+                            { value: "day", label: t("listTabs.byDay") },
+                            {
+                                value: "expired",
+                                label: (
+                                    <>
+                                        {t("listTabs.expired")}
+                                        <span
+                                            className={`list-tab-count${expiredCount > 0 ? " list-tab-count-late" : ""}`}
+                                            aria-label={t("listTabs.expiredCount", { count: expiredCount })}
+                                        >
+                                            {expiredCount}
+                                        </span>
+                                    </>
+                                ),
+                            },
+                        ]}
+                        value={listTab}
+                        onChange={setListTab}
+                        ariaLabel={t("listTabs.label")}
                     />
+
+                    {listTab === "all" && taskListOf(projectTasks)}
+
+                    {listTab === "day" && (
+                        <>
+                            <DayNavigator day={day} onChange={setDay} />
+                            {dayTasks.length > 0 ? taskListOf(dayTasks) : <p className="list-tab-empty">{t("dayTasks.none")}</p>}
+                        </>
+                    )}
+
+                    {listTab === "expired" && (
+                        <>
+                            {overdueTasks.length > 0 ? taskListOf(overdueTasks) : <p className="list-tab-empty">{t("expiredTasks.none")}</p>}
+                            <ExpiredTasks tasks={expiredElsewhere} />
+                        </>
+                    )}
                     {showHelp && HelpModalView}
                     {showPopup && NewTaskModalView}
                     {showCleanConfirm && ConfirmModalView}
