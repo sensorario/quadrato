@@ -51,7 +51,9 @@ export const Modal = ({ children, title, icon, onClick, buttons, footer }: Modal
                     &times;
                 </button>
             </div>
-            <div className="modal-content">{children}</div>
+            {/* Not "modal-content": sg-components' stylesheet uses that name for its own
+                dialog (overflow: hidden, min-width...), and it would stop this from scrolling. */}
+            <div className="modal-body">{children}</div>
             {buttons && <div className="modal-footer">
                 {buttons.map((button, index) => (
                     <button key={index} onClick={() => closeWith(button.onClick)} disabled={closing} className='modal-close-btn'>

@@ -447,14 +447,40 @@ class AjaxRepository implements Repository {
             ...this.data["simplanner-project-colors"],
             [String(project)]: color
         };
-        // Force sync by resetting the last synced hash
-        this.lastSyncedHash = "";
-        this.syncToServer();
+        this.saveProjectColor(String(project), color);
     }
 
     removeProjectColor(project: string): void {
         delete this.data["simplanner-project-colors"][project];
-        this.syncToServer();
+        this.saveProjectColor(project, null);
+    }
+
+    // One color at a time, recorded by the API as a ProjectColorChanged event and shared
+    // with the Gantt: the whole-config PUT doesn't save colors anymore.
+    private saveProjectColor(project: string, color: string | null): Promise<void> {
+        return fetch('https://api.simonegentili.com/quadrato/project-color', {
+            method: 'PATCH',
+            headers: {
+                'Content-Type': 'application/json',
+                ...this.getAuthHeaders(),
+            },
+            body: JSON.stringify({ project, color }),
+        })
+            .then(res => {
+                if (res.status === 401) {
+                    this.clearLocalData();
+                    if (this.onUnauthorizedCallback) {
+                        this.onUnauthorizedCallback();
+                    }
+                    throw new Error('Unauthorized');
+                }
+                if (!res.ok) {
+                    throw new Error(`HTTP error! status: ${res.status}`);
+                }
+            })
+            .catch(err => {
+                console.error('Error saving the project color:', err);
+            });
     }
 
     getProjectFilter(): string | null {

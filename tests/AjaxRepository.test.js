@@ -473,12 +473,20 @@ describe('AjaxRepository projects and project colors', () => {
         expect(repository.getAllFullProjects()).toEqual([{ project: 'work' }, { project: 'home' }]);
     });
 
-    it('sets and removes a project color', () => {
+    it('sets and removes a project color, saving only that project', () => {
         repository.setProjectColor('work', '#00ff00');
         expect(repository.getProjectColors()).toEqual({ work: '#00ff00' });
+        expect(global.fetch).toHaveBeenCalledWith(
+            'https://api.simonegentili.com/quadrato/project-color',
+            expect.objectContaining({ method: 'PATCH', body: JSON.stringify({ project: 'work', color: '#00ff00' }) }),
+        );
 
         repository.removeProjectColor('work');
         expect(repository.getProjectColors()).toEqual({});
+        expect(global.fetch).toHaveBeenCalledWith(
+            'https://api.simonegentili.com/quadrato/project-color',
+            expect.objectContaining({ method: 'PATCH', body: JSON.stringify({ project: 'work', color: null }) }),
+        );
     });
 });
 

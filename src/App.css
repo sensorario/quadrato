@@ -334,6 +334,7 @@ select:focus-visible,
 
 .tabbed-content .tabs {
     display: flex;
+    flex-shrink: 0;
     gap: 4px;
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
@@ -510,7 +511,7 @@ select:focus-visible,
     transform: scale(1.06);
 }
 
-.modal-content {
+.modal-body {
     padding: 1rem;
     flex: 1 1 auto;
     min-height: 0;
@@ -574,19 +575,19 @@ select:focus-visible,
     justify-content: center;
 }
 
-.modal-content:has(.modal-long-description) {
+.modal-body:has(.modal-long-description) {
     display: flex;
     flex-direction: column;
 }
 
-.modal-content:has(.modal-long-description) .tabbed-content {
+.modal-body:has(.modal-long-description) .tabbed-content {
     flex: 1 1 auto;
     display: flex;
     flex-direction: column;
     min-height: 0;
 }
 
-.modal-content:has(.modal-long-description) .tabbed-content .content {
+.modal-body:has(.modal-long-description) .tabbed-content .content {
     flex: 1 1 auto;
     display: flex;
     flex-direction: column;
@@ -602,6 +603,14 @@ select:focus-visible,
 
 .modal-long-description {
     flex: 1 1 auto;
+    min-height: 0;
+}
+
+/* Tab "Progetto": il campo resta fermo e scorre solo l'elenco dei progetti */
+.tab-content.active:has(> .project-suggestion-list) {
+    flex: 1 1 auto;
+    display: flex;
+    flex-direction: column;
     min-height: 0;
 }
 
@@ -682,6 +691,10 @@ select:focus-visible,
 
 .project-suggestion-list {
     margin-bottom: 1rem;
+    flex: 1 1 auto;
+    /* In a short window a few projects still show: what doesn't fit scrolls with the modal body */
+    min-height: 10rem;
+    overflow-y: auto;
 }
 
 .project-suggestion-item {
