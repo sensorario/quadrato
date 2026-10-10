@@ -17,8 +17,10 @@ import { navigate } from "../Router";
 export type OwnProject = { id: string; name: string; workspace: string; workspaceUuid: string };
 
 // @todo #44 extract task type in a common file and fix dateTime to timestamp
-export const TaskList = ({ tasks, onTaskClick, updateTaskTitle, onReorder, onClearDueDates, onArchive, onDelete, onChangeProject, onCreateParent, onMoveToNewWorkspace, loadProjects, currentWorkspace, workspaces, workspaceProjects, editable, projectEditable, dateTimeEnabled, iconTheme, projectFilter }: {
+export const TaskList = ({ tasks, pendingStatuses, onTaskClick, updateTaskTitle, onReorder, onClearDueDates, onArchive, onDelete, onChangeProject, onCreateParent, onMoveToNewWorkspace, loadProjects, currentWorkspace, workspaces, workspaceProjects, editable, projectEditable, dateTimeEnabled, iconTheme, projectFilter }: {
     tasks: Task[];
+    // Statuses clicked but not applied yet: shown on the icon while the row keeps its place.
+    pendingStatuses?: Record<string, number>;
     onTaskClick: (id: number) => void;
     updateTaskTitle: (id: number, title: string, longDescription?: string, project?: string, timestamp?: string | number, periodicity?: { number: string; unit: string } | null) => void;
     onReorder?: (taskId: Task['id'], parentId: Task['id'] | null, siblingIds: Task['id'][]) => void;
@@ -381,7 +383,7 @@ export const TaskList = ({ tasks, onTaskClick, updateTaskTitle, onReorder, onCle
                             <rect width="18" height="18" rx="3" fill={task.project && projectColors[task.project] ? projectColors[task.project] : '#ccc'} />
                         </svg>}
 
-                        {STATUS[task.status]}
+                        {STATUS[pendingStatuses?.[task.id] ?? task.status]}
 
                         {dateTimeEnabled && task.timestamp && (
                             <span style={{ margin: '0', color: '#666' }}>

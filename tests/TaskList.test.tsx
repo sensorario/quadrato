@@ -614,3 +614,26 @@ describe('TaskList task age', () => {
         expect(screen.queryByText(/giorn|ore|minut|adesso/)).not.toBeInTheDocument();
     });
 });
+
+describe('TaskList pending status', () => {
+    it('shows a clicked status on the icon while the row keeps its place', () => {
+        const { container } = render(
+            <TaskList
+                tasks={[
+                    { id: 1, title: 'Task one', status: 0 },
+                    { id: 2, title: 'Task two', status: 0 },
+                ]}
+                pendingStatuses={{ 1: 2 }}
+                onTaskClick={() => { }}
+                updateTaskTitle={() => { }}
+                editable={false}
+                projectEditable={false}
+                dateTimeEnabled={false}
+                iconTheme="default"
+            />
+        );
+        const rows = screen.getAllByText(/Task (one|two)/).map(el => el.textContent);
+        expect(rows).toEqual(['Task one', 'Task two']);
+        expect(container.querySelectorAll('line[stroke="#3cae82"]')).toHaveLength(2);
+    });
+});

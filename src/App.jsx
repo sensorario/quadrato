@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import "./App.css";
 import TaskList from "./components/TaskList";
@@ -34,6 +34,8 @@ function getAuthHeader() {
 const WEEKDAY_REFERENCE_DATES = [5, 6, 7, 8, 9, 10, 11].map(
     (day) => new Date(2026, 0, day)
 );
+
+const STATUS_DELAY_MS = 1000;
 
 function App() {
     const { t, i18n } = useTranslation();
@@ -220,6 +222,16 @@ function App() {
     const [tasks, setTasks] = useState(() => {
         return getConfigRepository().getTasks();
     });
+    // A click shows the new status at once but applies it (and so moves the
+    // task) only after STATUS_DELAY_MS without further clicks on that task:
+    // e.g. "da fare" -> "fatto" takes two clicks on a row that must stay put.
+    const [pendingStatuses, setPendingStatuses] = useState({});
+    const statusTimers = useRef({});
+    // The delayed commit must see the tasks as they are when it fires.
+    const latestTasks = useRef(tasks);
+    useEffect(() => {
+        latestTasks.current = tasks;
+    }, [tasks]);
 
     const [ws, setWs] = useState("default");
     // workspaces ora è un array di oggetti workspace (non solo nomi)
@@ -564,10 +576,24 @@ function App() {
         getConfigRepository().setTasks(updated);
     };
 
+    const commitStatus = (id, status) => {
+        const current = latestTasks.current;
+        const task = current.find((t) => t.id === id);
+        if (!task || task.status === status) return;
+        const updated = reconcileAncestors(
+            current.map((t) => (t.id === id ? { ...t, status } : t)),
+            task.parentId != null ? [task.parentId] : []
+        );
+        latestTasks.current = updated;
+        persistChanges(current, updated);
+        setTasks(updated);
+        getConfigRepository().setTasks(updated);
+    };
+
     const handleClick = (id) => {
         const task = tasks.find((t) => t.id === id);
         if (!task) return;
-        let status = (task.status + 1) % 4;
+        let status = ((pendingStatuses[id] ?? task.status) + 1) % 4;
         // A parent can't be closed by hand while a subtask is still open:
         // it closes by itself when the last one does.
         if (
@@ -576,10 +602,17 @@ function App() {
         ) {
             status = STATUS_ENUM.TODO;
         }
-        const updated = tasks.map((t) => (t.id === id ? { ...t, status } : t));
-        applyChanges(
-            reconcileAncestors(updated, task.parentId != null ? [task.parentId] : [])
-        );
+        setPendingStatuses((pending) => ({ ...pending, [id]: status }));
+        clearTimeout(statusTimers.current[id]);
+        statusTimers.current[id] = setTimeout(() => {
+            delete statusTimers.current[id];
+            setPendingStatuses((pending) => {
+                const rest = { ...pending };
+                delete rest[id];
+                return rest;
+            });
+            commitStatus(id, status);
+        }, STATUS_DELAY_MS);
     };
 
     // A task moves with its subtasks: it may get a new parent (or none) and new
@@ -935,6 +968,7 @@ function App() {
         <TaskList
             tasks={visible}
             onTaskClick={handleClick}
+            pendingStatuses={pendingStatuses}
             updateTaskTitle={updateTaskTitle}
             onReorder={handleMoveTask}
             onClearDueDates={handleClearDueDates}
@@ -2126,6 +2160,7 @@ function App() {
                     <TaskList
                         tasks={visibleTasks}
                         onTaskClick={handleClick}
+                        pendingStatuses={pendingStatuses}
                         updateTaskTitle={updateTaskTitle}
                         onReorder={handleMoveTask}
                         onClearDueDates={handleClearDueDates}
