@@ -260,15 +260,19 @@ const TaskModal = ({ mode, initialValues, onSave, onClose, projectEditable, date
                                     // every project shows until something else is typed.
                                     const query = project === seededProject ? "" : project.trim().toLowerCase();
                                     const repository = getConfigRepository();
+                                    const counts = new Map<string, number>();
+                                    for (const task of repository.getTasks()) {
+                                        if (!task.archived && task.project) counts.set(task.project, (counts.get(task.project) ?? 0) + 1);
+                                    }
+                                    // A project row stays after its last task is archived or moved: those aren't offered.
                                     const matching = repository.getAllFullProjects()
-                                        .filter((p) => p.project.toLowerCase().includes(query));
-                                    const openTasks = repository.getTasks().filter((task) => !task.archived);
+                                        .filter((p) => (counts.get(p.project) ?? 0) > 0 && p.project.toLowerCase().includes(query));
                                     return matching.length > 0
                                         ? matching.map((p) => (
                                             <div className="project-suggestion-item" key={p.project} onClick={() => setProject(p.project)}>
                                                 <span>{p.project}</span>
                                                 <span className="project-suggestion-count">
-                                                    {t("taskModal.projectTaskCount", { count: openTasks.filter((task) => task.project === p.project).length })}
+                                                    {t("taskModal.projectTaskCount", { count: counts.get(p.project) })}
                                                 </span>
                                             </div>
                                         ))
