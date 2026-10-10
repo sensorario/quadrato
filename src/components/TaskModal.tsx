@@ -256,9 +256,13 @@ const TaskModal = ({ mode, initialValues, onSave, onClose, projectEditable, date
                             </div>
                             <div className="project-suggestion-list">
                                 {(() => {
-                                    const uniqueProjects = getConfigRepository().getAllFullProjects();
-                                    return uniqueProjects.length > 0
-                                        ? uniqueProjects.map((p) => (
+                                    // Opened on a task that has a project, the field already holds it:
+                                    // every project shows until something else is typed.
+                                    const query = project === seededProject ? "" : project.trim().toLowerCase();
+                                    const matching = getConfigRepository().getAllFullProjects()
+                                        .filter((p) => p.project.toLowerCase().includes(query));
+                                    return matching.length > 0
+                                        ? matching.map((p) => (
                                             <div className="project-suggestion-item" key={p.project} onClick={() => setProject(p.project)}>
                                                 {p.project}
                                             </div>

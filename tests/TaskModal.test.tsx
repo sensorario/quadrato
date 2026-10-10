@@ -33,7 +33,7 @@ describe('TaskModal closing', () => {
     it('closes on overlay click', async () => {
         const onClose = jest.fn();
         render(<TaskModal {...baseProps} mode="edit" onClose={onClose} />);
-        const overlay = document.querySelector('.modal-overlay');
+        const overlay = document.querySelector('.modal-backdrop');
         fireEvent.click(overlay as Element);
         await waitFor(() => expect(onClose).toHaveBeenCalled());
     });
@@ -107,6 +107,29 @@ describe('TaskModal save', () => {
         expect(onSave).toHaveBeenCalledWith(expect.objectContaining({
             timestamp: expected.getTime(),
         }));
+    });
+
+    it('filters the project suggestions while typing, ignoring case', () => {
+        render(<TaskModal {...baseProps} mode="create" />);
+        fireEvent.change(screen.getByPlaceholderText('Progetto (opzionale)'), { target: { value: 'AL' } });
+        expect(screen.getByText('Alpha')).toBeInTheDocument();
+        expect(screen.queryByText('Beta')).not.toBeInTheDocument();
+    });
+
+    it('shows every project until the one the task already has is changed', () => {
+        render(<TaskModal {...baseProps} mode="edit" initialValues={{ title: 'Task', project: 'Beta' }} />);
+        expect(screen.getByText('Alpha')).toBeInTheDocument();
+        expect(screen.getAllByText('Beta').length).toBeGreaterThan(0);
+
+        fireEvent.change(screen.getByPlaceholderText('Progetto (opzionale)'), { target: { value: 'alp' } });
+        expect(screen.getByText('Alpha')).toBeInTheDocument();
+        expect(screen.queryByText('Beta')).not.toBeInTheDocument();
+    });
+
+    it('says so when no project matches what was typed', () => {
+        render(<TaskModal {...baseProps} mode="create" />);
+        fireEvent.change(screen.getByPlaceholderText('Progetto (opzionale)'), { target: { value: 'zzz' } });
+        expect(screen.getByText('Nessun progetto trovato')).toBeInTheDocument();
     });
 
     it('fills the project field from a suggestion click', () => {

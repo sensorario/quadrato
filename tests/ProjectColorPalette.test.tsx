@@ -29,8 +29,8 @@ describe('project colour palette', () => {
     it('opens as its own modal, outside the settings one', async () => {
         await openPalette();
 
-        const palette = screen.getByText('Scegli un colore').closest('.modal-overlay');
-        const settings = screen.getByText('Configurazioni').closest('.modal-overlay');
+        const palette = screen.getByText('Scegli un colore').closest('.modal-backdrop');
+        const settings = screen.getByText('Configurazioni').closest('.modal-backdrop');
         expect(palette).not.toBeNull();
         expect(settings?.contains(palette as Node)).toBe(false);
     });

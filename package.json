@@ -1,7 +1,7 @@
 {
     "name": "simplanner",
     "private": true,
-    "version": "1.2.136",
+    "version": "1.2.137",
     "type": "module",
     "homepage": "https://sensorario.github.io/quadrato",
     "scripts": {

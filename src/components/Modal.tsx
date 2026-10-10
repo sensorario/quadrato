@@ -10,7 +10,7 @@ type ModalProps = {
     footer?: React.ReactNode;
 };
 
-// Deve combaciare con la durata di .modal-closing / .modal-overlay-closing in App.css
+// Deve combaciare con la durata di .modal-closing / .modal-backdrop-closing in App.css
 const CLOSE_ANIMATION_MS = 220;
 
 export const Modal = ({ children, title, icon, onClick, buttons, footer }: ModalProps) => {
@@ -33,12 +33,15 @@ export const Modal = ({ children, title, icon, onClick, buttons, footer }: Modal
         return () => window.removeEventListener('keydown', handleKeyDown);
     }, [onClick]);
 
+    // Not sg-components' class names (modal-overlay, modal-header, modal-content, modal-footer):
+    // its stylesheet styles those for its own dialog and would leak into this one, e.g. the
+    // body's overflow: hidden, which kept long content from scrolling.
     return <div
-        className={`modal-overlay${closing ? ' modal-overlay-closing' : ''}`}
+        className={`modal-backdrop${closing ? ' modal-backdrop-closing' : ''}`}
         onClick={() => closeWith(onClick)}
     >
         <div className={`modal${closing ? ' modal-closing' : ''}`} onClick={e => e.stopPropagation()}>
-            <div className="modal-header" style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+            <div className="modal-head" style={{ display: "flex", alignItems: "center", gap: "8px" }}>
                 {icon && <span className="icon">{icon}</span>}
                 <h2 className="title" style={{ flex: 1 }}>{title}</h2>
                 <button
@@ -51,17 +54,15 @@ export const Modal = ({ children, title, icon, onClick, buttons, footer }: Modal
                     &times;
                 </button>
             </div>
-            {/* Not "modal-content": sg-components' stylesheet uses that name for its own
-                dialog (overflow: hidden, min-width...), and it would stop this from scrolling. */}
             <div className="modal-body">{children}</div>
-            {buttons && <div className="modal-footer">
+            {buttons && <div className="modal-foot">
                 {buttons.map((button, index) => (
                     <button key={index} onClick={() => closeWith(button.onClick)} disabled={closing} className='modal-close-btn'>
                         {button.label}
                     </button>
                 ))}
             </div>}
-            {footer && <div className="modal-footer">{footer}</div>}
+            {footer && <div className="modal-foot">{footer}</div>}
         </div>
     </div>;
 };
