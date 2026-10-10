@@ -2080,7 +2080,7 @@ function App() {
         </Modal>
     );
 
-    // The project filter, then each tab its own part: all of them, those due on `day`, the overdue ones.
+    // "Tutti" and "Per data" follow the project filter; "Scaduti" has every overdue task, as the block it replaced.
     const projectTasks =
         projectFilter === "ALL"
             ? unarchivedTasks
@@ -2091,7 +2091,7 @@ function App() {
                 : unarchivedTasks;
     const now = new Date();
     const dayTasks = projectTasks.filter((t) => !t.archived && dueDay(t) === day);
-    const overdueTasks = projectTasks.filter((t) => isOverdue(t, now));
+    const overdueTasks = unarchivedTasks.filter((t) => isOverdue(t, now));
     // This workspace's overdue tasks are the live ones above; the API's list gives the others'.
     const expiredElsewhere = expiredTasks.filter((task) => task.workspace !== ws);
     const expiredCount = overdueTasks.length + expiredElsewhere.length;

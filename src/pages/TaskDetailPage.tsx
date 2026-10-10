@@ -63,6 +63,68 @@ const Breadcrumb = ({ task }: { task: Task }) => {
     );
 };
 
+// The title as the list shows it. A double click makes the text itself editable, as an input:
+// Enter saves it, Esc or a click elsewhere puts it back as it was.
+const EditableTitle = ({ title, onSave }: { title: string; onSave: (title: string) => void }) => {
+    const { t } = useTranslation();
+    const [editing, setEditing] = useState(false);
+    const ref = useRef<HTMLSpanElement>(null);
+
+    useEffect(() => {
+        const element = ref.current;
+        if (!editing || !element) return;
+        element.focus();
+        // The caret after the last character, as when clicking an input.
+        const range = document.createRange();
+        range.selectNodeContents(element);
+        range.collapse(false);
+        window.getSelection()?.removeAllRanges();
+        window.getSelection()?.addRange(range);
+    }, [editing]);
+
+    if (!editing) {
+        return (
+            <span
+                onDoubleClick={() => setEditing(true)}
+                title={t('taskDetailPage.editTitleHint')}
+                style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'text' }}
+            >
+                <TaskTitle title={title} iconSize={36} />
+            </span>
+        );
+    }
+
+    const finish = (save: boolean) => {
+        const value = toPlainText(ref.current?.textContent ?? '').trim();
+        setEditing(false);
+        if (save && value !== '' && value !== title) onSave(value);
+    };
+
+    return (
+        <span
+            ref={ref}
+            role="textbox"
+            aria-label={t('taskDetailPage.title')}
+            contentEditable="plaintext-only"
+            suppressContentEditableWarning
+            onKeyDown={e => {
+                // Enter also ends what an input method (Japanese, Chinese…) is composing: that's no save.
+                if (e.nativeEvent.isComposing) return;
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    finish(true);
+                } else if (e.key === 'Escape') {
+                    finish(false);
+                }
+            }}
+            onBlur={() => finish(false)}
+            style={{ minWidth: '2ch', padding: '0 4px', borderRadius: '6px', outline: '2px solid #dbe8ff' }}
+        >
+            {title}
+        </span>
+    );
+};
+
 type TaskDetailPageProps = {
     taskId: string;
 };
@@ -231,6 +293,31 @@ export const TaskDetailPage = ({ taskId }: TaskDetailPageProps) => {
         }
     };
 
+    // Shown at once, put back if the API doesn't take it.
+    const handleRename = async (title: string) => {
+        if (!task) return;
+        const previous = task.title;
+        setTask({ ...task, title });
+        const token = localStorage.getItem('simonegentili.com-access-token');
+        try {
+            const res = await fetch(`https://api.simonegentili.com/quadrato/task/${task.id}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json', ...(token ? { Authorization: `Bearer ${token}` } : {}) },
+                body: JSON.stringify({ title }),
+            });
+            if (res.status === 401) {
+                localStorage.removeItem('simonegentili.com-access-token');
+                setIsAuthenticated(false);
+                return;
+            }
+            if (!res.ok) throw new Error(String(res.status));
+            getConfigRepository().fetchData();
+        } catch {
+            setTask(current => current && { ...current, title: previous });
+            alert(t('taskDetailPage.renameFailed'));
+        }
+    };
+
     const containerStyle: React.CSSProperties = {
         maxWidth: '600px',
         margin: '40px auto',
@@ -304,7 +391,9 @@ export const TaskDetailPage = ({ taskId }: TaskDetailPageProps) => {
             <div style={containerStyle}>
                 <Breadcrumb task={task} />
 
-                <h2 style={{ margin: '0 0 8px', fontSize: '22px', display: 'flex', alignItems: 'center', gap: '8px' }}><TaskTitle title={task.title} iconSize={36} /></h2>
+                <h2 style={{ margin: '0 0 8px', fontSize: '22px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <EditableTitle title={task.title} onSave={handleRename} />
+                </h2>
 
                 {(() => {
                     const parent = task.parentId != null ? allTasks.find(t => t.id === task.parentId) : undefined;

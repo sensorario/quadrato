@@ -251,7 +251,10 @@
     "noSubtasks": "No subtasks",
     "newSubtask": "Title of the new subtask",
     "addSubtask": "Add subtask",
-    "addSubtaskFailed": "The subtask could not be added."
+    "addSubtaskFailed": "The subtask could not be added.",
+    "title": "Task title",
+    "editTitleHint": "Double-click to edit the title",
+    "renameFailed": "The title could not be saved."
   },
   "expiredTasks": {
     "none": "No expired tasks",

@@ -251,7 +251,10 @@
     "noSubtasks": "Keine Unteraufgaben",
     "newSubtask": "Titel der neuen Unteraufgabe",
     "addSubtask": "Unteraufgabe hinzufügen",
-    "addSubtaskFailed": "Die Unteraufgabe konnte nicht hinzugefügt werden."
+    "addSubtaskFailed": "Die Unteraufgabe konnte nicht hinzugefügt werden.",
+    "title": "Titel der Aufgabe",
+    "editTitleHint": "Doppelklick zum Bearbeiten des Titels",
+    "renameFailed": "Der Titel konnte nicht gespeichert werden."
   },
   "expiredTasks": {
     "none": "Keine abgelaufenen Aufgaben",

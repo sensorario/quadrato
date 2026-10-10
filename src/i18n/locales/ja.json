@@ -245,7 +245,10 @@
     "noSubtasks": "サブタスクはありません",
     "newSubtask": "新しいサブタスクのタイトル",
     "addSubtask": "サブタスクを追加",
-    "addSubtaskFailed": "サブタスクを追加できませんでした。"
+    "addSubtaskFailed": "サブタスクを追加できませんでした。",
+    "title": "タスクのタイトル",
+    "editTitleHint": "ダブルクリックでタイトルを編集",
+    "renameFailed": "タイトルを保存できませんでした。"
   },
   "expiredTasks": {
     "none": "期限切れのタスクはありません",

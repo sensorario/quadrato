@@ -251,7 +251,10 @@
     "noSubtasks": "Sin subtareas",
     "newSubtask": "Título de la nueva subtarea",
     "addSubtask": "Añadir subtarea",
-    "addSubtaskFailed": "No se pudo añadir la subtarea."
+    "addSubtaskFailed": "No se pudo añadir la subtarea.",
+    "title": "Título de la tarea",
+    "editTitleHint": "Doble clic para editar el título",
+    "renameFailed": "No se pudo guardar el título."
   },
   "expiredTasks": {
     "none": "No hay tareas vencidas",

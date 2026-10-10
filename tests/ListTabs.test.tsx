@@ -31,15 +31,16 @@ const due = (days: number, hour: number) => {
     return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())} ${pad(hour)}:00:00`;
 };
 
-const renderApp = async () => {
+const renderApp = async (tasks: any[] = [
+    { id: 1, title: 'Due today', status: 0, timestamp: due(0, 23) },
+    { id: 2, title: 'Due tomorrow', status: 0, timestamp: due(1, 9) },
+    { id: 3, title: 'No due date', status: 0 },
+    { id: 4, title: 'Late since yesterday', status: 1, timestamp: due(-1, 10) },
+    { id: 5, title: 'Done yesterday', status: 2, timestamp: due(-1, 11) },
+], projectFilter: string | null = 'ALL') => {
     localStorage.setItem('simonegentili.com-access-token', 'tok');
-    (AjaxRepository as any).data['simplanner-tasks'] = [
-        { id: 1, title: 'Due today', status: 0, timestamp: due(0, 23) },
-        { id: 2, title: 'Due tomorrow', status: 0, timestamp: due(1, 9) },
-        { id: 3, title: 'No due date', status: 0 },
-        { id: 4, title: 'Late since yesterday', status: 1, timestamp: due(-1, 10) },
-        { id: 5, title: 'Done yesterday', status: 2, timestamp: due(-1, 11) },
-    ];
+    (AjaxRepository as any).data['simplanner-tasks'] = tasks;
+    (AjaxRepository as any).data['simplanner-project-filter'] = projectFilter;
     global.fetch = jest.fn().mockImplementation(async (url: string) => ({
         ok: true,
         status: 200,
@@ -86,6 +87,23 @@ describe('list tabs', () => {
         for (const title of ['Due today', 'Due tomorrow', 'No due date', 'Late since yesterday']) {
             expect(screen.getByText(title)).toBeTruthy();
         }
+    });
+
+    it('shows every overdue task in "Scaduti", whatever project is picked', async () => {
+        await renderApp([
+            { id: 1, title: 'Late at home', project: 'casa', status: 0, timestamp: due(-1, 10) },
+            { id: 2, title: 'Late at work', project: 'lavoro', status: 0, timestamp: due(-2, 10) },
+            { id: 3, title: 'Late, no project', status: 0, timestamp: due(-3, 10) },
+        ], 'casa');
+
+        fireEvent.click(screen.getByText('Tutti'));
+        expect(screen.queryByText('Late at work')).toBeNull();
+
+        fireEvent.click(screen.getByText('Scaduti'));
+        for (const title of ['Late at home', 'Late at work', 'Late, no project']) {
+            expect(screen.getByText(title)).toBeTruthy();
+        }
+        expect(screen.getByLabelText('4 task scaduti').textContent).toBe('4');
     });
 
     it('counts the overdue ones, here and in the other workspaces', async () => {

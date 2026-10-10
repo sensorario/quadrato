@@ -251,7 +251,10 @@
     "noSubtasks": "Aucune sous-tâche",
     "newSubtask": "Titre de la nouvelle sous-tâche",
     "addSubtask": "Ajouter une sous-tâche",
-    "addSubtaskFailed": "La sous-tâche n'a pas pu être ajoutée."
+    "addSubtaskFailed": "La sous-tâche n'a pas pu être ajoutée.",
+    "title": "Titre de la tâche",
+    "editTitleHint": "Double-cliquez pour modifier le titre",
+    "renameFailed": "Le titre n'a pas pu être enregistré."
   },
   "expiredTasks": {
     "none": "Aucune tâche expirée",
