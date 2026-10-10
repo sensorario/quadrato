@@ -85,6 +85,8 @@
     "projectLabel": "Project",
     "projectPlaceholder": "Project (optional)",
     "noProjectsFound": "No projects found",
+    "projectTaskCount_one": "{{count}} task",
+    "projectTaskCount_other": "{{count}} tasks",
     "addAnotherTask": "Add another task"
   },
   "confirmModal": {

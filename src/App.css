@@ -698,9 +698,18 @@ select:focus-visible,
 }
 
 .project-suggestion-item {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
     padding: 6px 8px;
     border-bottom: 1px solid var(--color-border);
     cursor: pointer;
+}
+
+.project-suggestion-count {
+    flex-shrink: 0;
+    color: var(--color-ink-muted);
+    font-size: 0.85em;
 }
 
 .project-suggestion-item:hover {

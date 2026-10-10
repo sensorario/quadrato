@@ -85,6 +85,8 @@
     "projectLabel": "プロジェクト",
     "projectPlaceholder": "プロジェクト（任意）",
     "noProjectsFound": "プロジェクトが見つかりません",
+    "projectTaskCount_one": "{{count}} 件のタスク",
+    "projectTaskCount_other": "{{count}} 件のタスク",
     "addAnotherTask": "続けてタスクを追加"
   },
   "confirmModal": {

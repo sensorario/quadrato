@@ -259,12 +259,17 @@ const TaskModal = ({ mode, initialValues, onSave, onClose, projectEditable, date
                                     // Opened on a task that has a project, the field already holds it:
                                     // every project shows until something else is typed.
                                     const query = project === seededProject ? "" : project.trim().toLowerCase();
-                                    const matching = getConfigRepository().getAllFullProjects()
+                                    const repository = getConfigRepository();
+                                    const matching = repository.getAllFullProjects()
                                         .filter((p) => p.project.toLowerCase().includes(query));
+                                    const openTasks = repository.getTasks().filter((task) => !task.archived);
                                     return matching.length > 0
                                         ? matching.map((p) => (
                                             <div className="project-suggestion-item" key={p.project} onClick={() => setProject(p.project)}>
-                                                {p.project}
+                                                <span>{p.project}</span>
+                                                <span className="project-suggestion-count">
+                                                    {t("taskModal.projectTaskCount", { count: openTasks.filter((task) => task.project === p.project).length })}
+                                                </span>
                                             </div>
                                         ))
                                         : <div className="modal-hint">{t("taskModal.noProjectsFound")}</div>;

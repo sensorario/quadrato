@@ -4,12 +4,19 @@ import { render, fireEvent, screen, waitFor } from '@testing-library/react';
 import TaskModal from '../src/components/TaskModal';
 
 const mockGetAllFullProjects = jest.fn(() => [{ project: 'Alpha' }, { project: 'Beta' }]);
+const mockGetTasks = jest.fn(() => [
+    { id: 1, project: 'Alpha' },
+    { id: 2, project: 'Alpha' },
+    { id: 3, project: 'Alpha', archived: true },
+    { id: 4, project: 'Beta' },
+]);
 const mockGetActiveTab = jest.fn(() => 0);
 const mockSetActiveTab = jest.fn();
 
 jest.mock('../src/repositories', () => ({
     getConfigRepository: () => ({
         getAllFullProjects: mockGetAllFullProjects,
+        getTasks: mockGetTasks,
         getActiveTab: mockGetActiveTab,
         setActiveTab: mockSetActiveTab,
     }),
@@ -124,6 +131,12 @@ describe('TaskModal save', () => {
         fireEvent.change(screen.getByPlaceholderText('Progetto (opzionale)'), { target: { value: 'alp' } });
         expect(screen.getByText('Alpha')).toBeInTheDocument();
         expect(screen.queryByText('Beta')).not.toBeInTheDocument();
+    });
+
+    it('shows how many tasks each project holds, archived ones left out', () => {
+        render(<TaskModal {...baseProps} mode="create" />);
+        expect(screen.getByText('Alpha').closest('.project-suggestion-item')).toHaveTextContent('2 task');
+        expect(screen.getByText('Beta').closest('.project-suggestion-item')).toHaveTextContent('1 task');
     });
 
     it('says so when no project matches what was typed', () => {
