@@ -307,10 +307,6 @@
     "expiredCount_other": "{{count}} tâches expirées"
   },
   "dayTasks": {
-    "today": "Aujourd'hui",
-    "previousDay": "Jour précédent",
-    "nextDay": "Jour suivant",
-    "backToToday": "Revenir à aujourd'hui",
     "none": "Aucune tâche à terminer ce jour-là"
   }
 }

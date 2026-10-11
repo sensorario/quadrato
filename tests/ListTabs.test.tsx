@@ -6,6 +6,7 @@ jest.mock('@sensorario/sg-components', () => ({
     QuadratoHeader: () => <div />,
     SGFooter: () => <div />,
     LanguageSwitcher: () => <div />,
+    DateNav: jest.requireActual('@sensorario/sg-components').DateNav,
     Tabs: ({ items, onChange }: any) => (
         <div>
             {items.map((item: any) => (

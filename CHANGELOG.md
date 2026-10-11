@@ -54,6 +54,7 @@
 
 
 ### Fixes
+- fix(expired): task expired are missing ([1745510](https://github.com/sensorario/quadrato/commit/1745510), 2026-10-11)
 - fix(UI): scrolling hide login button ([bd04ecf](https://github.com/sensorario/quadrato/commit/bd04ecf), 2026-09-09)
 - fix(task): login on static link opening from a not authenticated user ([11418c8](https://github.com/sensorario/quadrato/commit/11418c8), 2026-08-20)
 - fix: clear all simplanner-* localStorage on logout, 401 and before login ([9a8d785](https://github.com/sensorario/quadrato/commit/9a8d785), 2026-07-20)

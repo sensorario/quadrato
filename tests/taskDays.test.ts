@@ -1,4 +1,4 @@
-import { dayKey, dueDay, isOverdue, offsetDay } from '../src/utils/taskDays';
+import { dayKey, dueDay, isOverdue } from '../src/utils/taskDays';
 import { STATUS_ENUM } from '../src/utils';
 import { Task } from '../src/types/commonTypes';
 
@@ -11,10 +11,7 @@ describe('taskDays', () => {
         expect(dueDay(task({}))).toBeNull();
     });
 
-    it('moves by days across months and years', () => {
-        expect(offsetDay('2026-10-31', 1)).toBe('2026-11-01');
-        expect(offsetDay('2026-01-01', -1)).toBe('2025-12-31');
-        expect(offsetDay('2026-03-29', 1)).toBe('2026-03-30');
+    it('gives the local day of a date', () => {
         expect(dayKey(new Date(2026, 9, 1, 0, 5))).toBe('2026-10-01');
     });
 

@@ -307,10 +307,6 @@
     "expiredCount_other": "{{count}} abgelaufene Aufgaben"
   },
   "dayTasks": {
-    "today": "Heute",
-    "previousDay": "Vorheriger Tag",
-    "nextDay": "Nächster Tag",
-    "backToToday": "Zurück zu heute",
     "none": "Keine Aufgabe an diesem Tag fällig"
   }
 }

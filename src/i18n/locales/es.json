@@ -307,10 +307,6 @@
     "expiredCount_other": "{{count}} tareas vencidas"
   },
   "dayTasks": {
-    "today": "Hoy",
-    "previousDay": "Día anterior",
-    "nextDay": "Día siguiente",
-    "backToToday": "Volver a hoy",
     "none": "Ninguna tarea vence este día"
   }
 }

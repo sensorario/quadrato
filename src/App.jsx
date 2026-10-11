@@ -19,9 +19,8 @@ import { childrenOf, descendantIds, hasOpenDescendants, reconcileAncestors } fro
 import { getActiveProjects } from "./functions/getActiveProjects";
 import { getConfigRepository } from "./repositories";
 import { navigate } from "./Router";
-import { Icon, LanguageSwitcher, QuadratoHeader, SGFooter, Tabs } from "@sensorario/sg-components";
+import { DateNav, Icon, LanguageSwitcher, QuadratoHeader, SGFooter, Tabs } from "@sensorario/sg-components";
 import ExpiredTasks from "./components/ExpiredTasks";
-import DayNavigator from "./components/DayNavigator";
 import { dayKey, dueDay, isOverdue } from "./utils/taskDays";
 import LogoutConfirmModal from "./components/LogoutConfirmModal";
 
@@ -2211,7 +2210,7 @@ function App() {
 
                     {listTab === "day" && (
                         <>
-                            <DayNavigator day={day} onChange={setDay} />
+                            <DateNav className="list-day-nav" value={day} onChange={setDay} />
                             {dayTasks.length > 0 ? taskListOf(dayTasks) : <p className="list-tab-empty">{t("dayTasks.none")}</p>}
                         </>
                     )}
