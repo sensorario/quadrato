@@ -5,6 +5,7 @@ import { TaskDetailPage } from '../src/pages/TaskDetailPage';
 
 jest.mock('@sensorario/sg-components', () => ({
     QuadratoHeader: () => <div data-testid="header" />,
+    Logo: () => <span />,
     Icon: (props: any) => <span aria-label={props['aria-label']} />,
 }));
 
@@ -170,5 +171,215 @@ describe('TaskDetailPage subtasks', () => {
         render(<TaskDetailPage taskId="x" />);
 
         expect(screen.getByText('Nessun sotto-task')).toBeInTheDocument();
+    });
+
+    it('links to the Gantt\'s route of the task\'s project, or of the tasks without one', () => {
+        mockTasks.push({ id: 'w', title: 'Ufficio', status: 0, project: "Lavoro d'ufficio" });
+        const { unmount } = render(<TaskDetailPage taskId="p" />);
+        expect(screen.getByRole('link', { name: 'Apri nel Gantt' })).toHaveAttribute('href', 'https://gantt.simonegentili.com/progetto/casa');
+        unmount();
+
+        const { unmount: unmountOffice } = render(<TaskDetailPage taskId="w" />);
+        expect(screen.getByRole('link', { name: 'Apri nel Gantt' })).toHaveAttribute('href', "https://gantt.simonegentili.com/progetto/Lavoro%20d'ufficio");
+        unmountOffice();
+
+        render(<TaskDetailPage taskId="x" />);
+        expect(screen.getByRole('link', { name: 'Apri nel Gantt' })).toHaveAttribute('href', 'https://gantt.simonegentili.com/senza-progetto');
+    });
+});
+
+describe('TaskDetailPage subtasks reordering', () => {
+    // jsdom has no PointerEvent: without it fireEvent drops clientY and button. Nor DOMMatrix,
+    // which reads how far a sliding row is drawn from its place: here never mid-slide.
+    beforeAll(() => {
+        (window as unknown as { PointerEvent: unknown }).PointerEvent ??= class extends MouseEvent { };
+        (window as unknown as { DOMMatrixReadOnly: unknown }).DOMMatrixReadOnly ??= class { m42 = 0; };
+    });
+
+    beforeEach(() => {
+        localStorage.setItem('simonegentili.com-access-token', 'tok');
+        mockTasks = [
+            { id: 'p', title: 'Parent', status: 0 },
+            { id: 'a', title: 'First', status: 0, parentId: 'p' },
+            { id: 'a1', title: 'Under first', status: 0, parentId: 'a' },
+            { id: 'b', title: 'Second', status: 0, parentId: 'p' },
+            { id: 'c', title: 'Third', status: 0, parentId: 'p' },
+        ];
+        mockFetchData.mockClear();
+        global.fetch = jest.fn().mockResolvedValue({ ok: true, status: 200, json: async () => ({}) });
+    });
+
+    afterEach(() => {
+        localStorage.clear();
+        jest.restoreAllMocks();
+    });
+
+    // jsdom has no layout: each row is 20px high, laid out in DOM order, so a reordered row moves.
+    const stackRows = () => {
+        within(screen.getByRole('list', { name: 'Sotto-task' })).getAllByRole('listitem').forEach(li => {
+            Object.defineProperty(li, 'offsetTop', { configurable: true, get: () => Array.from(li.parentElement?.children ?? []).indexOf(li) * 20 });
+            Object.defineProperty(li, 'offsetHeight', { configurable: true, value: 20 });
+        });
+    };
+    const row = (title: string) => screen.getByText(title).closest('li') as HTMLLIElement;
+    const grip = (title: string) => within(row(title)).getByLabelText('Trascina per riordinare');
+    // Each row's button: the status label, then the title.
+    const titles = () => within(screen.getByRole('list', { name: 'Sotto-task' })).getAllByRole('listitem')
+        .map(li => li.querySelector('button') as HTMLButtonElement)
+        .map(button => button.textContent?.replace(button.querySelector('span')?.textContent ?? '', ''));
+    const putBodies = () => Object.fromEntries((global.fetch as jest.Mock).mock.calls
+        .filter(([, o]) => o.method === 'PUT')
+        .map(([url, o]) => [url.split('/').pop(), JSON.parse(o.body)]));
+
+    it('moves a subtask, with its own subtasks, below the next one and saves the positions', async () => {
+        render(<TaskDetailPage taskId="p" />);
+        stackRows();
+
+        // Rows: First 0-20, Under first 20-40, Second 40-60, Third 60-80.
+        fireEvent.pointerDown(grip('First'), { button: 0, clientY: 10 });
+        fireEvent.pointerMove(window, { clientY: 65 });
+        expect(titles()).toEqual(['Second', 'First', 'Under first', 'Third']);
+        fireEvent.pointerUp(window);
+
+        await waitFor(() => expect(mockFetchData).toHaveBeenCalled());
+        expect(putBodies()).toEqual({ b: { position: 0 }, a: { position: 1 }, c: { position: 2 } });
+        expect(titles()).toEqual(['Second', 'First', 'Under first', 'Third']);
+    });
+
+    it('keeps the dragged rows under the pointer, slides the others, and slides them into place on release', () => {
+        render(<TaskDetailPage taskId="p" />);
+        stackRows();
+
+        fireEvent.pointerDown(grip('First'), { button: 0, clientY: 10 });
+        fireEvent.pointerMove(window, { clientY: 65 });
+
+        // Pointer 55px down, First and its subtask laid out 20px lower: drawn 35px further.
+        expect(row('First').style.transform).toBe('translateY(35px)');
+        expect(row('Under first').style.transform).toBe('translateY(35px)');
+        expect(row('Second').style.transition).toBe('transform 200ms ease');
+
+        fireEvent.pointerUp(window);
+
+        expect(row('First').style.transform).toBe('');
+        expect(row('First').style.transition).toBe('transform 200ms ease');
+    });
+
+    it('keeps a subtask among its siblings, never under another task', async () => {
+        mockTasks.push({ id: 'a2', title: 'Second under first', status: 0, parentId: 'a' });
+        render(<TaskDetailPage taskId="p" />);
+        stackRows();
+
+        // Rows: First, Under first, Second under first, Second, Third: dragged to the very bottom.
+        fireEvent.pointerDown(grip('Under first'), { button: 0, clientY: 30 });
+        fireEvent.pointerMove(window, { clientY: 95 });
+        fireEvent.pointerUp(window);
+
+        await waitFor(() => expect(mockFetchData).toHaveBeenCalled());
+        expect(titles()).toEqual(['First', 'Second under first', 'Under first', 'Second', 'Third']);
+        expect(putBodies()).toEqual({ a2: { position: 0 }, a1: { position: 1 } });
+    });
+
+    it('saves nothing when the grip is released where it was', () => {
+        render(<TaskDetailPage taskId="p" />);
+        stackRows();
+
+        fireEvent.pointerDown(grip('Second'), { button: 0, clientY: 50 });
+        fireEvent.pointerUp(window);
+
+        expect(global.fetch).not.toHaveBeenCalled();
+    });
+
+    it('moves subtasks with a due date too, and keeps them where they were dropped', async () => {
+        mockTasks.push({ id: 'd', title: 'Dated', status: 0, parentId: 'p', timestamp: '2026-11-01 09:00:00' });
+        render(<TaskDetailPage taskId="p" />);
+        expect(titles()).toEqual(['Dated', 'First', 'Under first', 'Second', 'Third']);
+        stackRows();
+
+        fireEvent.pointerDown(grip('Dated'), { button: 0, clientY: 10 });
+        fireEvent.pointerMove(window, { clientY: 105 });
+        fireEvent.pointerUp(window);
+
+        await waitFor(() => expect(mockFetchData).toHaveBeenCalled());
+        expect(titles()).toEqual(['First', 'Under first', 'Second', 'Third', 'Dated']);
+        expect(putBodies()).toEqual({ a: { position: 0 }, b: { position: 1 }, c: { position: 2 }, d: { position: 3 } });
+    });
+
+    it('shows the order picked here before date and status, and the subtasks never placed after', () => {
+        mockTasks = mockTasks.map(t =>
+            t.id === 'a' ? { ...t, status: 2, position: 1 }
+                : t.id === 'b' ? { ...t, timestamp: '2026-11-01 09:00:00', position: 0 }
+                    : t
+        );
+        render(<TaskDetailPage taskId="p" />);
+
+        expect(titles()).toEqual(['Second', 'First', 'Under first', 'Third']);
+    });
+
+    it('puts the order back when it cannot be saved', async () => {
+        global.fetch = jest.fn().mockResolvedValue({ ok: false, status: 500, json: async () => ({}) });
+        const alert = jest.spyOn(window, 'alert').mockImplementation(() => { });
+        render(<TaskDetailPage taskId="p" />);
+        stackRows();
+
+        fireEvent.pointerDown(grip('Third'), { button: 0, clientY: 70 });
+        fireEvent.pointerMove(window, { clientY: 5 });
+        fireEvent.pointerUp(window);
+
+        await waitFor(() => expect(alert).toHaveBeenCalledWith('Non è stato possibile salvare il nuovo ordine dei sotto-task.'));
+        expect(titles()).toEqual(['First', 'Under first', 'Second', 'Third']);
+    });
+});
+
+describe('TaskDetailPage status', () => {
+    beforeEach(() => {
+        localStorage.setItem('simonegentili.com-access-token', 'tok');
+        mockTasks = [
+            { id: 'p', title: 'Parent', status: 0 },
+            { id: 'c1', title: 'Done child', status: 2, parentId: 'p' },
+            { id: 'c2', title: 'Open child', status: 0, parentId: 'p' },
+        ];
+        mockFetchData.mockClear();
+        global.fetch = jest.fn().mockResolvedValue({ ok: true, status: 200, json: async () => ({}) });
+    });
+
+    afterEach(() => {
+        localStorage.clear();
+        jest.restoreAllMocks();
+    });
+
+    const statusButton = (label: string) =>
+        within(screen.getByRole('group', { name: 'Stato' })).getByRole('button', { name: label });
+    const putBodies = () => Object.fromEntries((global.fetch as jest.Mock).mock.calls
+        .filter(([, o]) => o.method === 'PUT')
+        .map(([url, o]) => [url.split('/').pop(), JSON.parse(o.body)]));
+
+    it('changes the status, and closes the parent with its last open subtask', async () => {
+        render(<TaskDetailPage taskId="c2" />);
+        expect(statusButton('Da fare')).toHaveAttribute('aria-pressed', 'true');
+
+        fireEvent.click(statusButton('Completato'));
+
+        expect(statusButton('Completato')).toHaveAttribute('aria-pressed', 'true');
+        await waitFor(() => expect(mockFetchData).toHaveBeenCalled());
+        expect(putBodies()).toEqual({ c2: { status: 2 }, p: { status: 2 } });
+    });
+
+    it('cannot close a task while a subtask is open', () => {
+        render(<TaskDetailPage taskId="p" />);
+
+        expect(statusButton('Completato')).toBeDisabled();
+        expect(statusButton('Saltato')).toBeDisabled();
+        expect(statusButton('In corso')).toBeEnabled();
+    });
+
+    it('puts the status back when it cannot be saved', async () => {
+        global.fetch = jest.fn().mockResolvedValue({ ok: false, status: 500, json: async () => ({}) });
+        const alert = jest.spyOn(window, 'alert').mockImplementation(() => { });
+        render(<TaskDetailPage taskId="c2" />);
+
+        fireEvent.click(statusButton('In corso'));
+
+        await waitFor(() => expect(alert).toHaveBeenCalledWith('Non è stato possibile cambiare lo stato del task.'));
+        expect(statusButton('Da fare')).toHaveAttribute('aria-pressed', 'true');
     });
 });

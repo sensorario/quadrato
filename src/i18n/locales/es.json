@@ -254,7 +254,10 @@
     "addSubtaskFailed": "No se pudo añadir la subtarea.",
     "title": "Título de la tarea",
     "editTitleHint": "Doble clic para editar el título",
-    "renameFailed": "No se pudo guardar el título."
+    "renameFailed": "No se pudo guardar el título.",
+    "reorderFailed": "No se pudo guardar el nuevo orden de las subtareas.",
+    "statusFailed": "No se pudo cambiar el estado de la tarea.",
+    "openInGantt": "Abrir en el Gantt"
   },
   "expiredTasks": {
     "none": "No hay tareas vencidas",
@@ -302,11 +305,19 @@
     "label": "Lista de tareas",
     "all": "Todas",
     "byDay": "Por fecha",
+    "week": "Semana",
+    "month": "Mes",
     "expired": "Vencidas",
     "expiredCount_one": "{{count}} tarea vencida",
     "expiredCount_other": "{{count}} tareas vencidas"
   },
   "dayTasks": {
     "none": "Ninguna tarea vence este día"
+  },
+  "weekTasks": {
+    "none": "Ninguna tarea vence esta semana"
+  },
+  "monthTasks": {
+    "none": "Ninguna tarea vence este mes"
   }
 }

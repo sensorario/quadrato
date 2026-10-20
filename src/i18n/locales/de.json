@@ -254,7 +254,10 @@
     "addSubtaskFailed": "Die Unteraufgabe konnte nicht hinzugefügt werden.",
     "title": "Titel der Aufgabe",
     "editTitleHint": "Doppelklick zum Bearbeiten des Titels",
-    "renameFailed": "Der Titel konnte nicht gespeichert werden."
+    "renameFailed": "Der Titel konnte nicht gespeichert werden.",
+    "reorderFailed": "Die neue Reihenfolge der Unteraufgaben konnte nicht gespeichert werden.",
+    "statusFailed": "Der Status der Aufgabe konnte nicht geändert werden.",
+    "openInGantt": "Im Gantt öffnen"
   },
   "expiredTasks": {
     "none": "Keine abgelaufenen Aufgaben",
@@ -302,11 +305,19 @@
     "label": "Aufgabenliste",
     "all": "Alle",
     "byDay": "Nach Datum",
+    "week": "Woche",
+    "month": "Monat",
     "expired": "Abgelaufen",
     "expiredCount_one": "{{count}} abgelaufene Aufgabe",
     "expiredCount_other": "{{count}} abgelaufene Aufgaben"
   },
   "dayTasks": {
     "none": "Keine Aufgabe an diesem Tag fällig"
+  },
+  "weekTasks": {
+    "none": "Keine Aufgabe diese Woche fällig"
+  },
+  "monthTasks": {
+    "none": "Keine Aufgabe diesen Monat fällig"
   }
 }

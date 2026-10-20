@@ -1,16 +1,20 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { QuadratoHeader } from '@sensorario/sg-components';
+import { Icon, Logo, QuadratoHeader } from '@sensorario/sg-components';
 import { Task } from '../types/commonTypes';
 import { getConfigRepository } from '../repositories';
 import { navigate } from '../Router';
 import FormatDate from '../components/FormatDate';
 import TaskTitle from '../components/TaskTitle';
 import { STATUS_ENUM } from '../utils';
-import { descendantIds, flattenTree, reconcileAncestors } from '../utils/taskTree';
+import { byPosition, descendantIds, flattenTree, hasOpenDescendants, reconcileAncestors, TreeRow } from '../utils/taskTree';
 import { toPlainText } from '../utils/toPlainText';
+import { useSlidingRows } from '../functions/useSlidingRows';
 
 const UNIT_KEYS: Record<string, string> = { minuti: 'minutes', giorni: 'days', settimane: 'weeks', mesi: 'months', anni: 'years' };
+
+const withPositions = (tasks: Task[], positions: Map<Task['id'], number>) =>
+    tasks.map(t => positions.has(t.id) && t.position !== positions.get(t.id) ? { ...t, position: positions.get(t.id) } : t);
 
 const goBack = (task: Task) => {
     const anyTask = task as any;
@@ -59,6 +63,15 @@ const Breadcrumb = ({ task }: { task: Task }) => {
                     </button>
                 </>
             )}
+            {/* The Gantt opened on this task's project, by its route (see the Gantt's App.jsx). */}
+            <a
+                href={`https://gantt.simonegentili.com/${task.project ? `progetto/${encodeURIComponent(task.project)}` : 'senza-progetto'}`}
+                title={t('taskDetailPage.openInGantt')}
+                aria-label={t('taskDetailPage.openInGantt')}
+                style={{ marginLeft: 'auto', display: 'flex', color: '#007bff' }}
+            >
+                <Logo name="gantt" size={22} />
+            </a>
         </div>
     );
 };
@@ -146,6 +159,10 @@ export const TaskDetailPage = ({ taskId }: TaskDetailPageProps) => {
         () => Boolean(localStorage.getItem('simonegentili.com-access-token'))
     );
     const [deleting, setDeleting] = useState(false);
+    // While a subtask is dragged: the siblings' positions where it would land, shown at once.
+    const [draggedId, setDraggedId] = useState<Task['id'] | null>(null);
+    const [dragPositions, setDragPositions] = useState<Map<Task['id'], number> | null>(null);
+    const { rowRef, isAbove, startFollowing, follow, stopFollowing } = useSlidingRows(taskId);
 
     const matchTask = (t: any) =>
         String(t.id) === String(taskId) || String(t.uuid) === String(taskId);
@@ -318,6 +335,121 @@ export const TaskDetailPage = ({ taskId }: TaskDetailPageProps) => {
         }
     };
 
+    // Shown at once, put back if the API doesn't take it. As in the list (commitStatus in
+    // App.jsx), its parents follow: closed when all their subtasks are, reopened when one isn't.
+    const handleStatus = async (status: number) => {
+        if (!task || task.status === status) return;
+        const before = allTasks;
+        const after = reconcileAncestors(
+            before.map(t => t.id === task.id ? { ...t, status } : t),
+            task.parentId != null ? [task.parentId] : []
+        );
+        const previous = new Map(before.map(t => [t.id, t]));
+        const changes = after.flatMap(t => {
+            const old = previous.get(t.id);
+            if (!old || old === t) return [];
+            const body = Object.fromEntries((['status', 'timestamp'] as const)
+                .filter(field => (old[field] ?? null) !== (t[field] ?? null))
+                .map(field => [field, t[field] ?? null]));
+            return Object.keys(body).length > 0 ? [{ id: t.id, body }] : [];
+        });
+        setAllTasks(after);
+        setTask({ ...task, status });
+        const token = localStorage.getItem('simonegentili.com-access-token');
+        try {
+            const responses = await Promise.all(changes.map(({ id, body }) =>
+                fetch(`https://api.simonegentili.com/quadrato/task/${id}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json', ...(token ? { Authorization: `Bearer ${token}` } : {}) },
+                    body: JSON.stringify(body),
+                })
+            ));
+            if (responses.some(res => res.status === 401)) {
+                localStorage.removeItem('simonegentili.com-access-token');
+                setIsAuthenticated(false);
+                return;
+            }
+            if (responses.some(res => !res.ok)) throw new Error('status');
+            getConfigRepository().fetchData();
+        } catch {
+            setAllTasks(before);
+            setTask(task);
+            alert(t('taskDetailPage.statusFailed'));
+        }
+    };
+
+    // Shown at once, put back if the API doesn't take it.
+    const saveOrder = async (positions: Map<Task['id'], number>) => {
+        const before = allTasks;
+        const after = withPositions(before, positions);
+        const changed = after.filter((t, i) => t !== before[i]);
+        if (changed.length === 0) return;
+        setAllTasks(after);
+        const token = localStorage.getItem('simonegentili.com-access-token');
+        try {
+            const responses = await Promise.all(changed.map(t =>
+                fetch(`https://api.simonegentili.com/quadrato/task/${t.id}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json', ...(token ? { Authorization: `Bearer ${token}` } : {}) },
+                    body: JSON.stringify({ position: t.position }),
+                })
+            ));
+            if (responses.some(res => res.status === 401)) {
+                localStorage.removeItem('simonegentili.com-access-token');
+                setIsAuthenticated(false);
+                return;
+            }
+            if (responses.some(res => !res.ok)) throw new Error('reorder');
+            getConfigRepository().fetchData();
+        } catch {
+            setAllTasks(before);
+            alert(t('taskDetailPage.reorderFailed'));
+        }
+    };
+
+    // Dragged by the grip, up and down among its siblings only: its own subtasks move along,
+    // and it never ends up under another task. The rows follow the pointer, the others slide
+    // out of the way, and on release they slide into their place.
+    const startDrag = (e: React.PointerEvent, sub: Task, rows: TreeRow[]) => {
+        if (e.button !== 0) return;
+        e.preventDefault();
+        const siblings = rows.filter(r => r.task.parentId === sub.parentId).map(r => r.task);
+        const others = siblings.filter(s => s.id !== sub.id);
+        const startIndex = siblings.indexOf(sub);
+        const positionsAt = (index: number) =>
+            new Map([...others.slice(0, index), sub, ...others.slice(index)].map((s, i) => [s.id, i]));
+        const startY = e.clientY;
+        let index = startIndex;
+        startFollowing([sub.id, ...descendantIds(allTasks, sub.id)]);
+        setDraggedId(sub.id);
+        setDragPositions(positionsAt(index));
+
+        const onMove = (ev: PointerEvent) => {
+            follow(ev.clientY - startY);
+            let next = others.findIndex(s => isAbove(s.id, ev.clientY));
+            if (next === -1) next = others.length;
+            if (next !== index) {
+                index = next;
+                setDragPositions(positionsAt(index));
+            }
+        };
+        const finish = (save: boolean) => {
+            window.removeEventListener('pointermove', onMove);
+            window.removeEventListener('pointerup', onUp);
+            window.removeEventListener('pointercancel', onCancel);
+            stopFollowing();
+            setDraggedId(null);
+            setDragPositions(null);
+            if (save && index !== startIndex) saveOrder(positionsAt(index));
+        };
+        const onUp = () => finish(true);
+        const onCancel = () => finish(false);
+
+        window.addEventListener('pointermove', onMove);
+        window.addEventListener('pointerup', onUp);
+        window.addEventListener('pointercancel', onCancel);
+    };
+
     const containerStyle: React.CSSProperties = {
         maxWidth: '600px',
         margin: '40px auto',
@@ -413,7 +545,33 @@ export const TaskDetailPage = ({ taskId }: TaskDetailPageProps) => {
                 })()}
 
                 <span style={labelStyle}>{t('taskDetailPage.status')}</span>
-                <span style={valueStyle}>{statusLabel[task.status] ?? task.status}</span>
+                <div role="group" aria-label={t('taskDetailPage.status')} style={{ display: 'flex', flexWrap: 'wrap', gap: '6px', marginTop: '4px' }}>
+                    {[STATUS_ENUM.TODO, STATUS_ENUM.IN_PROGRESS, STATUS_ENUM.DONE, STATUS_ENUM.SKIPPED].map(status => {
+                        // As in the list: a task closes by itself with its last open subtask.
+                        const blocked = (status === STATUS_ENUM.DONE || status === STATUS_ENUM.SKIPPED) && hasOpenDescendants(allTasks, task.id);
+                        const current = task.status === status;
+                        return (
+                            <button
+                                key={status}
+                                type="button"
+                                aria-pressed={current}
+                                disabled={blocked}
+                                title={blocked ? t('taskList.subtasksOpen') : undefined}
+                                onClick={() => handleStatus(status)}
+                                style={{
+                                    padding: '4px 12px', borderRadius: '999px', fontSize: '13px',
+                                    border: `1px solid ${current ? '#007bff' : '#ccc'}`,
+                                    background: current ? '#007bff' : '#fff',
+                                    color: current ? '#fff' : '#333',
+                                    cursor: blocked ? 'not-allowed' : 'pointer',
+                                    opacity: blocked ? 0.5 : 1,
+                                }}
+                            >
+                                {statusLabel[status]}
+                            </button>
+                        );
+                    })}
+                </div>
 
                 {task.project && (
                     <>
@@ -449,14 +607,32 @@ export const TaskDetailPage = ({ taskId }: TaskDetailPageProps) => {
                 {(() => {
                     // The task itself isn't in the list, so its direct children come out at depth 0.
                     const ids = new Set(descendantIds(allTasks, task.id));
-                    const rows = flattenTree(allTasks.filter(t => ids.has(t.id) && !t.archived));
+                    const subtasks = allTasks.filter(t => ids.has(t.id) && !t.archived);
+                    const rows = flattenTree(dragPositions ? withPositions(subtasks, dragPositions) : subtasks, byPosition);
                     if (rows.length === 0) {
                         return <p style={{ ...valueStyle, color: '#999' }}>{t('taskDetailPage.noSubtasks')}</p>;
                     }
+                    const lifted = new Set(draggedId != null ? [draggedId, ...descendantIds(allTasks, draggedId)] : []);
                     return (
-                        <ul aria-label={t('taskDetailPage.subtasks')} style={{ listStyle: 'none', margin: '4px 0 0', padding: 0 }}>
+                        // Positioned, so each row's offsetTop is its place in the list (useSlidingRows).
+                        <ul aria-label={t('taskDetailPage.subtasks')} style={{ listStyle: 'none', margin: '4px 0 0', padding: 0, position: 'relative' }}>
                             {rows.map(({ task: sub, depth }) => (
-                                <li key={sub.id} style={{ paddingLeft: depth * 20, margin: '4px 0' }}>
+                                <li
+                                    key={sub.id}
+                                    ref={rowRef(sub.id)}
+                                    style={{
+                                        paddingLeft: depth * 20, margin: '4px 0', display: 'flex', alignItems: 'center', gap: '4px', position: 'relative',
+                                        ...(lifted.has(sub.id) && { zIndex: 1, background: '#f3f7ff', boxShadow: '0 2px 6px rgba(0,0,0,0.12)' }),
+                                    }}
+                                >
+                                    <span
+                                        onPointerDown={e => startDrag(e, sub, rows)}
+                                        title={t('taskList.dragHandle')}
+                                        aria-label={t('taskList.dragHandle')}
+                                        style={{ display: 'flex', flexShrink: 0, color: '#aaa', cursor: draggedId === sub.id ? 'grabbing' : 'grab', touchAction: 'none' }}
+                                    >
+                                        <Icon name="grip-vertical" size={16} />
+                                    </span>
                                     <button
                                         type="button"
                                         onClick={() => navigate(`/task/${sub.id}`)}

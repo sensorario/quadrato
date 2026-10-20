@@ -103,12 +103,17 @@ beforeAll(() => {
         }
     }
     (window as unknown as { PointerEvent: unknown }).PointerEvent ??= PointerEventPolyfill;
+    // Nor DOMMatrix, which reads how far a sliding row is drawn from its place: here never mid-slide.
+    (window as unknown as { DOMMatrixReadOnly: unknown }).DOMMatrixReadOnly ??= class { m42 = 0; };
 });
 
-// jsdom has no layout: give each row a 100x20 box stacked by DOM order.
+// jsdom has no layout: give each row a 100x20 box stacked by DOM order (the selection area
+// reads the box, dragging reads offsetTop, which follows the rows when they're reordered).
 const stackRows = (container: HTMLElement) => {
     container.querySelectorAll('li').forEach((li, i) => {
         li.getBoundingClientRect = () => ({ top: i * 20, height: 20, bottom: i * 20 + 20, left: 0, right: 100, width: 100, x: 0, y: i * 20, toJSON: () => ({}) });
+        Object.defineProperty(li, 'offsetTop', { configurable: true, get: () => Array.from(li.parentElement?.children ?? []).indexOf(li) * 20 });
+        Object.defineProperty(li, 'offsetHeight', { configurable: true, value: 20 });
     });
 };
 
@@ -148,6 +153,22 @@ describe('TaskList drag and drop', () => {
         fireEvent.pointerUp(window);
 
         expect(onReorder).toHaveBeenCalledWith(1, null, [2, 1, 3]);
+    });
+
+    it('keeps the dragged row under the pointer, slides the others, and slides it into place on release', () => {
+        renderList(undated, jest.fn());
+
+        fireEvent.pointerDown(grip('First'), { button: 0, clientX: 10, clientY: 10 });
+        fireEvent.pointerMove(window, { clientX: 10, clientY: 35 });
+
+        // Pointer 25px down, First laid out 20px lower (after Second): drawn 5px further.
+        expect(row('First').style.transform).toBe('translateY(5px)');
+        expect(row('Second').style.transition).toBe('transform 200ms ease');
+
+        fireEvent.pointerUp(window);
+
+        expect(row('First').style.transform).toBe('');
+        expect(row('First').style.transition).toBe('transform 200ms ease');
     });
 
     it('does not reorder when the grip is released where it was', () => {

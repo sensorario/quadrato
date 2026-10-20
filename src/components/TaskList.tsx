@@ -1,4 +1,4 @@
-import React, { SetStateAction, useEffect, useLayoutEffect, useRef, useState } from "react";
+import React, { SetStateAction, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { getStatusIcons, STATUS_ENUM } from "../utils";
 import { Icon } from "@sensorario/sg-components";
@@ -12,6 +12,7 @@ import { Task } from "../types/commonTypes";
 import { getConfigRepository } from "../repositories";
 import { childrenOf, descendantIds, flattenTree, hasOpenDescendants, INDENT_PX, projectDrop, TreeRow } from "../utils/taskTree";
 import { navigate } from "../Router";
+import { useSlidingRows } from "../functions/useSlidingRows";
 
 // A project in one of the user's own workspaces, as listed by GET /quadrato/projects.
 export type OwnProject = { id: string; name: string; workspace: string; workspaceUuid: string };
@@ -53,28 +54,7 @@ export const TaskList = ({ tasks, pendingStatuses, onTaskClick, updateTaskTitle,
     const [editTask, setEditTask] = useState<Task | null>(null);
     const [drag, setDrag] = useState<{ insertIndex: number; depth: number; parentId: Task['id'] | null } | null>(null);
     const [draggedId, setDraggedId] = useState<Task['id'] | null>(null);
-    const rowRefs = useRef(new Map<Task['id'], HTMLLIElement>());
-    const prevTops = useRef(new Map<Task['id'], number>());
-
-    // FLIP: when a status change moves a task to the top or bottom, every row slides
-    // from its old offset to the new one. offsetTop (not getBoundingClientRect) so
-    // page scroll between renders doesn't look like a move; skipped while dragging
-    // because the drag hit-testing reads the rows' on-screen rects.
-    useLayoutEffect(() => {
-        const animate = drag === null && !window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
-        const tops = new Map<Task['id'], number>();
-        rowRefs.current.forEach((el, id) => {
-            tops.set(id, el.offsetTop);
-            const prev = prevTops.current.get(id);
-            if (!animate || prev === undefined || prev === el.offsetTop) return;
-            el.style.transition = 'none';
-            el.style.transform = `translateY(${prev - el.offsetTop}px)`;
-            void el.offsetHeight;
-            el.style.transition = 'transform 300ms ease';
-            el.style.transform = '';
-        });
-        prevTops.current = tops;
-    });
+    const { rowRefs, rowRef, isAbove, startFollowing, follow, stopFollowing } = useSlidingRows();
     const [selectedIds, setSelectedIds] = useState<Task['id'][]>([]);
     const [marquee, setMarquee] = useState<{ left: number; top: number; width: number; height: number } | null>(null);
     const [showSelectionModal, setShowSelectionModal] = useState(false);
@@ -255,6 +235,7 @@ export const TaskList = ({ tasks, pendingStatuses, onTaskClick, updateTaskTitle,
     // Dragging starts from the grip only, so clicks on the row and page scrolling are untouched.
     // Up and down picks the place, a small move sideways picks the level: right of the row
     // above makes it a subtask of that row, left brings it back up. Subtasks move along.
+    // The dragged rows follow the pointer and the others slide out of their way (useSlidingRows).
     const startDrag = (e: React.PointerEvent, task: Task, rows: TreeRow[]) => {
         if (!onReorder || e.button !== 0) return;
         e.preventDefault();
@@ -264,16 +245,16 @@ export const TaskList = ({ tasks, pendingStatuses, onTaskClick, updateTaskTitle,
         const startIndex = rows.findIndex(r => r.task.id === task.id);
         const startDepth = rows[startIndex].depth;
         const startX = e.clientX;
+        const startY = e.clientY;
         const start = { insertIndex: startIndex, ...projectDrop(others, startIndex, startDepth, 0) };
         let state = start;
+        startFollowing(rows.filter(r => subtree.has(r.task.id)).map(r => r.task.id));
         setDraggedId(task.id);
         setDrag(state);
 
         const onMove = (ev: PointerEvent) => {
-            let index = others.findIndex(r => {
-                const rect = rowRefs.current.get(r.task.id)?.getBoundingClientRect();
-                return rect !== undefined && ev.clientY < rect.top + rect.height / 2;
-            });
+            follow(ev.clientY - startY);
+            let index = others.findIndex(r => isAbove(r.task.id, ev.clientY));
             if (index === -1) index = others.length;
             const next = { insertIndex: index, ...projectDrop(others, index, startDepth, ev.clientX - startX) };
             if (next.insertIndex !== state.insertIndex || next.depth !== state.depth) {
@@ -299,6 +280,7 @@ export const TaskList = ({ tasks, pendingStatuses, onTaskClick, updateTaskTitle,
             window.removeEventListener('pointermove', onMove);
             window.removeEventListener('pointerup', onUp);
             window.removeEventListener('pointercancel', cleanup);
+            stopFollowing();
             setDraggedId(null);
             setDrag(null);
         };
@@ -341,15 +323,16 @@ export const TaskList = ({ tasks, pendingStatuses, onTaskClick, updateTaskTitle,
         return (
             <li
                 key={task.id}
-                ref={el => { if (el) rowRefs.current.set(task.id, el); else rowRefs.current.delete(task.id); }}
+                ref={rowRef(task.id)}
                 className="task-item"
                 onMouseEnter={() => setHoveredId(typeof task.id === 'number' ? task.id : null)}
                 onMouseLeave={() => setHoveredId(null)}
                 style={{
-                    display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                    display: 'flex', alignItems: 'center', justifyContent: 'space-between', position: 'relative',
                     padding: '4px', paddingLeft: `${4 + depth * INDENT_PX}px`, borderBottom: '1px solid #eee', cursor: isDragged ? 'grabbing' : 'pointer',
                     ...(isSelected && { background: '#e8f0fe' }),
-                    ...(isDragged && { opacity: 0.6, background: '#f3f7ff', boxShadow: '0 2px 6px rgba(0,0,0,0.12)' })
+                    // The dragged task and its subtasks, lifted over the rows they pass.
+                    ...(lifted.has(task.id) && { zIndex: 1, background: '#f3f7ff', boxShadow: '0 2px 6px rgba(0,0,0,0.12)' })
                 }}
 
             >
@@ -425,10 +408,10 @@ export const TaskList = ({ tasks, pendingStatuses, onTaskClick, updateTaskTitle,
 
     const rows = flattenTree(tasks.filter(t => !t.archived));
     let displayRows = rows;
+    const lifted = new Set(drag && draggedId !== null ? [draggedId, ...descendantIds(tasks, draggedId)] : []);
     if (drag && draggedId !== null) {
-        const subtree = new Set([draggedId, ...descendantIds(tasks, draggedId)]);
-        const others = rows.filter(r => !subtree.has(r.task.id));
-        const moving = rows.filter(r => subtree.has(r.task.id));
+        const others = rows.filter(r => !lifted.has(r.task.id));
+        const moving = rows.filter(r => lifted.has(r.task.id));
         const shift = drag.depth - (moving[0]?.depth ?? 0);
         displayRows = [
             ...others.slice(0, drag.insertIndex),
@@ -441,6 +424,8 @@ export const TaskList = ({ tasks, pendingStatuses, onTaskClick, updateTaskTitle,
         <>
             <ul
                 className="task-list"
+                // Positioned, so each row's offsetTop is its place in the list (useSlidingRows).
+                style={{ position: 'relative' }}
                 onPointerDown={startMarquee}
                 onClickCapture={e => { if (suppressClick.current) { e.stopPropagation(); e.preventDefault(); } }}
             >

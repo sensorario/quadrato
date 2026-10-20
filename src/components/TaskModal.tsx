@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
+import { Icon } from "@sensorario/sg-components";
 import { Modal } from "./Modal";
+import { splitTaskType, TASK_TYPES, TaskType, taskTypeIcons } from "./TaskTitle";
 import TabbedContent from "./TabbedContent";
 import { Footer } from "./Footer/index";
 import Toggle from "./Toggle";
@@ -60,11 +62,15 @@ type TaskModalProps = {
 const TaskModal = ({ mode, initialValues, onSave, onClose, projectEditable, dateTimeEnabled }: TaskModalProps) => {
     const { t } = useTranslation();
     const seededProject = initialValues?.project ?? "";
+    const seededTimestamp = initialValues?.timestamp ?? "";
+    // The type is picked from its icon and kept out of the title field ("[bug] " in front of it).
+    const seededTitle = splitTaskType(initialValues?.title ?? "");
 
-    const [title, setTitle] = useState(initialValues?.title ?? "");
+    const [taskType, setTaskType] = useState<TaskType | null>(seededTitle.type);
+    const [title, setTitle] = useState(seededTitle.text);
     const [longDescription, setLongDescription] = useState(initialValues?.longDescription ?? "");
     const [project, setProject] = useState(seededProject);
-    const [timestamp, setTimestamp] = useState<string | number | "">(initialValues?.timestamp ?? "");
+    const [timestamp, setTimestamp] = useState<string | number | "">(seededTimestamp);
     const [periodicity, setPeriodicity] = useState<Periodicity>(initialValues?.periodicity ?? DEFAULT_PERIODICITY);
     const [addAnother, setAddAnother] = useState(false);
 
@@ -72,7 +78,7 @@ const TaskModal = ({ mode, initialValues, onSave, onClose, projectEditable, date
         if (title.trim() === "") return;
 
         onSave({
-            title: toPlainText(title),
+            title: (taskType ? `[${taskType}] ` : "") + toPlainText(title),
             longDescription: toPlainText(longDescription),
             project,
             timestamp,
@@ -86,9 +92,10 @@ const TaskModal = ({ mode, initialValues, onSave, onClose, projectEditable, date
                 setAddAnother,
                 setNewTaskTitle: setTitle,
             });
+            setTaskType(null);
             setLongDescription("");
             setProject(seededProject);
-            setTimestamp("");
+            setTimestamp(seededTimestamp);
             setPeriodicity(DEFAULT_PERIODICITY);
         } else {
             onClose();
@@ -98,6 +105,23 @@ const TaskModal = ({ mode, initialValues, onSave, onClose, projectEditable, date
     const setQuickDate = (getDate: () => Date) => {
         setTimestamp(atUtcMidday(getDate()));
     };
+
+    // Also under the title, so the due date (the one a list tab gives a new task, too) is in
+    // sight while the task is typed; the same field in both tabs.
+    const deadlineField = (
+        <>
+            <label className="modal-input-label">{t("taskModal.deadlineLabel")}</label>
+            <div className="modal-input-wrapper">
+                <input
+                    type="datetime-local"
+                    aria-label={t("taskModal.deadlineLabel")}
+                    value={formatDateTimeLocal(timestamp)}
+                    onChange={(e) => setTimestamp(parseLocalDateTimeToUTC(e.target.value))}
+                    className="modal-input"
+                />
+            </div>
+        </>
+    );
 
     return (
         <Modal
@@ -110,6 +134,31 @@ const TaskModal = ({ mode, initialValues, onSave, onClose, projectEditable, date
                 </Footer>
             }
         >
+            <div role="group" aria-label={t("app.taskTypeLegendLabel")} style={{ display: "flex", gap: "8px", marginBottom: "12px" }}>
+                {TASK_TYPES.map((type) => {
+                    const picked = taskType === type;
+                    const { name, color } = taskTypeIcons[type];
+                    return (
+                        <button
+                            key={type}
+                            type="button"
+                            aria-pressed={picked}
+                            aria-label={t(`app.${type}Label`)}
+                            title={t(`app.${type}Label`)}
+                            onClick={() => setTaskType(picked ? null : type)}
+                            style={{
+                                display: "flex", alignItems: "center", justifyContent: "center",
+                                padding: "6px", borderRadius: "8px", cursor: "pointer",
+                                border: `2px solid ${picked ? color : "transparent"}`,
+                                background: picked ? `${color}22` : "transparent",
+                                color,
+                            }}
+                        >
+                            <Icon name={name} size={20} />
+                        </button>
+                    );
+                })}
+            </div>
             <TabbedContent id="taskModal" panels={[
                 {
                     title: t("taskModal.whatTab"), content: <>
@@ -129,6 +178,7 @@ const TaskModal = ({ mode, initialValues, onSave, onClose, projectEditable, date
                                 }}
                             />
                         </div>
+                        {dateTimeEnabled && deadlineField}
                         <label className="modal-input-label">{t("taskModal.longDescriptionLabel")}</label>
                         <div className="modal-long-description">
                             <textarea
@@ -165,15 +215,7 @@ const TaskModal = ({ mode, initialValues, onSave, onClose, projectEditable, date
                             </div>
                             <div className="modal-hint">{t("taskModal.noDeadlineHint")}</div>
                             <hr />
-                            <label className="modal-input-label">{t("taskModal.deadlineLabel")}</label>
-                            <div className="modal-input-wrapper">
-                                <input
-                                    type="datetime-local"
-                                    value={formatDateTimeLocal(timestamp)}
-                                    onChange={(e) => setTimestamp(parseLocalDateTimeToUTC(e.target.value))}
-                                    className="modal-input"
-                                />
-                            </div>
+                            {deadlineField}
                             <div className="date-shortcut-row">
                                 {QUICK_DAY_OFFSETS.map((days) => (
                                     <button

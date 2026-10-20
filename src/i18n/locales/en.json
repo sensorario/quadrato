@@ -254,7 +254,10 @@
     "addSubtaskFailed": "The subtask could not be added.",
     "title": "Task title",
     "editTitleHint": "Double-click to edit the title",
-    "renameFailed": "The title could not be saved."
+    "renameFailed": "The title could not be saved.",
+    "reorderFailed": "The new order of the subtasks could not be saved.",
+    "statusFailed": "The task's status could not be changed.",
+    "openInGantt": "Open in the Gantt"
   },
   "expiredTasks": {
     "none": "No expired tasks",
@@ -302,11 +305,19 @@
     "label": "Task list",
     "all": "All",
     "byDay": "By date",
+    "week": "Week",
+    "month": "Month",
     "expired": "Expired",
     "expiredCount_one": "{{count}} expired task",
     "expiredCount_other": "{{count}} expired tasks"
   },
   "dayTasks": {
     "none": "No task due on this day"
+  },
+  "weekTasks": {
+    "none": "No task due this week"
+  },
+  "monthTasks": {
+    "none": "No task due this month"
   }
 }

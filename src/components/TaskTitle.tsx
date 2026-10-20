@@ -5,18 +5,28 @@ import type { IconName } from "@sensorario/sg-components";
 // @todo define task type
 const taskTypeRegex = /^\[(feature|bug|pay|spike)\]\s*/i;
 
-const taskTypeIcons: Record<string, { name: IconName; color: string }> = {
+export const TASK_TYPES = ["feature", "bug", "pay", "spike"] as const;
+
+export type TaskType = typeof TASK_TYPES[number];
+
+export const taskTypeIcons: Record<TaskType, { name: IconName; color: string }> = {
     feature: { name: "sparkle", color: '#5480e6' },
     bug: { name: "bug", color: '#e2727d' },
     pay: { name: "credit-card", color: '#2e9e5b' },
     spike: { name: "books", color: '#9b6bd1' },
 };
 
+// A task's type is the start of its title: "[bug] Crash" is a bug called "Crash".
+export const splitTaskType = (title: string): { type: TaskType | null; text: string } => {
+    const match = taskTypeRegex.exec(title);
+    return match
+        ? { type: match[1].toLowerCase() as TaskType, text: title.slice(match[0].length) }
+        : { type: null, text: title };
+};
+
 const TaskTitle = ({ title, iconSize }: { title: string; iconSize?: number }) => {
-    const taskTypeMatch = taskTypeRegex.exec(title);
-    const taskType = taskTypeMatch?.[1].toLowerCase();
+    const { type: taskType, text } = splitTaskType(title);
     const icon = taskType ? taskTypeIcons[taskType] : null;
-    const text = taskTypeMatch ? title.slice(taskTypeMatch[0].length) : title;
     // @todo #45 define url type
     // The capturing group makes split() keep each URL at the odd indexes.
     const parts = text.split(/(https?:\/\/[^\s]+)/).map((part, i) =>

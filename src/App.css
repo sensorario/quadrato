@@ -755,9 +755,20 @@ select:focus-visible,
     }
 }
 
-/* The list's tabs: all the tasks, those due on a day, the overdue ones with how many they are. */
+/* The list's tabs: all the tasks, those due on a day, this week or this month, the overdue ones with how many they are. */
 .list-tabs {
     margin-bottom: 12px;
+}
+
+/* All five tabs, and the overdue count on the last one, have to fit a phone's width. */
+@media (max-width: 480px) {
+    .list-tabs.sg-tabs {
+        --tabs-gap: 2px;
+    }
+
+    .list-tabs .sg-tab {
+        padding: 8px 6px;
+    }
 }
 
 .list-tab-count {
@@ -788,6 +799,12 @@ select:focus-visible,
 .list-day-nav {
     justify-content: center;
     margin-bottom: 8px;
+}
+
+.list-period {
+    margin: 0 0 8px;
+    color: var(--color-ink-muted);
+    text-align: center;
 }
 
 .expired-elsewhere {

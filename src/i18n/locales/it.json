@@ -254,7 +254,10 @@
     "addSubtaskFailed": "Non è stato possibile aggiungere il sotto-task.",
     "title": "Titolo del task",
     "editTitleHint": "Doppio click per modificare il titolo",
-    "renameFailed": "Non è stato possibile salvare il titolo."
+    "renameFailed": "Non è stato possibile salvare il titolo.",
+    "reorderFailed": "Non è stato possibile salvare il nuovo ordine dei sotto-task.",
+    "statusFailed": "Non è stato possibile cambiare lo stato del task.",
+    "openInGantt": "Apri nel Gantt"
   },
   "expiredTasks": {
     "none": "Nessun task scaduto",
@@ -302,11 +305,19 @@
     "label": "Elenco dei task",
     "all": "Tutti",
     "byDay": "Per data",
+    "week": "Settimana",
+    "month": "Mese",
     "expired": "Scaduti",
     "expiredCount_one": "{{count}} task scaduto",
     "expiredCount_other": "{{count}} task scaduti"
   },
   "dayTasks": {
     "none": "Nessun task da concludere in questo giorno"
+  },
+  "weekTasks": {
+    "none": "Nessun task da concludere questa settimana"
+  },
+  "monthTasks": {
+    "none": "Nessun task da concludere questo mese"
   }
 }

@@ -248,7 +248,10 @@
     "addSubtaskFailed": "サブタスクを追加できませんでした。",
     "title": "タスクのタイトル",
     "editTitleHint": "ダブルクリックでタイトルを編集",
-    "renameFailed": "タイトルを保存できませんでした。"
+    "renameFailed": "タイトルを保存できませんでした。",
+    "reorderFailed": "サブタスクの新しい順序を保存できませんでした。",
+    "statusFailed": "タスクの状態を変更できませんでした。",
+    "openInGantt": "ガントチャートで開く"
   },
   "expiredTasks": {
     "none": "期限切れのタスクはありません",
@@ -296,11 +299,19 @@
     "label": "タスク一覧",
     "all": "すべて",
     "byDay": "日付別",
+    "week": "今週",
+    "month": "今月",
     "expired": "期限切れ",
     "expiredCount_one": "期限切れのタスク {{count}} 件",
     "expiredCount_other": "期限切れのタスク {{count}} 件"
   },
   "dayTasks": {
     "none": "この日が期限のタスクはありません"
+  },
+  "weekTasks": {
+    "none": "今週が期限のタスクはありません"
+  },
+  "monthTasks": {
+    "none": "今月が期限のタスクはありません"
   }
 }

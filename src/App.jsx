@@ -21,7 +21,7 @@ import { getConfigRepository } from "./repositories";
 import { navigate } from "./Router";
 import { DateNav, Icon, LanguageSwitcher, QuadratoHeader, SGFooter, Tabs } from "@sensorario/sg-components";
 import ExpiredTasks from "./components/ExpiredTasks";
-import { dayKey, dueDay, isOverdue } from "./utils/taskDays";
+import { dayKey, dueDay, isDueBetween, isOverdue, monthDays, tabDueDate, weekDays } from "./utils/taskDays";
 import LogoutConfirmModal from "./components/LogoutConfirmModal";
 
 // Header di autorizzazione da allegare alle richieste autenticate verso l'API
@@ -239,7 +239,7 @@ function App() {
     const [workspaces, setWorkspaces] = useState([]);
     // The overdue tasks of every workspace, as GET /quadrato/workspaces lists them.
     const [expiredTasks, setExpiredTasks] = useState([]);
-    // The list's tabs: "all" of them, those due on `day` (the default, today) or the "expired" ones.
+    // The list's tabs: "all" of them, those due on `day` (the default, today), this "week" or "month", or the "expired" ones.
     const [listTab, setListTab] = useState("day");
     const [day, setDay] = useState(() => dayKey(new Date()));
     const [registeredUsersCount, setRegisteredUsersCount] = useState(null);
@@ -633,7 +633,8 @@ function App() {
             if (task.id === id && (task.parentId ?? null) !== parentId) {
                 next = { ...next, parentId };
             }
-            if (positions.has(task.id) && !task.timestamp && task.position !== positions.get(task.id)) {
+            // Subtasks go by position whatever their due date (byPosition), top-level tasks with one by date.
+            if (positions.has(task.id) && (parentId != null || !task.timestamp) && task.position !== positions.get(task.id)) {
                 next = { ...next, position: positions.get(task.id) };
             }
             return next;
@@ -1004,6 +1005,8 @@ function App() {
             mode="create"
             initialValues={{
                 project: projectFilter === "ALL" ? "" : projectFilter,
+                // Due where the tab shows it; zen mode has no tabs.
+                timestamp: zenMode ? "" : tabDueDate(listTab, day, new Date()),
             }}
             onSave={handleAddTask}
             onClose={() => setShowPopup(false)}
@@ -2079,7 +2082,7 @@ function App() {
         </Modal>
     );
 
-    // "Tutti" and "Per data" follow the project filter; "Scaduti" has every overdue task, as the block it replaced.
+    // "Tutti", "Per data", "Settimana" and "Mese" follow the project filter; "Scaduti" has every overdue task, as the block it replaced.
     const projectTasks =
         projectFilter === "ALL"
             ? unarchivedTasks
@@ -2090,6 +2093,10 @@ function App() {
                 : unarchivedTasks;
     const now = new Date();
     const dayTasks = projectTasks.filter((t) => !t.archived && dueDay(t) === day);
+    const week = weekDays(now);
+    const month = monthDays(now);
+    const weekTasks = projectTasks.filter((t) => isDueBetween(t, ...week));
+    const monthTasks = projectTasks.filter((t) => isDueBetween(t, ...month));
     const overdueTasks = unarchivedTasks.filter((t) => isOverdue(t, now));
     // This workspace's overdue tasks are the live ones above; the API's list gives the others'.
     const expiredElsewhere = expiredTasks.filter((task) => task.workspace !== ws);
@@ -2186,6 +2193,8 @@ function App() {
                         items={[
                             { value: "all", label: t("listTabs.all") },
                             { value: "day", label: t("listTabs.byDay") },
+                            { value: "week", label: t("listTabs.week") },
+                            { value: "month", label: t("listTabs.month") },
                             {
                                 value: "expired",
                                 label: (
@@ -2212,6 +2221,27 @@ function App() {
                         <>
                             <DateNav className="list-day-nav" value={day} onChange={setDay} />
                             {dayTasks.length > 0 ? taskListOf(dayTasks) : <p className="list-tab-empty">{t("dayTasks.none")}</p>}
+                        </>
+                    )}
+
+                    {listTab === "week" && (
+                        <>
+                            <p className="list-period">
+                                {new Intl.DateTimeFormat(i18n.language, { day: "numeric", month: "long" }).formatRange(
+                                    new Date(`${week[0]}T00:00`),
+                                    new Date(`${week[1]}T00:00`)
+                                )}
+                            </p>
+                            {weekTasks.length > 0 ? taskListOf(weekTasks) : <p className="list-tab-empty">{t("weekTasks.none")}</p>}
+                        </>
+                    )}
+
+                    {listTab === "month" && (
+                        <>
+                            <p className="list-period">
+                                {new Intl.DateTimeFormat(i18n.language, { month: "long", year: "numeric" }).format(now)}
+                            </p>
+                            {monthTasks.length > 0 ? taskListOf(monthTasks) : <p className="list-tab-empty">{t("monthTasks.none")}</p>}
                         </>
                     )}
 

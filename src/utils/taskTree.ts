@@ -19,9 +19,18 @@ export const toTime = (timestamp: Task['timestamp']): number | null => {
     return isNaN(time) ? null : time;
 };
 
-// Depth-first, siblings in the list's usual order. A subtask whose parent isn't in
-// `tasks` (archived, another project, filtered out) is shown as a top-level task.
-export const flattenTree = (tasks: Task[]): TreeRow[] => {
+// Subtasks keep the order they were dragged into, whatever their due date or status, the same
+// in the list and in a task's detail. The ones never placed, as a new subtask, come after, in
+// the list's usual order.
+export const byPosition = (siblings: Task[]): Task[] => [
+    ...siblings.filter(t => t.position != null).sort((a, b) => (a.position as number) - (b.position as number)),
+    ...sortByDate(siblings.filter(t => t.position == null)),
+];
+
+// Depth-first: top-level tasks in the list's usual order (or `sortTop`'s), subtasks by
+// position. A subtask whose parent isn't in `tasks` (archived, another project, filtered out)
+// is shown as a top-level task.
+export const flattenTree = (tasks: Task[], sortTop: (siblings: Task[]) => Task[] = sortByDate): TreeRow[] => {
     const ids = new Set(tasks.map(t => t.id));
     const children = new Map<Id | null, Task[]>();
     for (const task of tasks) {
@@ -32,7 +41,7 @@ export const flattenTree = (tasks: Task[]): TreeRow[] => {
     const rows: TreeRow[] = [];
     const visited = new Set<Id>();
     const visit = (parent: Id | null, depth: number) => {
-        for (const task of sortByDate(children.get(parent) ?? [])) {
+        for (const task of (parent === null ? sortTop : byPosition)(children.get(parent) ?? [])) {
             if (visited.has(task.id)) continue;
             visited.add(task.id);
             rows.push({ task, depth });
@@ -41,7 +50,7 @@ export const flattenTree = (tasks: Task[]): TreeRow[] => {
     };
     visit(null, 0);
     // Tasks caught in a parent cycle are unreachable from the top: keep them visible anyway.
-    for (const task of sortByDate(tasks.filter(t => !visited.has(t.id)))) {
+    for (const task of sortTop(tasks.filter(t => !visited.has(t.id)))) {
         if (visited.has(task.id)) continue;
         visited.add(task.id);
         rows.push({ task, depth: 0 });

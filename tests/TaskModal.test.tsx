@@ -117,6 +117,54 @@ describe('TaskModal save', () => {
         }));
     });
 
+    it('shows the deadline under the title, in the first tab, where it can be changed too', () => {
+        const onSave = jest.fn();
+        render(<TaskModal {...baseProps} mode="create" onSave={onSave}
+            initialValues={{ timestamp: new Date(2026, 9, 25, 18, 0).getTime() }} />);
+
+        const [field] = screen.getAllByLabelText('Scadenza') as HTMLInputElement[];
+        expect(field.closest('.tab-content')?.classList.contains('active')).toBe(true);
+        expect(field.value).toBe('2026-10-25T18:00');
+
+        fireEvent.change(screen.getByPlaceholderText('Titolo del task'), { target: { value: 'Task' } });
+        fireEvent.change(field, { target: { value: '2026-10-26T18:00' } });
+        fireEvent.click(screen.getByText('Salva'));
+
+        expect(onSave).toHaveBeenCalledWith(expect.objectContaining({ timestamp: new Date(2026, 9, 26, 18, 0).getTime() }));
+    });
+
+    it('shows no deadline field when dates are turned off', () => {
+        render(<TaskModal {...baseProps} mode="create" dateTimeEnabled={false} />);
+
+        expect(screen.queryAllByLabelText('Scadenza')).toHaveLength(0);
+    });
+
+    it('saves the type picked from its icon in front of the title', () => {
+        const onSave = jest.fn();
+        render(<TaskModal {...baseProps} mode="create" onSave={onSave} />);
+
+        fireEvent.click(screen.getByRole('button', { name: 'Bug' }));
+        expect(screen.getByRole('button', { name: 'Bug' })).toHaveAttribute('aria-pressed', 'true');
+        fireEvent.change(screen.getByPlaceholderText('Titolo del task'), { target: { value: 'Crash al login' } });
+        fireEvent.click(screen.getByText('Salva'));
+
+        expect(onSave).toHaveBeenCalledWith(expect.objectContaining({ title: '[bug] Crash al login' }));
+    });
+
+    it('shows the type of the task being edited on its icon, out of the title, and can take it away', () => {
+        const onSave = jest.fn();
+        render(<TaskModal {...baseProps} mode="edit" onSave={onSave} initialValues={{ title: '[pay] Bolletta' }} />);
+
+        expect(screen.getByPlaceholderText('Titolo del task')).toHaveValue('Bolletta');
+        expect(screen.getByRole('button', { name: 'Pagamento' })).toHaveAttribute('aria-pressed', 'true');
+        expect(screen.getByRole('button', { name: 'Feature' })).toHaveAttribute('aria-pressed', 'false');
+
+        fireEvent.click(screen.getByRole('button', { name: 'Pagamento' }));
+        fireEvent.click(screen.getByText('Salva'));
+
+        expect(onSave).toHaveBeenCalledWith(expect.objectContaining({ title: 'Bolletta' }));
+    });
+
     it('filters the project suggestions while typing, ignoring case', () => {
         render(<TaskModal {...baseProps} mode="create" />);
         fireEvent.change(screen.getByPlaceholderText('Progetto (opzionale)'), { target: { value: 'AL' } });

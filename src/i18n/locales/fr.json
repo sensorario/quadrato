@@ -254,7 +254,10 @@
     "addSubtaskFailed": "La sous-tâche n'a pas pu être ajoutée.",
     "title": "Titre de la tâche",
     "editTitleHint": "Double-cliquez pour modifier le titre",
-    "renameFailed": "Le titre n'a pas pu être enregistré."
+    "renameFailed": "Le titre n'a pas pu être enregistré.",
+    "reorderFailed": "Le nouvel ordre des sous-tâches n'a pas pu être enregistré.",
+    "statusFailed": "Le statut de la tâche n'a pas pu être modifié.",
+    "openInGantt": "Ouvrir dans le Gantt"
   },
   "expiredTasks": {
     "none": "Aucune tâche expirée",
@@ -302,11 +305,19 @@
     "label": "Liste des tâches",
     "all": "Toutes",
     "byDay": "Par date",
+    "week": "Semaine",
+    "month": "Mois",
     "expired": "Expirées",
     "expiredCount_one": "{{count}} tâche expirée",
     "expiredCount_other": "{{count}} tâches expirées"
   },
   "dayTasks": {
     "none": "Aucune tâche à terminer ce jour-là"
+  },
+  "weekTasks": {
+    "none": "Aucune tâche à terminer cette semaine"
+  },
+  "monthTasks": {
+    "none": "Aucune tâche à terminer ce mois-ci"
   }
 }

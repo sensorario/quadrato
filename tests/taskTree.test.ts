@@ -25,6 +25,19 @@ describe('flattenTree', () => {
 
         expect(rows.map(r => r.task.id).sort()).toEqual([1, 2]);
     });
+
+    it('puts subtasks in the order they were placed, whatever their due date or status, and the never placed ones after', () => {
+        const rows = flattenTree([
+            task(1, { timestamp: '2026-11-02 09:00:00' }),
+            task(2, { timestamp: '2026-11-01 09:00:00' }),
+            task(3, { parentId: 1, position: 1, timestamp: '2026-10-01 09:00:00' }),
+            task(4, { parentId: 1, position: 0, status: 2 }),
+            task(5, { parentId: 1, timestamp: '2026-09-01 09:00:00' }),
+        ]);
+
+        // Top-level tasks still by due date.
+        expect(rows.map(r => r.task.id)).toEqual([2, 1, 4, 3, 5]);
+    });
 });
 
 describe('descendantIds / hasOpenDescendants', () => {
