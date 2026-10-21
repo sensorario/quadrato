@@ -4,14 +4,22 @@ import { Icon, Logo, QuadratoHeader } from '@sensorario/sg-components';
 import { Task } from '../types/commonTypes';
 import { getConfigRepository } from '../repositories';
 import { navigate } from '../Router';
-import FormatDate from '../components/FormatDate';
 import TaskTitle from '../components/TaskTitle';
 import { STATUS_ENUM } from '../utils';
-import { byPosition, descendantIds, flattenTree, hasOpenDescendants, reconcileAncestors, TreeRow } from '../utils/taskTree';
+import { byPosition, descendantIds, flattenTree, hasOpenDescendants, reconcileAncestors, toTime, TreeRow } from '../utils/taskTree';
+import { dayKey } from '../utils/taskDays';
 import { toPlainText } from '../utils/toPlainText';
 import { useSlidingRows } from '../functions/useSlidingRows';
 
 const UNIT_KEYS: Record<string, string> = { minuti: 'minutes', giorni: 'days', settimane: 'weeks', mesi: 'months', anni: 'years' };
+
+// A due date (Unix ms) as a datetime-local field writes it, where the browser is.
+const dateTimeField = (time: number | null) => {
+    if (time === null) return '';
+    const date = new Date(time);
+    const pad = (n: number) => String(n).padStart(2, '0');
+    return `${dayKey(date)}T${pad(date.getHours())}:${pad(date.getMinutes())}`;
+};
 
 const withPositions = (tasks: Task[], positions: Map<Task['id'], number>) =>
     tasks.map(t => positions.has(t.id) && t.position !== positions.get(t.id) ? { ...t, position: positions.get(t.id) } : t);
@@ -162,6 +170,8 @@ export const TaskDetailPage = ({ taskId }: TaskDetailPageProps) => {
     // While a subtask is dragged: the siblings' positions where it would land, shown at once.
     const [draggedId, setDraggedId] = useState<Task['id'] | null>(null);
     const [dragPositions, setDragPositions] = useState<Map<Task['id'], number> | null>(null);
+    // Bumped to draw the date fields again from the task, when what was typed isn't kept.
+    const [datesRevision, setDatesRevision] = useState(0);
     const { rowRef, isAbove, startFollowing, follow, stopFollowing } = useSlidingRows(taskId);
 
     const matchTask = (t: any) =>
@@ -335,29 +345,28 @@ export const TaskDetailPage = ({ taskId }: TaskDetailPageProps) => {
         }
     };
 
-    // Shown at once, put back if the API doesn't take it. As in the list (commitStatus in
-    // App.jsx), its parents follow: closed when all their subtasks are, reopened when one isn't.
-    const handleStatus = async (status: number) => {
-        if (!task || task.status === status) return;
+    // Shown at once, put back if the API doesn't take it. As in the list, the rules between a
+    // task and its subtasks apply first, up from `from` (reconcileAncestors): parents close with
+    // their last open subtask and reopen when one isn't, and are due no earlier than their
+    // subtasks. Every task that changes is saved.
+    const saveChanges = async (changes: Partial<Task>, from: Task['id'][], failure: string) => {
+        if (!task) return;
         const before = allTasks;
-        const after = reconcileAncestors(
-            before.map(t => t.id === task.id ? { ...t, status } : t),
-            task.parentId != null ? [task.parentId] : []
-        );
+        const after = reconcileAncestors(before.map(t => t.id === task.id ? { ...t, ...changes } : t), from);
         const previous = new Map(before.map(t => [t.id, t]));
-        const changes = after.flatMap(t => {
+        const puts = after.flatMap(t => {
             const old = previous.get(t.id);
             if (!old || old === t) return [];
-            const body = Object.fromEntries((['status', 'timestamp'] as const)
+            const body = Object.fromEntries((['status', 'timestamp', 'startsAt'] as const)
                 .filter(field => (old[field] ?? null) !== (t[field] ?? null))
                 .map(field => [field, t[field] ?? null]));
             return Object.keys(body).length > 0 ? [{ id: t.id, body }] : [];
         });
         setAllTasks(after);
-        setTask({ ...task, status });
+        setTask(after.find(t => t.id === task.id) ?? task);
         const token = localStorage.getItem('simonegentili.com-access-token');
         try {
-            const responses = await Promise.all(changes.map(({ id, body }) =>
+            const responses = await Promise.all(puts.map(({ id, body }) =>
                 fetch(`https://api.simonegentili.com/quadrato/task/${id}`, {
                     method: 'PUT',
                     headers: { 'Content-Type': 'application/json', ...(token ? { Authorization: `Bearer ${token}` } : {}) },
@@ -369,13 +378,45 @@ export const TaskDetailPage = ({ taskId }: TaskDetailPageProps) => {
                 setIsAuthenticated(false);
                 return;
             }
-            if (responses.some(res => !res.ok)) throw new Error('status');
+            if (responses.some(res => !res.ok)) throw new Error('save');
             getConfigRepository().fetchData();
         } catch {
             setAllTasks(before);
             setTask(task);
-            alert(t('taskDetailPage.statusFailed'));
+            setDatesRevision(r => r + 1);
+            alert(failure);
         }
+    };
+
+    // From the parent up: the task itself keeps the status picked.
+    const handleStatus = (status: number) => {
+        if (!task || task.status === status) return;
+        saveChanges({ status }, task.parentId != null ? [task.parentId] : [], t('taskDetailPage.statusFailed'));
+    };
+
+    // The fields are saved when left (or on Enter), not at every keystroke: a date being typed
+    // is complete only then. The start is a day, as in the Gantt; the due date has its time.
+    const startDay = task?.startsAt ? dayKey(new Date(task.startsAt * 1000)) : '';
+    const dueTime = task ? toTime(task.timestamp) : null;
+    const rejectDates = () => {
+        setDatesRevision(r => r + 1);
+        alert(t('taskDetailPage.startAfterEnd'));
+    };
+
+    const handleStart = (day: string) => {
+        if (!task || day === startDay) return;
+        if (day !== '' && dueTime !== null && day > dayKey(new Date(dueTime))) return rejectDates();
+        const startsAt = day === '' ? null : Math.floor(new Date(`${day}T00:00:00`).getTime() / 1000);
+        saveChanges({ startsAt }, [], t('taskDetailPage.datesFailed'));
+    };
+
+    // From the task itself up: it can't be due before its subtasks, its parents after it.
+    const handleDue = (value: string) => {
+        if (!task) return;
+        const timestamp = value === '' ? null : new Date(value).getTime();
+        if (timestamp === dueTime) return;
+        if (timestamp !== null && startDay !== '' && dayKey(new Date(timestamp)) < startDay) return rejectDates();
+        saveChanges({ timestamp }, [task.id], t('taskDetailPage.datesFailed'));
     };
 
     // Shown at once, put back if the API doesn't take it.
@@ -580,14 +621,35 @@ export const TaskDetailPage = ({ taskId }: TaskDetailPageProps) => {
                     </>
                 )}
 
-                {task.timestamp && (
-                    <>
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '16px' }}>
+                    {/* Uncontrolled, drawn again (key) when the task's dates change or what was typed isn't kept. */}
+                    <label>
+                        <span style={labelStyle}>{t('taskDetailPage.start')}</span>
+                        <input
+                            key={`start-${startDay}-${datesRevision}`}
+                            type="date"
+                            className="modal-input"
+                            style={{ marginBottom: 0, marginTop: '4px' }}
+                            defaultValue={startDay}
+                            max={dueTime !== null ? dayKey(new Date(dueTime)) : undefined}
+                            onBlur={e => handleStart(e.target.value)}
+                            onKeyDown={e => { if (e.key === 'Enter') e.currentTarget.blur(); }}
+                        />
+                    </label>
+                    <label>
                         <span style={labelStyle}>{t('taskDetailPage.deadline')}</span>
-                        <span style={valueStyle}>
-                            <FormatDate date={typeof task.timestamp === 'number' ? task.timestamp : task.timestamp} />
-                        </span>
-                    </>
-                )}
+                        <input
+                            key={`due-${dueTime}-${datesRevision}`}
+                            type="datetime-local"
+                            className="modal-input"
+                            style={{ marginBottom: 0, marginTop: '4px' }}
+                            defaultValue={dateTimeField(dueTime)}
+                            min={startDay !== '' ? `${startDay}T00:00` : undefined}
+                            onBlur={e => handleDue(e.target.value)}
+                            onKeyDown={e => { if (e.key === 'Enter') e.currentTarget.blur(); }}
+                        />
+                    </label>
+                </div>
 
                 {task.periodicity && (task.periodicity.number || task.periodicity.unit) && (
                     <>

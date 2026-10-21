@@ -251,7 +251,10 @@
     "renameFailed": "タイトルを保存できませんでした。",
     "reorderFailed": "サブタスクの新しい順序を保存できませんでした。",
     "statusFailed": "タスクの状態を変更できませんでした。",
-    "openInGantt": "ガントチャートで開く"
+    "openInGantt": "ガントチャートで開く",
+    "start": "開始",
+    "startAfterEnd": "開始日を期限より後にすることはできません。",
+    "datesFailed": "タスクの日付を保存できませんでした。"
   },
   "expiredTasks": {
     "none": "期限切れのタスクはありません",

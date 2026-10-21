@@ -257,7 +257,10 @@
     "renameFailed": "Le titre n'a pas pu être enregistré.",
     "reorderFailed": "Le nouvel ordre des sous-tâches n'a pas pu être enregistré.",
     "statusFailed": "Le statut de la tâche n'a pas pu être modifié.",
-    "openInGantt": "Ouvrir dans le Gantt"
+    "openInGantt": "Ouvrir dans le Gantt",
+    "start": "Début",
+    "startAfterEnd": "Le début ne peut pas venir après l'échéance.",
+    "datesFailed": "Les dates de la tâche n'ont pas pu être enregistrées."
   },
   "expiredTasks": {
     "none": "Aucune tâche expirée",

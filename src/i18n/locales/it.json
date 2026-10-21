@@ -257,7 +257,10 @@
     "renameFailed": "Non è stato possibile salvare il titolo.",
     "reorderFailed": "Non è stato possibile salvare il nuovo ordine dei sotto-task.",
     "statusFailed": "Non è stato possibile cambiare lo stato del task.",
-    "openInGantt": "Apri nel Gantt"
+    "openInGantt": "Apri nel Gantt",
+    "start": "Inizio",
+    "startAfterEnd": "L'inizio non può venire dopo la scadenza.",
+    "datesFailed": "Non è stato possibile salvare le date del task."
   },
   "expiredTasks": {
     "none": "Nessun task scaduto",

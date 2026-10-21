@@ -7,7 +7,7 @@ export type Task = {
     title: string;
     longDescription?: string;
     project?: string;
-    timestamp?: string | number;
+    timestamp?: string | number | null;
     status: number;
     archived?: boolean;
     periodicity?: Periodicity;
@@ -15,6 +15,8 @@ export type Task = {
     parentId?: number | null;
     // Unix seconds; missing on tasks created before the API recorded it.
     createdAt?: number | null;
+    // Planned start, Unix seconds (the start of its bar in the Gantt); none when not planned.
+    startsAt?: number | null;
 };
 
 export type HandleAddAnotherModalParams = {

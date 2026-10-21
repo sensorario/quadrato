@@ -383,3 +383,72 @@ describe('TaskDetailPage status', () => {
         expect(statusButton('Da fare')).toHaveAttribute('aria-pressed', 'true');
     });
 });
+
+describe('TaskDetailPage dates', () => {
+    const seconds = (local: string) => new Date(local).getTime() / 1000;
+
+    beforeEach(() => {
+        localStorage.setItem('simonegentili.com-access-token', 'tok');
+        mockTasks = [
+            { id: 'p', title: 'Parent', status: 0, timestamp: '2026-10-25 18:00:00' },
+            { id: 'c', title: 'Child', status: 0, parentId: 'p', timestamp: '2026-10-24 18:00:00', startsAt: seconds('2026-10-20T00:00:00') },
+        ];
+        mockFetchData.mockClear();
+        global.fetch = jest.fn().mockResolvedValue({ ok: true, status: 200, json: async () => ({}) });
+    });
+
+    afterEach(() => {
+        localStorage.clear();
+        jest.restoreAllMocks();
+    });
+
+    const field = (label: string) => screen.getByLabelText(label) as HTMLInputElement;
+    const leave = (label: string, value: string) => {
+        fireEvent.change(field(label), { target: { value } });
+        fireEvent.blur(field(label));
+    };
+    const putBodies = () => Object.fromEntries((global.fetch as jest.Mock).mock.calls
+        .filter(([, o]) => o.method === 'PUT')
+        .map(([url, o]) => [url.split('/').pop(), JSON.parse(o.body)]));
+
+    it('shows the start day and the due date, and saves a new start when the field is left', async () => {
+        render(<TaskDetailPage taskId="c" />);
+        expect(field('Inizio').value).toBe('2026-10-20');
+        expect(field('Scadenza').value).toBe('2026-10-24T18:00');
+
+        leave('Inizio', '2026-10-22');
+
+        await waitFor(() => expect(mockFetchData).toHaveBeenCalled());
+        expect(putBodies()).toEqual({ c: { startsAt: seconds('2026-10-22T00:00:00') } });
+    });
+
+    it('saves a new due date, and postpones the parent to it', async () => {
+        render(<TaskDetailPage taskId="c" />);
+
+        leave('Scadenza', '2026-10-27T18:00');
+
+        await waitFor(() => expect(mockFetchData).toHaveBeenCalled());
+        const due = new Date('2026-10-27T18:00').getTime();
+        expect(putBodies()).toEqual({ c: { timestamp: due }, p: { timestamp: due } });
+    });
+
+    it('takes the due date away when the field is emptied', async () => {
+        render(<TaskDetailPage taskId="c" />);
+
+        leave('Scadenza', '');
+
+        await waitFor(() => expect(mockFetchData).toHaveBeenCalled());
+        expect(putBodies()).toEqual({ c: { timestamp: null } });
+    });
+
+    it('does not take a start after the due date', () => {
+        const alert = jest.spyOn(window, 'alert').mockImplementation(() => { });
+        render(<TaskDetailPage taskId="c" />);
+
+        leave('Inizio', '2026-10-26');
+
+        expect(alert).toHaveBeenCalledWith("L'inizio non può venire dopo la scadenza.");
+        expect(global.fetch).not.toHaveBeenCalled();
+        expect(field('Inizio').value).toBe('2026-10-20');
+    });
+});

@@ -257,7 +257,10 @@
     "renameFailed": "The title could not be saved.",
     "reorderFailed": "The new order of the subtasks could not be saved.",
     "statusFailed": "The task's status could not be changed.",
-    "openInGantt": "Open in the Gantt"
+    "openInGantt": "Open in the Gantt",
+    "start": "Start",
+    "startAfterEnd": "The start can't come after the due date.",
+    "datesFailed": "The task's dates could not be saved."
   },
   "expiredTasks": {
     "none": "No expired tasks",

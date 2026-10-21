@@ -257,7 +257,10 @@
     "renameFailed": "Der Titel konnte nicht gespeichert werden.",
     "reorderFailed": "Die neue Reihenfolge der Unteraufgaben konnte nicht gespeichert werden.",
     "statusFailed": "Der Status der Aufgabe konnte nicht geändert werden.",
-    "openInGantt": "Im Gantt öffnen"
+    "openInGantt": "Im Gantt öffnen",
+    "start": "Beginn",
+    "startAfterEnd": "Der Beginn darf nicht nach der Fälligkeit liegen.",
+    "datesFailed": "Die Daten der Aufgabe konnten nicht gespeichert werden."
   },
   "expiredTasks": {
     "none": "Keine abgelaufenen Aufgaben",
