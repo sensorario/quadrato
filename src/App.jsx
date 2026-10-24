@@ -9,6 +9,7 @@ import ConfirmModal from "./components/ConfirmModal";
 import HelpModal from "./components/HelpModal";
 import { Modal } from "./components/Modal";
 import TaskModal from "./components/TaskModal";
+import { TASK_TYPES, taskTypeIcons } from "./components/TaskTitle";
 import RenameProjectModal from "./components/RenameProjectModal";
 import { Palette24 } from "./types/Palette24";
 import TabbedContent from "./components/TabbedContent";
@@ -1266,46 +1267,19 @@ function App() {
                             gap: "8px",
                         }}
                     >
-                        <div
-                            style={{
-                                display: "flex",
-                                alignItems: "center",
-                                gap: "8px",
-                            }}
-                        >
-                            <Icon name="sparkle" style={{ color: "#5480e6" }} />
-                            <span>{t("app.featureLabel")}</span>
-                        </div>
-                        <div
-                            style={{
-                                display: "flex",
-                                alignItems: "center",
-                                gap: "8px",
-                            }}
-                        >
-                            <Icon name="bug" style={{ color: "#e2727d" }} />
-                            <span>{t("app.bugLabel")}</span>
-                        </div>
-                        <div
-                            style={{
-                                display: "flex",
-                                alignItems: "center",
-                                gap: "8px",
-                            }}
-                        >
-                            <Icon name="credit-card" style={{ color: "#2e9e5b" }} />
-                            <span>{t("app.payLabel")}</span>
-                        </div>
-                        <div
-                            style={{
-                                display: "flex",
-                                alignItems: "center",
-                                gap: "8px",
-                            }}
-                        >
-                            <Icon name="books" style={{ color: "#9b6bd1" }} />
-                            <span>{t("app.spikeLabel")}</span>
-                        </div>
+                        {TASK_TYPES.map((type) => (
+                            <div
+                                key={type}
+                                style={{
+                                    display: "flex",
+                                    alignItems: "center",
+                                    gap: "8px",
+                                }}
+                            >
+                                <Icon name={taskTypeIcons[type].name} style={{ color: taskTypeIcons[type].color }} />
+                                <span>{t(`app.${type}Label`)}</span>
+                            </div>
+                        ))}
                     </div>
                 </div>
             );

@@ -2,10 +2,10 @@ import React from "react";
 import { Icon } from "@sensorario/sg-components";
 import type { IconName } from "@sensorario/sg-components";
 
-// @todo define task type
-const taskTypeRegex = /^\[(feature|bug|pay|spike)\]\s*/i;
+export const TASK_TYPES = ["feature", "bug", "pay", "spike", "epic", "chore", "docs"] as const;
 
-export const TASK_TYPES = ["feature", "bug", "pay", "spike"] as const;
+// @todo define task type
+const taskTypeRegex = new RegExp(`^\\[(${TASK_TYPES.join("|")})\\]\\s*`, "i");
 
 export type TaskType = typeof TASK_TYPES[number];
 
@@ -14,6 +14,9 @@ export const taskTypeIcons: Record<TaskType, { name: IconName; color: string }> 
     bug: { name: "bug", color: '#e2727d' },
     pay: { name: "credit-card", color: '#2e9e5b' },
     spike: { name: "books", color: '#9b6bd1' },
+    epic: { name: "zap", color: '#e08a2e' },
+    chore: { name: "wrench", color: '#7d8796' },
+    docs: { name: "file-text", color: '#2a9d9a' },
 };
 
 // A task's type is the start of its title: "[bug] Crash" is a bug called "Crash".
