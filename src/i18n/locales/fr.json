@@ -38,6 +38,8 @@
     "epicLabel": "Épique",
     "choreLabel": "Chore (maintenance)",
     "docsLabel": "Documentation",
+    "noteLabel": "Note",
+    "eventLabel": "Événement",
     "workspaceLabel": "espace de travail : {{name}}",
     "registeredUsersCount": "{{count}} utilisateurs inscrits",
     "loggedInAs": "Connecté en tant que {{name}}",
@@ -263,10 +265,20 @@
     "openInGantt": "Ouvrir dans le Gantt",
     "start": "Début",
     "startAfterEnd": "Le début ne peut pas venir après l'échéance.",
-    "datesFailed": "Les dates de la tâche n'ont pas pu être enregistrées."
+    "datesFailed": "Les dates de la tâche n'ont pas pu être enregistrées.",
+    "type": "Type",
+    "typeFailed": "Le type de la tâche n'a pas pu être modifié.",
+    "tracker": "Tracker",
+    "trackerStart": "Démarrer",
+    "trackerQueue": "Mettre en file",
+    "trackerStarted": "Démarrée dans le tracker.",
+    "trackerQueued": "Mise en file dans le tracker.",
+    "trackerOpen": "Ouvrir le tracker",
+    "trackerBusy": "Un timebox est déjà en cours dans le tracker, démarré il y a {{minutes}} minutes : mets la tâche en file.",
+    "trackerStartFailed": "La tâche n'a pas pu être démarrée dans le tracker.",
+    "trackerQueueFailed": "La tâche n'a pas pu être mise en file dans le tracker."
   },
   "expiredTasks": {
-    "none": "Aucune tâche expirée",
     "elsewhere": "Dans les autres workspaces",
     "viewDetail": "Voir le détail de la tâche"
   },
@@ -307,23 +319,19 @@
     "allTasks": "toutes les tâches",
     "noProject": "aucun projet"
   },
-  "listTabs": {
-    "label": "Liste des tâches",
-    "all": "Toutes",
-    "byDay": "Par date",
-    "week": "Semaine",
-    "month": "Mois",
+  "listLevels": {
+    "label": "Échéances",
     "expired": "Expirées",
-    "expiredCount_one": "{{count}} tâche expirée",
-    "expiredCount_other": "{{count}} tâches expirées"
-  },
-  "dayTasks": {
-    "none": "Aucune tâche à terminer ce jour-là"
-  },
-  "weekTasks": {
-    "none": "Aucune tâche à terminer cette semaine"
-  },
-  "monthTasks": {
-    "none": "Aucune tâche à terminer ce mois-ci"
+    "day": "Aujourd'hui",
+    "week": "7 jours",
+    "month": "4 semaines",
+    "all": "Toutes",
+    "hint": {
+      "expired": "Tâches à faire dont l'échéance est passée",
+      "day": "Les tâches expirées et celles à rendre aujourd'hui",
+      "until": "Les tâches expirées et celles à rendre d'ici le {{date}}",
+      "all": "Toutes les tâches, même sans échéance"
+    },
+    "none": "Aucune tâche"
   }
 }

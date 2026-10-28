@@ -38,6 +38,8 @@
     "epicLabel": "Epica",
     "choreLabel": "Chore (manutenzione)",
     "docsLabel": "Documentazione",
+    "noteLabel": "Nota",
+    "eventLabel": "Evento",
     "workspaceLabel": "workspace: {{name}}",
     "registeredUsersCount": "{{count}} utenti registrati",
     "loggedInAs": "Accesso effettuato come {{name}}",
@@ -263,10 +265,20 @@
     "openInGantt": "Apri nel Gantt",
     "start": "Inizio",
     "startAfterEnd": "L'inizio non può venire dopo la scadenza.",
-    "datesFailed": "Non è stato possibile salvare le date del task."
+    "datesFailed": "Non è stato possibile salvare le date del task.",
+    "type": "Tipo",
+    "typeFailed": "Non è stato possibile cambiare il tipo del task.",
+    "tracker": "Tracker",
+    "trackerStart": "Avvia",
+    "trackerQueue": "Metti in coda",
+    "trackerStarted": "Avviato nel tracker.",
+    "trackerQueued": "Messo in coda nel tracker.",
+    "trackerOpen": "Apri il tracker",
+    "trackerBusy": "Nel tracker c'è già un timebox in corso, iniziato {{minutes}} minuti fa: mettilo in coda.",
+    "trackerStartFailed": "Non è stato possibile avviare il task nel tracker.",
+    "trackerQueueFailed": "Non è stato possibile mettere il task in coda nel tracker."
   },
   "expiredTasks": {
-    "none": "Nessun task scaduto",
     "elsewhere": "In altri workspace",
     "viewDetail": "Vedi dettaglio task"
   },
@@ -307,23 +319,19 @@
     "allTasks": "tutti i task",
     "noProject": "nessun progetto"
   },
-  "listTabs": {
-    "label": "Elenco dei task",
-    "all": "Tutti",
-    "byDay": "Per data",
-    "week": "Settimana",
-    "month": "Mese",
+  "listLevels": {
+    "label": "Scadenze",
     "expired": "Scaduti",
-    "expiredCount_one": "{{count}} task scaduto",
-    "expiredCount_other": "{{count}} task scaduti"
-  },
-  "dayTasks": {
-    "none": "Nessun task da concludere in questo giorno"
-  },
-  "weekTasks": {
-    "none": "Nessun task da concludere questa settimana"
-  },
-  "monthTasks": {
-    "none": "Nessun task da concludere questo mese"
+    "day": "Oggi",
+    "week": "7 giorni",
+    "month": "4 settimane",
+    "all": "Tutti",
+    "hint": {
+      "expired": "I task da fare con la scadenza già passata",
+      "day": "Gli scaduti e quelli in scadenza oggi",
+      "until": "Gli scaduti e quelli in scadenza fino al {{date}}",
+      "all": "Tutti i task, anche senza scadenza"
+    },
+    "none": "Nessun task"
   }
 }

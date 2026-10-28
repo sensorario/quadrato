@@ -38,6 +38,8 @@
     "epicLabel": "エピック",
     "choreLabel": "雑務（メンテナンス）",
     "docsLabel": "ドキュメント",
+    "noteLabel": "メモ",
+    "eventLabel": "イベント",
     "workspaceLabel": "ワークスペース: {{name}}",
     "registeredUsersCount": "登録ユーザー数: {{count}}",
     "loggedInAs": "{{name}} としてログイン中",
@@ -257,10 +259,20 @@
     "openInGantt": "ガントチャートで開く",
     "start": "開始",
     "startAfterEnd": "開始日を期限より後にすることはできません。",
-    "datesFailed": "タスクの日付を保存できませんでした。"
+    "datesFailed": "タスクの日付を保存できませんでした。",
+    "type": "種類",
+    "typeFailed": "タスクの種類を変更できませんでした。",
+    "tracker": "トラッカー",
+    "trackerStart": "開始",
+    "trackerQueue": "キューに追加",
+    "trackerStarted": "トラッカーで開始しました。",
+    "trackerQueued": "トラッカーのキューに追加しました。",
+    "trackerOpen": "トラッカーを開く",
+    "trackerBusy": "トラッカーではすでにタイムボックスが進行中です（{{minutes}}分前に開始）。キューに追加してください。",
+    "trackerStartFailed": "トラッカーでタスクを開始できませんでした。",
+    "trackerQueueFailed": "トラッカーのキューにタスクを追加できませんでした。"
   },
   "expiredTasks": {
-    "none": "期限切れのタスクはありません",
     "elsewhere": "他のワークスペース",
     "viewDetail": "タスクの詳細を見る"
   },
@@ -301,23 +313,19 @@
     "allTasks": "すべてのタスク",
     "noProject": "プロジェクトなし"
   },
-  "listTabs": {
-    "label": "タスク一覧",
-    "all": "すべて",
-    "byDay": "日付別",
-    "week": "今週",
-    "month": "今月",
+  "listLevels": {
+    "label": "期限",
     "expired": "期限切れ",
-    "expiredCount_one": "期限切れのタスク {{count}} 件",
-    "expiredCount_other": "期限切れのタスク {{count}} 件"
-  },
-  "dayTasks": {
-    "none": "この日が期限のタスクはありません"
-  },
-  "weekTasks": {
-    "none": "今週が期限のタスクはありません"
-  },
-  "monthTasks": {
-    "none": "今月が期限のタスクはありません"
+    "day": "今日",
+    "week": "7日間",
+    "month": "4週間",
+    "all": "すべて",
+    "hint": {
+      "expired": "期限が過ぎた未完了のタスク",
+      "day": "期限切れと今日が期限のタスク",
+      "until": "期限切れと{{date}}までが期限のタスク",
+      "all": "期限のないものも含むすべてのタスク"
+    },
+    "none": "タスクはありません"
   }
 }

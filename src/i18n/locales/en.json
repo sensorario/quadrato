@@ -38,6 +38,8 @@
     "epicLabel": "Epic",
     "choreLabel": "Chore (maintenance)",
     "docsLabel": "Docs",
+    "noteLabel": "Note",
+    "eventLabel": "Event",
     "workspaceLabel": "workspace: {{name}}",
     "registeredUsersCount": "{{count}} registered users",
     "loggedInAs": "Logged in as {{name}}",
@@ -263,10 +265,20 @@
     "openInGantt": "Open in the Gantt",
     "start": "Start",
     "startAfterEnd": "The start can't come after the due date.",
-    "datesFailed": "The task's dates could not be saved."
+    "datesFailed": "The task's dates could not be saved.",
+    "type": "Type",
+    "typeFailed": "The task's type could not be changed.",
+    "tracker": "Tracker",
+    "trackerStart": "Start",
+    "trackerQueue": "Queue",
+    "trackerStarted": "Started in the tracker.",
+    "trackerQueued": "Queued in the tracker.",
+    "trackerOpen": "Open the tracker",
+    "trackerBusy": "A timebox is already running in the tracker, started {{minutes}} minutes ago: queue this task instead.",
+    "trackerStartFailed": "The task could not be started in the tracker.",
+    "trackerQueueFailed": "The task could not be queued in the tracker."
   },
   "expiredTasks": {
-    "none": "No expired tasks",
     "elsewhere": "In other workspaces",
     "viewDetail": "View task detail"
   },
@@ -307,23 +319,19 @@
     "allTasks": "all tasks",
     "noProject": "no project"
   },
-  "listTabs": {
-    "label": "Task list",
+  "listLevels": {
+    "label": "Due dates",
+    "expired": "Overdue",
+    "day": "Today",
+    "week": "7 days",
+    "month": "4 weeks",
     "all": "All",
-    "byDay": "By date",
-    "week": "Week",
-    "month": "Month",
-    "expired": "Expired",
-    "expiredCount_one": "{{count}} expired task",
-    "expiredCount_other": "{{count}} expired tasks"
-  },
-  "dayTasks": {
-    "none": "No task due on this day"
-  },
-  "weekTasks": {
-    "none": "No task due this week"
-  },
-  "monthTasks": {
-    "none": "No task due this month"
+    "hint": {
+      "expired": "Tasks still to do whose due date has passed",
+      "day": "Overdue tasks and those due today",
+      "until": "Overdue tasks and those due by {{date}}",
+      "all": "Every task, even without a due date"
+    },
+    "none": "No tasks"
   }
 }

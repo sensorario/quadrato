@@ -93,6 +93,37 @@ describe('TaskList task type icon', () => {
     });
 });
 
+describe('TaskList note', () => {
+    const renderNote = (onTaskClick = () => { }) => render(
+        <TaskList
+            tasks={[{ id: 1, title: '[note] Chiamato il fornitore', status: 0, project: 'Alpha', timestamp: new Date(2026, 0, 1, 9, 0).toISOString() }]}
+            onTaskClick={onTaskClick}
+            updateTaskTitle={() => { }}
+            editable={false}
+            projectEditable={true}
+            dateTimeEnabled={true}
+            iconTheme="panda"
+        />
+    );
+
+    it('shows a line in place of the project square and of the status, whatever the theme', () => {
+        const { container } = renderNote();
+        expect(screen.getByRole('img', { name: 'Nota' })).toBeInTheDocument();
+        // The detail button's magnifier aside.
+        expect([...container.querySelectorAll('rect, circle, ellipse')].filter(shape => !shape.closest('button'))).toHaveLength(0);
+        expect(screen.getByText('Chiamato il fornitore')).toBeInTheDocument();
+        expect(screen.queryByText(/\[note\]/)).not.toBeInTheDocument();
+    });
+
+    it('has no status to click through and is not shown as overdue', () => {
+        const onTaskClick = jest.fn();
+        renderNote(onTaskClick);
+        fireEvent.click(screen.getByRole('img', { name: 'Nota' }));
+        expect(onTaskClick).not.toHaveBeenCalled();
+        expect(screen.getByText('Chiamato il fornitore').closest('span[style*="flex: 1"]')).not.toHaveStyle({ color: 'red' });
+    });
+});
+
 // jsdom has no PointerEvent: without it fireEvent drops clientY, button and pointerType.
 beforeAll(() => {
     class PointerEventPolyfill extends MouseEvent {

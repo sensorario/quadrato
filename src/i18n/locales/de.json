@@ -38,6 +38,8 @@
     "epicLabel": "Epic",
     "choreLabel": "Chore (Wartung)",
     "docsLabel": "Dokumentation",
+    "noteLabel": "Notiz",
+    "eventLabel": "Termin",
     "workspaceLabel": "Arbeitsbereich: {{name}}",
     "registeredUsersCount": "{{count}} registrierte Benutzer",
     "loggedInAs": "Angemeldet als {{name}}",
@@ -263,10 +265,20 @@
     "openInGantt": "Im Gantt öffnen",
     "start": "Beginn",
     "startAfterEnd": "Der Beginn darf nicht nach der Fälligkeit liegen.",
-    "datesFailed": "Die Daten der Aufgabe konnten nicht gespeichert werden."
+    "datesFailed": "Die Daten der Aufgabe konnten nicht gespeichert werden.",
+    "type": "Typ",
+    "typeFailed": "Der Typ der Aufgabe konnte nicht geändert werden.",
+    "tracker": "Tracker",
+    "trackerStart": "Starten",
+    "trackerQueue": "In die Warteschlange",
+    "trackerStarted": "Im Tracker gestartet.",
+    "trackerQueued": "In die Warteschlange des Trackers gestellt.",
+    "trackerOpen": "Tracker öffnen",
+    "trackerBusy": "Im Tracker läuft bereits eine Timebox, gestartet vor {{minutes}} Minuten: stelle die Aufgabe in die Warteschlange.",
+    "trackerStartFailed": "Die Aufgabe konnte im Tracker nicht gestartet werden.",
+    "trackerQueueFailed": "Die Aufgabe konnte nicht in die Warteschlange des Trackers gestellt werden."
   },
   "expiredTasks": {
-    "none": "Keine abgelaufenen Aufgaben",
     "elsewhere": "In anderen Workspaces",
     "viewDetail": "Aufgabendetails anzeigen"
   },
@@ -307,23 +319,19 @@
     "allTasks": "alle Aufgaben",
     "noProject": "kein Projekt"
   },
-  "listTabs": {
-    "label": "Aufgabenliste",
+  "listLevels": {
+    "label": "Fälligkeiten",
+    "expired": "Überfällig",
+    "day": "Heute",
+    "week": "7 Tage",
+    "month": "4 Wochen",
     "all": "Alle",
-    "byDay": "Nach Datum",
-    "week": "Woche",
-    "month": "Monat",
-    "expired": "Abgelaufen",
-    "expiredCount_one": "{{count}} abgelaufene Aufgabe",
-    "expiredCount_other": "{{count}} abgelaufene Aufgaben"
-  },
-  "dayTasks": {
-    "none": "Keine Aufgabe an diesem Tag fällig"
-  },
-  "weekTasks": {
-    "none": "Keine Aufgabe diese Woche fällig"
-  },
-  "monthTasks": {
-    "none": "Keine Aufgabe diesen Monat fällig"
+    "hint": {
+      "expired": "Offene Aufgaben, deren Fälligkeit vorbei ist",
+      "day": "Überfällige und heute fällige Aufgaben",
+      "until": "Überfällige und bis zum {{date}} fällige Aufgaben",
+      "all": "Alle Aufgaben, auch ohne Fälligkeit"
+    },
+    "none": "Keine Aufgaben"
   }
 }

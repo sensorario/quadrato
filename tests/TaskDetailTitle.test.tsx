@@ -82,6 +82,38 @@ describe('TaskDetailPage title', () => {
         expect(global.fetch).not.toHaveBeenCalled();
     });
 
+    it('shows the type on its icon and changes it, or takes it away, from there', async () => {
+        render(<TaskDetailPage taskId="t" />);
+
+        expect(screen.getByRole('button', { name: 'Bug' })).toHaveAttribute('aria-pressed', 'true');
+
+        fireEvent.click(screen.getByRole('button', { name: 'Feature' }));
+        expect(screen.getByRole('button', { name: 'Feature' })).toHaveAttribute('aria-pressed', 'true');
+        expect(screen.getByRole('button', { name: 'Bug' })).toHaveAttribute('aria-pressed', 'false');
+        await waitFor(() => expect(global.fetch).toHaveBeenCalledWith(
+            'https://api.simonegentili.com/quadrato/task/t',
+            expect.objectContaining({ method: 'PUT', body: JSON.stringify({ title: '[feature] Old title' }) }),
+        ));
+
+        fireEvent.click(screen.getByRole('button', { name: 'Feature' }));
+        expect(screen.getByRole('button', { name: 'Feature' })).toHaveAttribute('aria-pressed', 'false');
+        await waitFor(() => expect(global.fetch).toHaveBeenCalledWith(
+            'https://api.simonegentili.com/quadrato/task/t',
+            expect.objectContaining({ method: 'PUT', body: JSON.stringify({ title: 'Old title' }) }),
+        ));
+    });
+
+    it('puts the old type back when the API refuses the new one', async () => {
+        global.fetch = jest.fn().mockResolvedValue({ ok: false, status: 500 });
+        jest.spyOn(window, 'alert').mockImplementation(() => { });
+        render(<TaskDetailPage taskId="t" />);
+
+        fireEvent.click(screen.getByRole('button', { name: 'Pagamento' }));
+
+        await waitFor(() => expect(window.alert).toHaveBeenCalledWith('Non è stato possibile cambiare il tipo del task.'));
+        expect(screen.getByRole('button', { name: 'Bug' })).toHaveAttribute('aria-pressed', 'true');
+    });
+
     it('puts the old title back when the API refuses the new one', async () => {
         global.fetch = jest.fn().mockResolvedValue({ ok: false, status: 500 });
         jest.spyOn(window, 'alert').mockImplementation(() => { });

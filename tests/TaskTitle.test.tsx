@@ -11,7 +11,7 @@ describe('TaskTitle', () => {
         expect(screen.queryByText(/\[BUG\]/)).not.toBeInTheDocument();
     });
 
-    it.each(['epic', 'chore', 'docs'])('replaces the [%s] prefix with its icon', (type) => {
+    it.each(['epic', 'chore', 'docs', 'event'])('replaces the [%s] prefix with its icon', (type) => {
         render(<TaskTitle title={`[${type}] Something to do`} />);
         expect(screen.getByLabelText(type).childElementCount).toBeGreaterThan(0);
         expect(screen.getByText('Something to do')).toBeInTheDocument();

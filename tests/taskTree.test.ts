@@ -51,6 +51,10 @@ describe('descendantIds / hasOpenDescendants', () => {
         expect(hasOpenDescendants(tasks, 1)).toBe(true);
         expect(hasOpenDescendants(tasks.map(t => ({ ...t, status: 2 })), 1)).toBe(false);
     });
+
+    it('takes no note for an open subtask', () => {
+        expect(hasOpenDescendants([task(1), task(2, { parentId: 1, title: '[note] Appunto' })], 1)).toBe(false);
+    });
 });
 
 describe('projectDrop', () => {
@@ -113,5 +117,13 @@ describe('reconcileAncestors', () => {
         const tasks = [task(1, { timestamp: 5000 }), task(2, { parentId: 1, timestamp: 1000 })];
 
         expect(reconcileAncestors(tasks, [2])[0]).toBe(tasks[0]);
+    });
+
+    it('neither completes, reopens nor postpones a parent for its notes', () => {
+        const note = (id: number, extra: object = {}) => task(id, { parentId: 1, title: '[note] Appunto', timestamp: 9000, ...extra });
+
+        expect(reconcileAncestors([task(1, { timestamp: 5000 }), note(2)], [2])[0]).toEqual(task(1, { timestamp: 5000 }));
+        expect(reconcileAncestors([task(1, { status: 2 }), task(3, { parentId: 1, status: 2 }), note(2)], [2])[0].status).toBe(2);
+        expect(reconcileAncestors([task(1), task(3, { parentId: 1, status: 2 }), note(2)], [3])[0].status).toBe(2);
     });
 });

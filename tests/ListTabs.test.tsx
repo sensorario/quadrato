@@ -6,11 +6,10 @@ jest.mock('@sensorario/sg-components', () => ({
     QuadratoHeader: () => <div />,
     SGFooter: () => <div />,
     LanguageSwitcher: () => <div />,
-    DateNav: jest.requireActual('@sensorario/sg-components').DateNav,
-    Tabs: ({ items, onChange }: any) => (
+    StepRange: ({ items, onChange }: any) => (
         <div>
             {items.map((item: any) => (
-                <button key={item.value} onClick={() => onChange(item.value)}>
+                <button key={item.value} data-testid={`level-${item.value}`} data-count={item.count} onClick={() => onChange(item.value)}>
                     {item.label}
                 </button>
             ))}
@@ -23,7 +22,7 @@ jest.mock('../src/components/TaskProjectSelector', () => () => null);
 
 import App from '../src/App';
 import AjaxRepository from '../src/repositories/AjaxRepository';
-import { dayKey, monthDays, weekDays } from '../src/utils/taskDays';
+import { dayKey } from '../src/utils/taskDays';
 
 const pad = (n: number) => String(n).padStart(2, '0');
 // "YYYY-MM-DD HH:MM:SS" `days` from today, as the API sends due dates.
@@ -32,10 +31,10 @@ const due = (days: number, hour: number) => {
     date.setDate(date.getDate() + days);
     return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())} ${pad(hour)}:00:00`;
 };
-// The day after a "YYYY-MM-DD" one.
-const dayAfter = (day: string) => {
-    const [y, m, d] = day.split('-').map(Number);
-    return dayKey(new Date(y, m - 1, d + 1));
+// "YYYY-MM-DD" `days` from today.
+const inDays = (days: number) => {
+    const date = new Date();
+    return dayKey(new Date(date.getFullYear(), date.getMonth(), date.getDate() + days));
 };
 
 const renderApp = async (tasks: any[] = [
@@ -65,111 +64,107 @@ const renderApp = async (tasks: any[] = [
     await act(async () => { });
 };
 
-describe('list tabs', () => {
+// The tasks on screen, among those named.
+const shown = (...titles: string[]) => titles.filter((title) => screen.queryByText(title) !== null);
+const pick = (level: string) => fireEvent.click(screen.getByTestId(`level-${level}`));
+
+describe('list levels', () => {
     afterEach(() => localStorage.clear());
 
-    it('opens on the tasks due today, and moves from day to day', async () => {
+    it('goes from the overdue tasks to all of them, and opens on today', async () => {
         await renderApp();
 
-        expect(screen.getByText('Due today')).toBeTruthy();
-        expect(screen.queryByText('Due tomorrow')).toBeNull();
-        expect(screen.queryByText('No due date')).toBeNull();
-        expect(screen.queryByText('Late since yesterday')).toBeNull();
-
-        fireEvent.click(screen.getByLabelText('Giorno successivo'));
-        expect(screen.getByText('Due tomorrow')).toBeTruthy();
-        expect(screen.queryByText('Due today')).toBeNull();
-
-        fireEvent.click(screen.getByLabelText('Giorno precedente'));
-        fireEvent.click(screen.getByLabelText('Giorno precedente'));
-        expect(screen.getByText('Late since yesterday')).toBeTruthy();
-        expect(screen.getByText('Done yesterday')).toBeTruthy();
+        expect(['expired', 'day', 'week', 'month', 'all'].map((level) => screen.getByTestId(`level-${level}`).textContent))
+            .toEqual(['Scaduti', 'Oggi', '7 giorni', '4 settimane', 'Tutti']);
+        expect(screen.getByText('Gli scaduti e quelli in scadenza oggi')).toBeTruthy();
     });
 
-    it('shows every task in "Tutti"', async () => {
+    it('holds only the overdue tasks in "Scaduti", with those of the other workspaces', async () => {
         await renderApp();
+        pick('expired');
 
-        fireEvent.click(screen.getByText('Tutti'));
-
-        for (const title of ['Due today', 'Due tomorrow', 'No due date', 'Late since yesterday']) {
-            expect(screen.getByText(title)).toBeTruthy();
-        }
-    });
-
-    it('shows every overdue task in "Scaduti", whatever project is picked', async () => {
-        await renderApp([
-            { id: 1, title: 'Late at home', project: 'casa', status: 0, timestamp: due(-1, 10) },
-            { id: 2, title: 'Late at work', project: 'lavoro', status: 0, timestamp: due(-2, 10) },
-            { id: 3, title: 'Late, no project', status: 0, timestamp: due(-3, 10) },
-        ], 'casa');
-
-        fireEvent.click(screen.getByText('Tutti'));
-        expect(screen.queryByText('Late at work')).toBeNull();
-
-        fireEvent.click(screen.getByText('Scaduti'));
-        for (const title of ['Late at home', 'Late at work', 'Late, no project']) {
-            expect(screen.getByText(title)).toBeTruthy();
-        }
-        expect(screen.getByLabelText('4 task scaduti').textContent).toBe('4');
-    });
-
-    it('counts the overdue ones, here and in the other workspaces', async () => {
-        await renderApp();
-
-        expect(screen.getByLabelText('2 task scaduti').textContent).toBe('2');
-        fireEvent.click(screen.getByText('Scaduti'));
-
-        expect(screen.getByText('Late since yesterday')).toBeTruthy();
-        expect(screen.queryByText('Done yesterday')).toBeNull();
-        expect(screen.queryByText('Due today')).toBeNull();
+        expect(shown('Due today', 'Due tomorrow', 'No due date', 'Late since yesterday', 'Done yesterday'))
+            .toEqual(['Late since yesterday']);
         expect(screen.getByText('lavoro')).toBeTruthy();
         expect(screen.getByText(/Offerta da mandare/)).toBeTruthy();
     });
 
-    it('shows the tasks due this week, Monday to Sunday, in "Settimana"', async () => {
-        const [monday, sunday] = weekDays(new Date());
+    it('adds the tasks due today in "Oggi", done ones included', async () => {
         await renderApp([
-            { id: 1, title: 'Due on Monday', status: 2, timestamp: `${monday} 09:00:00` },
-            { id: 2, title: 'Due on Sunday', status: 0, timestamp: `${sunday} 23:00:00` },
-            { id: 3, title: 'Due next Monday', status: 0, timestamp: `${dayAfter(sunday)} 09:00:00` },
-            { id: 4, title: 'No due date', status: 0 },
+            { id: 1, title: 'Due today', status: 0, timestamp: due(0, 23) },
+            { id: 2, title: 'Done today', status: 2, timestamp: due(0, 9) },
+            { id: 3, title: 'Due tomorrow', status: 0, timestamp: due(1, 9) },
+            { id: 4, title: 'Late since yesterday', status: 1, timestamp: due(-1, 10) },
+            { id: 5, title: 'Done yesterday', status: 2, timestamp: due(-1, 11) },
         ]);
 
-        fireEvent.click(screen.getByText('Settimana'));
-
-        expect(screen.getByText('Due on Monday')).toBeTruthy();
-        expect(screen.getByText('Due on Sunday')).toBeTruthy();
-        expect(screen.queryByText('Due next Monday')).toBeNull();
-        expect(screen.queryByText('No due date')).toBeNull();
+        expect(shown('Due today', 'Done today', 'Due tomorrow', 'Late since yesterday', 'Done yesterday'))
+            .toEqual(['Due today', 'Done today', 'Late since yesterday']);
+        expect(screen.getByText(/Offerta da mandare/)).toBeTruthy();
     });
 
-    it('shows the tasks due this month in "Mese", following the project picked', async () => {
-        const [first, last] = monthDays(new Date());
+    it('reaches 6 days from today in "7 giorni"', async () => {
         await renderApp([
-            { id: 1, title: 'Due on the first', project: 'casa', status: 0, timestamp: `${first} 09:00:00` },
-            { id: 2, title: 'Due on the last', project: 'casa', status: 0, timestamp: `${last} 23:00:00` },
-            { id: 3, title: 'Due next month', project: 'casa', status: 0, timestamp: `${dayAfter(last)} 09:00:00` },
-            { id: 4, title: 'Due at work', project: 'lavoro', status: 0, timestamp: `${last} 10:00:00` },
+            { id: 1, title: 'Late since yesterday', status: 0, timestamp: due(-1, 10) },
+            { id: 2, title: 'Done today', status: 2, timestamp: due(0, 9) },
+            { id: 3, title: 'Due in 6 days', status: 0, timestamp: due(6, 23) },
+            { id: 4, title: 'Due in 7 days', status: 0, timestamp: due(7, 9) },
+            { id: 5, title: 'No due date', status: 0 },
+        ]);
+        pick('week');
+
+        expect(shown('Late since yesterday', 'Done today', 'Due in 6 days', 'Due in 7 days', 'No due date'))
+            .toEqual(['Late since yesterday', 'Done today', 'Due in 6 days']);
+        expect(screen.getByText(`Gli scaduti e quelli in scadenza fino al ${new Intl.DateTimeFormat('it', { day: 'numeric', month: 'long' }).format(new Date(`${inDays(6)}T00:00`))}`)).toBeTruthy();
+    });
+
+    it('reaches 27 days from today in "4 settimane"', async () => {
+        await renderApp([
+            { id: 1, title: 'Late since yesterday', status: 0, timestamp: due(-1, 10) },
+            { id: 2, title: 'Due in 27 days', status: 0, timestamp: due(27, 23) },
+            { id: 3, title: 'Due in 28 days', status: 0, timestamp: due(28, 9) },
+        ]);
+        pick('month');
+
+        expect(shown('Late since yesterday', 'Due in 27 days', 'Due in 28 days')).toEqual(['Late since yesterday', 'Due in 27 days']);
+    });
+
+    it('holds every task in "Tutti", those with no due date too', async () => {
+        await renderApp();
+        pick('all');
+
+        expect(shown('Due today', 'Due tomorrow', 'No due date', 'Late since yesterday', 'Done yesterday'))
+            .toEqual(['Due today', 'Due tomorrow', 'No due date', 'Late since yesterday', 'Done yesterday']);
+    });
+
+    it('keeps the overdue tasks of every project, and the others only of the project picked', async () => {
+        await renderApp([
+            { id: 1, title: 'Late at work', project: 'lavoro', status: 0, timestamp: due(-1, 10) },
+            { id: 2, title: 'Today at home', project: 'casa', status: 0, timestamp: due(0, 23) },
+            { id: 3, title: 'Today at work', project: 'lavoro', status: 0, timestamp: due(0, 23) },
+            { id: 4, title: 'Someday at work', project: 'lavoro', status: 0 },
         ], 'casa');
 
-        fireEvent.click(screen.getByText('Mese'));
-
-        expect(screen.getByText('Due on the first')).toBeTruthy();
-        expect(screen.getByText('Due on the last')).toBeTruthy();
-        expect(screen.queryByText('Due next month')).toBeNull();
-        expect(screen.queryByText('Due at work')).toBeNull();
+        expect(shown('Late at work', 'Today at home', 'Today at work')).toEqual(['Late at work', 'Today at home']);
+        pick('all');
+        expect(shown('Late at work', 'Today at home', 'Today at work', 'Someday at work')).toEqual(['Late at work', 'Today at home']);
     });
 
-    it('says when nothing is due this week', async () => {
+    it('counts on each level its tasks and those of the levels before, the other workspaces\' overdue ones included', async () => {
+        await renderApp();
+
+        expect(['expired', 'day', 'week', 'month', 'all'].map((level) => screen.getByTestId(`level-${level}`).dataset.count))
+            .toEqual(['2', '3', '4', '4', '6']);
+    });
+
+    it('says when a level has no task', async () => {
         await renderApp([{ id: 1, title: 'No due date', status: 0 }]);
 
-        fireEvent.click(screen.getByText('Settimana'));
-
-        expect(screen.getByText('Nessun task da concludere questa settimana')).toBeTruthy();
+        expect(screen.getByText('Nessun task')).toBeTruthy();
     });
 });
 
-describe('a task added from a tab', () => {
+describe('a task added from a level', () => {
     afterEach(() => localStorage.clear());
 
     // Adds a task from the new-task modal and gives back the due date sent to the API.
@@ -183,41 +178,43 @@ describe('a task added from a tab', () => {
     };
     const at18 = (day: string) => new Date(`${day}T18:00`).getTime();
 
-    it('is due at 18:00 of the day shown in "Per data"', async () => {
+    it('is due at 18:00 of today in "Oggi"', async () => {
         await renderApp([]);
-        fireEvent.click(screen.getByLabelText('Giorno successivo'));
 
-        expect(addTask('Domani')).toBe(at18(dayAfter(dayKey(new Date()))));
+        expect(addTask('Oggi')).toBe(at18(inDays(0)));
     });
 
-    it('is due at 18:00 of this week\'s Sunday in "Settimana"', async () => {
+    it('is due at 18:00 of 6 days from today in "7 giorni"', async () => {
         await renderApp([]);
-        fireEvent.click(screen.getByText('Settimana'));
+        pick('week');
 
-        expect(addTask('In settimana')).toBe(at18(weekDays(new Date())[1]));
+        expect(addTask('In settimana')).toBe(at18(inDays(6)));
     });
 
-    it('is due at 18:00 of the last day of the month in "Mese"', async () => {
+    it('is due at 18:00 of 27 days from today in "4 settimane"', async () => {
         await renderApp([]);
-        fireEvent.click(screen.getByText('Mese'));
+        pick('month');
 
-        expect(addTask('Entro il mese')).toBe(at18(monthDays(new Date())[1]));
+        expect(addTask('Entro il mese')).toBe(at18(inDays(27)));
     });
 
     it('shows that due date in the form, under the title, while the task is typed', async () => {
         await renderApp([]);
-        fireEvent.click(screen.getByText('Settimana'));
+        pick('week');
         fireEvent.click(screen.getByLabelText('Aggiungi nuovo task'));
 
         const [field] = screen.getAllByLabelText('Scadenza') as HTMLInputElement[];
         expect(field.closest('.tab-content')?.classList.contains('active')).toBe(true);
-        expect(field.value).toBe(`${weekDays(new Date())[1]}T18:00`);
+        expect(field.value).toBe(`${inDays(6)}T18:00`);
     });
 
-    it('has no due date in "Tutti"', async () => {
+    it('has no due date in "Scaduti" and in "Tutti"', async () => {
         await renderApp([]);
-        fireEvent.click(screen.getByText('Tutti'));
+        pick('expired');
+        expect(addTask('Senza data')).toBe('');
 
+        (global.fetch as jest.Mock).mockClear();
+        pick('all');
         expect(addTask('Quando capita')).toBe('');
     });
 });

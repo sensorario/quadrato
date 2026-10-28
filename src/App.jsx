@@ -20,9 +20,9 @@ import { childrenOf, descendantIds, hasOpenDescendants, reconcileAncestors } fro
 import { getActiveProjects } from "./functions/getActiveProjects";
 import { getConfigRepository } from "./repositories";
 import { navigate } from "./Router";
-import { DateNav, Icon, LanguageSwitcher, QuadratoHeader, SGFooter, Tabs } from "@sensorario/sg-components";
+import { Icon, LanguageSwitcher, QuadratoHeader, SGFooter, StepRange } from "@sensorario/sg-components";
 import ExpiredTasks from "./components/ExpiredTasks";
-import { dayKey, dueDay, isDueBetween, isOverdue, monthDays, tabDueDate, weekDays } from "./utils/taskDays";
+import { LEVELS, inLevel, isOverdue, levelLastDay, tabDueDate } from "./utils/taskDays";
 import LogoutConfirmModal from "./components/LogoutConfirmModal";
 
 // Header di autorizzazione da allegare alle richieste autenticate verso l'API
@@ -240,9 +240,8 @@ function App() {
     const [workspaces, setWorkspaces] = useState([]);
     // The overdue tasks of every workspace, as GET /quadrato/workspaces lists them.
     const [expiredTasks, setExpiredTasks] = useState([]);
-    // The list's tabs: "all" of them, those due on `day` (the default, today), this "week" or "month", or the "expired" ones.
-    const [listTab, setListTab] = useState("day");
-    const [day, setDay] = useState(() => dayKey(new Date()));
+    // How far ahead the list reaches, one of LEVELS: the overdue tasks, then those due today (the default), in 7 days, in 4 weeks, then all.
+    const [level, setLevel] = useState("day");
     const [registeredUsersCount, setRegisteredUsersCount] = useState(null);
     const [workspaceFilter, setWorkspaceFilter] = useState("");
     const [deletingWorkspace, setDeletingWorkspace] = useState(null);
@@ -1006,8 +1005,8 @@ function App() {
             mode="create"
             initialValues={{
                 project: projectFilter === "ALL" ? "" : projectFilter,
-                // Due where the tab shows it; zen mode has no tabs.
-                timestamp: zenMode ? "" : tabDueDate(listTab, day, new Date()),
+                // Due where the level shows it; zen mode has no levels.
+                timestamp: zenMode ? "" : tabDueDate(level, new Date()),
             }}
             onSave={handleAddTask}
             onClose={() => setShowPopup(false)}
@@ -2056,7 +2055,7 @@ function App() {
         </Modal>
     );
 
-    // "Tutti", "Per data", "Settimana" and "Mese" follow the project filter; "Scaduti" has every overdue task, as the block it replaced.
+    // Every level holds the overdue tasks, of every project as the block they replaced, then adds its own, of the project picked.
     const projectTasks =
         projectFilter === "ALL"
             ? unarchivedTasks
@@ -2066,15 +2065,24 @@ function App() {
                 ? unarchivedTasks.filter((t) => t.project === projectFilter)
                 : unarchivedTasks;
     const now = new Date();
-    const dayTasks = projectTasks.filter((t) => !t.archived && dueDay(t) === day);
-    const week = weekDays(now);
-    const month = monthDays(now);
-    const weekTasks = projectTasks.filter((t) => isDueBetween(t, ...week));
-    const monthTasks = projectTasks.filter((t) => isDueBetween(t, ...month));
-    const overdueTasks = unarchivedTasks.filter((t) => isOverdue(t, now));
+    const inProject = new Set(projectTasks);
+    // A filter of the whole list keeps its order, so dragging still works, and never shows twice a task of today already overdue.
+    const levelTasks = Object.fromEntries(
+        LEVELS.map((key) => [
+            key,
+            unarchivedTasks.filter((t) => !t.archived && (isOverdue(t, now) || (inProject.has(t) && inLevel(t, key, now)))),
+        ])
+    );
     // This workspace's overdue tasks are the live ones above; the API's list gives the others'.
     const expiredElsewhere = expiredTasks.filter((task) => task.workspace !== ws);
-    const expiredCount = overdueTasks.length + expiredElsewhere.length;
+    const levelHint =
+        level === "week" || level === "month"
+            ? t("listLevels.hint.until", {
+                  date: new Intl.DateTimeFormat(i18n.language, { day: "numeric", month: "long" }).format(
+                      new Date(`${levelLastDay(level, now)}T00:00`)
+                  ),
+              })
+            : t(`listLevels.hint.${level}`);
 
     const taskListOf = (list) => (
         <TaskList
@@ -2162,69 +2170,21 @@ function App() {
                         {projectGroupable && DefinedTaskProject}
                     </div>
 
-                    <Tabs
-                        className="list-tabs"
-                        items={[
-                            { value: "all", label: t("listTabs.all") },
-                            { value: "day", label: t("listTabs.byDay") },
-                            { value: "week", label: t("listTabs.week") },
-                            { value: "month", label: t("listTabs.month") },
-                            {
-                                value: "expired",
-                                label: (
-                                    <>
-                                        {t("listTabs.expired")}
-                                        <span
-                                            className={`list-tab-count${expiredCount > 0 ? " list-tab-count-late" : ""}`}
-                                            aria-label={t("listTabs.expiredCount", { count: expiredCount })}
-                                        >
-                                            {expiredCount}
-                                        </span>
-                                    </>
-                                ),
-                            },
-                        ]}
-                        value={listTab}
-                        onChange={setListTab}
-                        ariaLabel={t("listTabs.label")}
+                    <StepRange
+                        className="list-levels"
+                        items={LEVELS.map((key) => ({
+                            value: key,
+                            label: t(`listLevels.${key}`),
+                            count: levelTasks[key].length + expiredElsewhere.length,
+                            tone: key === "expired" ? "danger" : undefined,
+                        }))}
+                        value={level}
+                        onChange={setLevel}
+                        ariaLabel={t("listLevels.label")}
                     />
-
-                    {listTab === "all" && taskListOf(projectTasks)}
-
-                    {listTab === "day" && (
-                        <>
-                            <DateNav className="list-day-nav" value={day} onChange={setDay} />
-                            {dayTasks.length > 0 ? taskListOf(dayTasks) : <p className="list-tab-empty">{t("dayTasks.none")}</p>}
-                        </>
-                    )}
-
-                    {listTab === "week" && (
-                        <>
-                            <p className="list-period">
-                                {new Intl.DateTimeFormat(i18n.language, { day: "numeric", month: "long" }).formatRange(
-                                    new Date(`${week[0]}T00:00`),
-                                    new Date(`${week[1]}T00:00`)
-                                )}
-                            </p>
-                            {weekTasks.length > 0 ? taskListOf(weekTasks) : <p className="list-tab-empty">{t("weekTasks.none")}</p>}
-                        </>
-                    )}
-
-                    {listTab === "month" && (
-                        <>
-                            <p className="list-period">
-                                {new Intl.DateTimeFormat(i18n.language, { month: "long", year: "numeric" }).format(now)}
-                            </p>
-                            {monthTasks.length > 0 ? taskListOf(monthTasks) : <p className="list-tab-empty">{t("monthTasks.none")}</p>}
-                        </>
-                    )}
-
-                    {listTab === "expired" && (
-                        <>
-                            {overdueTasks.length > 0 ? taskListOf(overdueTasks) : <p className="list-tab-empty">{t("expiredTasks.none")}</p>}
-                            <ExpiredTasks tasks={expiredElsewhere} />
-                        </>
-                    )}
+                    <p className="list-level-hint">{levelHint}</p>
+                    {levelTasks[level].length > 0 ? taskListOf(levelTasks[level]) : <p className="list-empty">{t("listLevels.none")}</p>}
+                    <ExpiredTasks tasks={expiredElsewhere} />
                     {showHelp && HelpModalView}
                     {showPopup && NewTaskModalView}
                     {showCleanConfirm && ConfirmModalView}

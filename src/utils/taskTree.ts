@@ -1,6 +1,7 @@
 import { Task } from "../types/commonTypes";
 import { STATUS_ENUM } from "../utils";
 import sortByDate from "./filterTaskByVisibilityRange";
+import { isNote } from "../components/TaskTitle";
 
 type Id = Task['id'];
 
@@ -89,7 +90,7 @@ export const ancestorIds = (tasks: Task[], id: Id): Id[] => {
 
 export const hasOpenDescendants = (tasks: Task[], id: Id): boolean => {
     const ids = new Set(descendantIds(tasks, id));
-    return tasks.some(t => ids.has(t.id) && !isClosed(t));
+    return tasks.some(t => ids.has(t.id) && !isClosed(t) && !isNote(t));
 };
 
 // Where the dragged task lands: between `rows[insertIndex - 1]` and `rows[insertIndex]`
@@ -118,7 +119,7 @@ export const projectDrop = (rows: TreeRow[], insertIndex: number, startDepth: nu
 // Keeps every ancestor of `ids` consistent with its subtasks, from the deepest up:
 // - a parent is completed when all its subtasks are closed, and reopened when one isn't;
 // - a parent with a due date is postponed to its latest subtask's due date.
-// Parents without a due date keep none.
+// Parents without a due date keep none. Notes don't count: they're neither open nor due.
 export const reconcileAncestors = (tasks: Task[], ids: Id[]): Task[] => {
     const chain: Id[] = [];
     for (const id of ids) {
@@ -135,7 +136,7 @@ export const reconcileAncestors = (tasks: Task[], ids: Id[]): Task[] => {
         const task = byId.get(id);
         if (!task) continue;
         const current = [...byId.values()];
-        const children = childrenOf(current, id);
+        const children = childrenOf(current, id).filter(child => !isNote(child));
         if (children.length === 0) continue;
 
         let next = task;
@@ -145,7 +146,9 @@ export const reconcileAncestors = (tasks: Task[], ids: Id[]): Task[] => {
 
         const own = toTime(next.timestamp);
         if (own !== null) {
-            const latest = Math.max(...descendantIds(current, id).map(d => toTime(byId.get(d)?.timestamp) ?? -Infinity));
+            const latest = Math.max(...descendantIds(current, id)
+                .map(d => byId.get(d))
+                .map(d => (d && !isNote(d) ? toTime(d.timestamp) : null) ?? -Infinity));
             if (latest > own) next = { ...next, timestamp: latest };
         }
 

@@ -4,7 +4,7 @@ import { Icon, Logo, QuadratoHeader } from '@sensorario/sg-components';
 import { Task } from '../types/commonTypes';
 import { getConfigRepository } from '../repositories';
 import { navigate } from '../Router';
-import TaskTitle from '../components/TaskTitle';
+import TaskTitle, { isNote, splitTaskType, TaskType, TaskTypePicker } from '../components/TaskTitle';
 import { STATUS_ENUM } from '../utils';
 import { byPosition, descendantIds, flattenTree, hasOpenDescendants, reconcileAncestors, toTime, TreeRow } from '../utils/taskTree';
 import { dayKey } from '../utils/taskDays';
@@ -12,6 +12,7 @@ import { toPlainText } from '../utils/toPlainText';
 import { useSlidingRows } from '../functions/useSlidingRows';
 
 const UNIT_KEYS: Record<string, string> = { minuti: 'minutes', giorni: 'days', settimane: 'weeks', mesi: 'months', anni: 'years' };
+const TOME_API = 'https://api.simonegentili.com/tome';
 
 // A due date (Unix ms) as a datetime-local field writes it, where the browser is.
 const dateTimeField = (time: number | null) => {
@@ -172,12 +173,15 @@ export const TaskDetailPage = ({ taskId }: TaskDetailPageProps) => {
     const [dragPositions, setDragPositions] = useState<Map<Task['id'], number> | null>(null);
     // Bumped to draw the date fields again from the task, when what was typed isn't kept.
     const [datesRevision, setDatesRevision] = useState(0);
+    const [trackerSending, setTrackerSending] = useState(false);
+    const [trackerSent, setTrackerSent] = useState<'start' | 'queue' | null>(null);
     const { rowRef, isAbove, startFollowing, follow, stopFollowing } = useSlidingRows(taskId);
 
     const matchTask = (t: any) =>
         String(t.id) === String(taskId) || String(t.uuid) === String(taskId);
 
     useEffect(() => {
+        setTrackerSent(null);
         const repo = getConfigRepository();
         repo.onDataLoaded(() => {
             const tasks: Task[] = (repo as any).getTasks ? (repo as any).getTasks() : [];
@@ -321,7 +325,7 @@ export const TaskDetailPage = ({ taskId }: TaskDetailPageProps) => {
     };
 
     // Shown at once, put back if the API doesn't take it.
-    const handleRename = async (title: string) => {
+    const handleRename = async (title: string, failure = t('taskDetailPage.renameFailed')) => {
         if (!task) return;
         const previous = task.title;
         setTask({ ...task, title });
@@ -341,7 +345,50 @@ export const TaskDetailPage = ({ taskId }: TaskDetailPageProps) => {
             getConfigRepository().fetchData();
         } catch {
             setTask(current => current && { ...current, title: previous });
-            alert(t('taskDetailPage.renameFailed'));
+            alert(failure);
+        }
+    };
+
+    // The type is the start of the title ("[bug] "): changing it is renaming the task.
+    const handleType = (type: TaskType | null) => {
+        if (!task) return;
+        const { text } = splitTaskType(task.title);
+        handleRename((type ? `[${type}] ` : '') + text, t('taskDetailPage.typeFailed'));
+    };
+
+    // A timebox of the tracker (Tome) described by the task's title, as when Tome starts one of
+    // its tasks. Started, it's refused while another one is running; queued, it starts when the
+    // tracker is free, at once if it is already (the advance is what Tome itself does then).
+    const sendToTracker = async (mode: 'start' | 'queue') => {
+        if (!task) return;
+        const token = localStorage.getItem('simonegentili.com-access-token');
+        const post = (path: string, body?: object) => fetch(`${TOME_API}${path}`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', ...(token ? { Authorization: `Bearer ${token}` } : {}) },
+            body: body && JSON.stringify(body),
+        });
+        setTrackerSending(true);
+        setTrackerSent(null);
+        try {
+            const res = await post(mode === 'start' ? '/timeboxes' : '/queue', { description: task.title });
+            if (res.status === 401) {
+                localStorage.removeItem('simonegentili.com-access-token');
+                setIsAuthenticated(false);
+                return;
+            }
+            if (mode === 'start' && res.status === 400) {
+                const { minutesSinceLastTimebox } = await res.json();
+                alert(t('taskDetailPage.trackerBusy', { minutes: minutesSinceLastTimebox }));
+                return;
+            }
+            if (!res.ok) throw new Error(String(res.status));
+            // Not waited for: when it fails, the cron starts the queue anyway.
+            if (mode === 'queue') post('/queue/advance').catch(() => { });
+            setTrackerSent(mode);
+        } catch {
+            alert(t(mode === 'start' ? 'taskDetailPage.trackerStartFailed' : 'taskDetailPage.trackerQueueFailed'));
+        } finally {
+            setTrackerSending(false);
         }
     };
 
@@ -585,34 +632,77 @@ export const TaskDetailPage = ({ taskId }: TaskDetailPageProps) => {
                     );
                 })()}
 
-                <span style={labelStyle}>{t('taskDetailPage.status')}</span>
-                <div role="group" aria-label={t('taskDetailPage.status')} style={{ display: 'flex', flexWrap: 'wrap', gap: '6px', marginTop: '4px' }}>
-                    {[STATUS_ENUM.TODO, STATUS_ENUM.IN_PROGRESS, STATUS_ENUM.DONE, STATUS_ENUM.SKIPPED].map(status => {
-                        // As in the list: a task closes by itself with its last open subtask.
-                        const blocked = (status === STATUS_ENUM.DONE || status === STATUS_ENUM.SKIPPED) && hasOpenDescendants(allTasks, task.id);
-                        const current = task.status === status;
-                        return (
+                {/* A note has no status, as in the list. */}
+                {!isNote(task) && (
+                    <>
+                        <span style={labelStyle}>{t('taskDetailPage.status')}</span>
+                        <div role="group" aria-label={t('taskDetailPage.status')} style={{ display: 'flex', flexWrap: 'wrap', gap: '6px', marginTop: '4px' }}>
+                            {[STATUS_ENUM.TODO, STATUS_ENUM.IN_PROGRESS, STATUS_ENUM.DONE, STATUS_ENUM.SKIPPED].map(status => {
+                                // As in the list: a task closes by itself with its last open subtask.
+                                const blocked = (status === STATUS_ENUM.DONE || status === STATUS_ENUM.SKIPPED) && hasOpenDescendants(allTasks, task.id);
+                                const current = task.status === status;
+                                return (
+                                    <button
+                                        key={status}
+                                        type="button"
+                                        aria-pressed={current}
+                                        disabled={blocked}
+                                        title={blocked ? t('taskList.subtasksOpen') : undefined}
+                                        onClick={() => handleStatus(status)}
+                                        style={{
+                                            padding: '4px 12px', borderRadius: '999px', fontSize: '13px',
+                                            border: `1px solid ${current ? '#007bff' : '#ccc'}`,
+                                            background: current ? '#007bff' : '#fff',
+                                            color: current ? '#fff' : '#333',
+                                            cursor: blocked ? 'not-allowed' : 'pointer',
+                                            opacity: blocked ? 0.5 : 1,
+                                        }}
+                                    >
+                                        {statusLabel[status]}
+                                    </button>
+                                );
+                            })}
+                        </div>
+                    </>
+                )}
+
+                <span style={labelStyle}>{t('taskDetailPage.type')}</span>
+                <TaskTypePicker value={splitTaskType(task.title).type} onChange={handleType} style={{ marginTop: '4px' }} />
+
+                {/* An epic is tracked through its tasks, never as a timebox of its own (as in Tome). */}
+                {splitTaskType(task.title).type !== 'epic' && (
+                    <>
+                        <span style={labelStyle}>{t('taskDetailPage.tracker')}</span>
+                        <div style={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: '8px', marginTop: '4px' }}>
                             <button
-                                key={status}
                                 type="button"
-                                aria-pressed={current}
-                                disabled={blocked}
-                                title={blocked ? t('taskList.subtasksOpen') : undefined}
-                                onClick={() => handleStatus(status)}
-                                style={{
-                                    padding: '4px 12px', borderRadius: '999px', fontSize: '13px',
-                                    border: `1px solid ${current ? '#007bff' : '#ccc'}`,
-                                    background: current ? '#007bff' : '#fff',
-                                    color: current ? '#fff' : '#333',
-                                    cursor: blocked ? 'not-allowed' : 'pointer',
-                                    opacity: blocked ? 0.5 : 1,
-                                }}
+                                className="modal-close-btn"
+                                disabled={trackerSending}
+                                onClick={() => sendToTracker('start')}
+                                style={{ display: 'flex', alignItems: 'center', gap: '6px' }}
                             >
-                                {statusLabel[status]}
+                                <Icon name="play" size={16} />
+                                {t('taskDetailPage.trackerStart')}
                             </button>
-                        );
-                    })}
-                </div>
+                            <button
+                                type="button"
+                                className="modal-close-btn"
+                                disabled={trackerSending}
+                                onClick={() => sendToTracker('queue')}
+                                style={{ display: 'flex', alignItems: 'center', gap: '6px' }}
+                            >
+                                <Icon name="list-check" size={16} />
+                                {t('taskDetailPage.trackerQueue')}
+                            </button>
+                            {trackerSent && (
+                                <span role="status" style={{ fontSize: '13px', color: '#666' }}>
+                                    {t(trackerSent === 'start' ? 'taskDetailPage.trackerStarted' : 'taskDetailPage.trackerQueued')}{' '}
+                                    <a href="https://tome.simonegentili.com" style={{ color: '#007bff' }}>{t('taskDetailPage.trackerOpen')}</a>
+                                </span>
+                            )}
+                        </div>
+                    </>
+                )}
 
                 {task.project && (
                     <>
@@ -700,7 +790,7 @@ export const TaskDetailPage = ({ taskId }: TaskDetailPageProps) => {
                                         onClick={() => navigate(`/task/${sub.id}`)}
                                         style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer', font: 'inherit', fontSize: '15px', color: '#222', display: 'flex', alignItems: 'center', gap: '6px', textAlign: 'left' }}
                                     >
-                                        <span style={{ fontSize: '12px', color: '#888', minWidth: '84px' }}>{statusLabel[sub.status] ?? sub.status}</span>
+                                        <span style={{ fontSize: '12px', color: '#888', minWidth: '84px' }}>{isNote(sub) ? t('app.noteLabel') : statusLabel[sub.status] ?? sub.status}</span>
                                         <TaskTitle title={sub.title} />
                                     </button>
                                 </li>

@@ -1,8 +1,7 @@
 import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Icon } from "@sensorario/sg-components";
 import { Modal } from "./Modal";
-import { splitTaskType, TASK_TYPES, TaskType, taskTypeIcons } from "./TaskTitle";
+import { splitTaskType, TaskType, TaskTypePicker } from "./TaskTitle";
 import TabbedContent from "./TabbedContent";
 import { Footer } from "./Footer/index";
 import Toggle from "./Toggle";
@@ -73,6 +72,10 @@ const TaskModal = ({ mode, initialValues, onSave, onClose, projectEditable, date
     const [timestamp, setTimestamp] = useState<string | number | "">(seededTimestamp);
     const [periodicity, setPeriodicity] = useState<Periodicity>(initialValues?.periodicity ?? DEFAULT_PERIODICITY);
     const [addAnother, setAddAnother] = useState(false);
+    // A new note goes on the day and at the time it's written: no due date nor repetition to pick.
+    // It's moved afterwards, as any task.
+    const newNote = mode === "create" && taskType === "note";
+    const datesShown = dateTimeEnabled && !newNote;
 
     const handleSave = () => {
         if (title.trim() === "") return;
@@ -81,8 +84,8 @@ const TaskModal = ({ mode, initialValues, onSave, onClose, projectEditable, date
             title: (taskType ? `[${taskType}] ` : "") + toPlainText(title),
             longDescription: toPlainText(longDescription),
             project,
-            timestamp,
-            periodicity: periodicity.number ? periodicity : null,
+            timestamp: newNote ? Date.now() : timestamp,
+            periodicity: !newNote && periodicity.number ? periodicity : null,
         });
 
         if (mode === "create") {
@@ -134,31 +137,7 @@ const TaskModal = ({ mode, initialValues, onSave, onClose, projectEditable, date
                 </Footer>
             }
         >
-            <div role="group" aria-label={t("app.taskTypeLegendLabel")} style={{ display: "flex", gap: "8px", marginBottom: "12px" }}>
-                {TASK_TYPES.map((type) => {
-                    const picked = taskType === type;
-                    const { name, color } = taskTypeIcons[type];
-                    return (
-                        <button
-                            key={type}
-                            type="button"
-                            aria-pressed={picked}
-                            aria-label={t(`app.${type}Label`)}
-                            title={t(`app.${type}Label`)}
-                            onClick={() => setTaskType(picked ? null : type)}
-                            style={{
-                                display: "flex", alignItems: "center", justifyContent: "center",
-                                padding: "6px", borderRadius: "8px", cursor: "pointer",
-                                border: `2px solid ${picked ? color : "transparent"}`,
-                                background: picked ? `${color}22` : "transparent",
-                                color,
-                            }}
-                        >
-                            <Icon name={name} size={20} />
-                        </button>
-                    );
-                })}
-            </div>
+            <TaskTypePicker value={taskType} onChange={setTaskType} style={{ marginBottom: "12px" }} />
             <TabbedContent id="taskModal" panels={[
                 {
                     title: t("taskModal.whatTab"), content: <>
@@ -178,7 +157,7 @@ const TaskModal = ({ mode, initialValues, onSave, onClose, projectEditable, date
                                 }}
                             />
                         </div>
-                        {dateTimeEnabled && deadlineField}
+                        {datesShown && deadlineField}
                         <label className="modal-input-label">{t("taskModal.longDescriptionLabel")}</label>
                         <div className="modal-long-description">
                             <textarea
@@ -191,7 +170,7 @@ const TaskModal = ({ mode, initialValues, onSave, onClose, projectEditable, date
                     </>
                 },
                 {
-                    title: t("taskModal.whenTab"), content: dateTimeEnabled && (
+                    title: t("taskModal.whenTab"), content: datesShown && (
                         <>
                             <label className="modal-input-label">{t("taskModal.periodicityLabel")}</label>
                             <div className="periodo">

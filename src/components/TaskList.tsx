@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next";
 import { getStatusIcons, STATUS_ENUM } from "../utils";
 import { Icon } from "@sensorario/sg-components";
 import TaskModal from "./TaskModal";
-import TaskTitle from "./TaskTitle";
+import TaskTitle, { isNote } from "./TaskTitle";
 import { toPlainText } from "../utils/toPlainText";
 import { taskAge } from "../utils/taskAge";
 import { Modal } from "./Modal";
@@ -302,7 +302,8 @@ export const TaskList = ({ tasks, pendingStatuses, onTaskClick, updateTaskTitle,
     };
 
     const handler = (task: Task, depth: number, rows: TreeRow[]) => {
-        const isExpired = dateTimeEnabled && task.timestamp && new Date(task.timestamp) < new Date();
+        const note = isNote(task);
+        const isExpired = !note && dateTimeEnabled && task.timestamp && new Date(task.timestamp) < new Date();
 
 
         const isMobile = /iPhone/i.test(navigator.userAgent);
@@ -361,12 +362,22 @@ export const TaskList = ({ tasks, pendingStatuses, onTaskClick, updateTaskTitle,
                         gap: '4px'
                     }}>
 
-                    <span onClick={() => onTaskClick(task.id)} title={blocked ? t('taskList.subtasksOpen') : undefined} style={{ flexShrink: 0, verticalAlign: 'middle', display: 'flex', alignItems: 'center', gap: '4px' }}>
-                        {projectEditable && <svg width="18" height="18" style={{ flexShrink: 0, verticalAlign: 'middle' }}>
-                            <rect width="18" height="18" rx="3" fill={task.project && projectColors[task.project] ? projectColors[task.project] : '#ccc'} />
-                        </svg>}
+                    <span onClick={note ? undefined : () => onTaskClick(task.id)} title={blocked && !note ? t('taskList.subtasksOpen') : undefined} style={{ flexShrink: 0, verticalAlign: 'middle', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                        {note ? (
+                            // No status to click through: one line, in the project's color, as wide as the squares it replaces.
+                            <svg width={projectEditable ? 40 : 18} height="18" role="img" aria-label={t('app.noteLabel')} style={{ flexShrink: 0, verticalAlign: 'middle' }}>
+                                <line x1="2" y1="9" x2={projectEditable ? 38 : 16} y2="9" strokeWidth="2" strokeLinecap="round"
+                                    stroke={projectEditable && task.project && projectColors[task.project] ? projectColors[task.project] : '#888'} />
+                            </svg>
+                        ) : (
+                            <>
+                                {projectEditable && <svg width="18" height="18" style={{ flexShrink: 0, verticalAlign: 'middle' }}>
+                                    <rect width="18" height="18" rx="3" fill={task.project && projectColors[task.project] ? projectColors[task.project] : '#ccc'} />
+                                </svg>}
 
-                        {STATUS[pendingStatuses?.[task.id] ?? task.status]}
+                                {STATUS[pendingStatuses?.[task.id] ?? task.status]}
+                            </>
+                        )}
 
                         {dateTimeEnabled && task.timestamp && (
                             <span style={{ margin: '0', color: '#666' }}>

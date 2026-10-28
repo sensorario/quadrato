@@ -38,6 +38,8 @@
     "epicLabel": "Épica",
     "choreLabel": "Chore (mantenimiento)",
     "docsLabel": "Documentación",
+    "noteLabel": "Nota",
+    "eventLabel": "Evento",
     "workspaceLabel": "espacio de trabajo: {{name}}",
     "registeredUsersCount": "{{count}} usuarios registrados",
     "loggedInAs": "Sesión iniciada como {{name}}",
@@ -263,10 +265,20 @@
     "openInGantt": "Abrir en el Gantt",
     "start": "Inicio",
     "startAfterEnd": "El inicio no puede ser posterior al vencimiento.",
-    "datesFailed": "No se pudieron guardar las fechas de la tarea."
+    "datesFailed": "No se pudieron guardar las fechas de la tarea.",
+    "type": "Tipo",
+    "typeFailed": "No se pudo cambiar el tipo de la tarea.",
+    "tracker": "Tracker",
+    "trackerStart": "Iniciar",
+    "trackerQueue": "Poner en cola",
+    "trackerStarted": "Iniciada en el tracker.",
+    "trackerQueued": "Puesta en cola en el tracker.",
+    "trackerOpen": "Abrir el tracker",
+    "trackerBusy": "Ya hay un timebox en curso en el tracker, iniciado hace {{minutes}} minutos: ponla en cola.",
+    "trackerStartFailed": "No se pudo iniciar la tarea en el tracker.",
+    "trackerQueueFailed": "No se pudo poner la tarea en cola en el tracker."
   },
   "expiredTasks": {
-    "none": "No hay tareas vencidas",
     "elsewhere": "En otros workspaces",
     "viewDetail": "Ver detalle de la tarea"
   },
@@ -307,23 +319,19 @@
     "allTasks": "todas las tareas",
     "noProject": "sin proyecto"
   },
-  "listTabs": {
-    "label": "Lista de tareas",
-    "all": "Todas",
-    "byDay": "Por fecha",
-    "week": "Semana",
-    "month": "Mes",
+  "listLevels": {
+    "label": "Vencimientos",
     "expired": "Vencidas",
-    "expiredCount_one": "{{count}} tarea vencida",
-    "expiredCount_other": "{{count}} tareas vencidas"
-  },
-  "dayTasks": {
-    "none": "Ninguna tarea vence este día"
-  },
-  "weekTasks": {
-    "none": "Ninguna tarea vence esta semana"
-  },
-  "monthTasks": {
-    "none": "Ninguna tarea vence este mes"
+    "day": "Hoy",
+    "week": "7 días",
+    "month": "4 semanas",
+    "all": "Todas",
+    "hint": {
+      "expired": "Tareas pendientes cuyo vencimiento ya pasó",
+      "day": "Las vencidas y las que vencen hoy",
+      "until": "Las vencidas y las que vencen hasta el {{date}}",
+      "all": "Todas las tareas, también sin vencimiento"
+    },
+    "none": "Ninguna tarea"
   }
 }

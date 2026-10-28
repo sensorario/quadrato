@@ -139,6 +139,37 @@ describe('TaskModal save', () => {
         expect(screen.queryAllByLabelText('Scadenza')).toHaveLength(0);
     });
 
+    it('saves a new note on the day and at the time it is written, with no deadline to pick', () => {
+        jest.useFakeTimers().setSystemTime(new Date(2026, 9, 28, 14, 32));
+        const onSave = jest.fn();
+        render(<TaskModal {...baseProps} mode="create" onSave={onSave}
+            initialValues={{ timestamp: new Date(2026, 9, 28, 18, 0).getTime() }} />);
+
+        fireEvent.click(screen.getByRole('button', { name: 'Nota' }));
+        expect(screen.queryAllByLabelText('Scadenza')).toHaveLength(0);
+        fireEvent.change(screen.getByPlaceholderText('Titolo del task'), { target: { value: 'Chiamato il fornitore' } });
+        fireEvent.click(screen.getByText('Salva'));
+
+        expect(onSave).toHaveBeenCalledWith(expect.objectContaining({
+            title: '[note] Chiamato il fornitore',
+            timestamp: new Date(2026, 9, 28, 14, 32).getTime(),
+            periodicity: null,
+        }));
+        jest.useRealTimers();
+    });
+
+    it('lets a note being edited be moved to another day', () => {
+        const onSave = jest.fn();
+        render(<TaskModal {...baseProps} mode="edit" onSave={onSave}
+            initialValues={{ title: '[note] Appunto', timestamp: new Date(2026, 9, 28, 14, 32).getTime() }} />);
+
+        const [field] = screen.getAllByLabelText('Scadenza') as HTMLInputElement[];
+        fireEvent.change(field, { target: { value: '2026-10-30T09:00' } });
+        fireEvent.click(screen.getByText('Salva'));
+
+        expect(onSave).toHaveBeenCalledWith(expect.objectContaining({ timestamp: new Date(2026, 9, 30, 9, 0).getTime() }));
+    });
+
     it('saves the type picked from its icon in front of the title', () => {
         const onSave = jest.fn();
         render(<TaskModal {...baseProps} mode="create" onSave={onSave} />);

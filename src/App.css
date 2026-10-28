@@ -755,54 +755,20 @@ select:focus-visible,
     }
 }
 
-/* The list's tabs: all the tasks, those due on a day, this week or this month, the overdue ones with how many they are. */
-.list-tabs {
-    margin-bottom: 12px;
+/* The list's levels: the overdue tasks, then those due today, in 7 days, in 4 weeks, then all, each holding the ones before. */
+.list-levels {
+    margin-bottom: 4px;
 }
 
-/* All five tabs, and the overdue count on the last one, have to fit a phone's width. */
-@media (max-width: 480px) {
-    .list-tabs.sg-tabs {
-        --tabs-gap: 2px;
-    }
-
-    .list-tabs .sg-tab {
-        padding: 8px 6px;
-    }
-}
-
-.list-tab-count {
-    display: inline-block;
-    min-width: 20px;
-    margin-left: 6px;
-    padding: 0 6px;
-    border-radius: 999px;
-    background: var(--color-surface-alt);
-    color: var(--color-ink-muted);
-    font-size: 12px;
-    font-weight: 600;
-    line-height: 20px;
-    text-align: center;
-}
-
-.list-tab-count-late {
-    background: var(--color-coral);
-    color: #fff;
-}
-
-.list-tab-empty {
-    padding: 24px 0;
-    color: var(--color-ink-muted);
-    text-align: center;
-}
-
-.list-day-nav {
-    justify-content: center;
-    margin-bottom: 8px;
-}
-
-.list-period {
+.list-level-hint {
     margin: 0 0 8px;
+    color: var(--color-ink-muted);
+    font-size: 13px;
+    text-align: center;
+}
+
+.list-empty {
+    padding: 24px 0;
     color: var(--color-ink-muted);
     text-align: center;
 }

@@ -1,4 +1,4 @@
-import { dayKey, dueDay, isDueBetween, isOverdue, monthDays, tabDueDate, weekDays } from '../src/utils/taskDays';
+import { dayKey, dueDay, inLevel, isDueBetween, isOverdue, levelLastDay, nextDays, tabDueDate } from '../src/utils/taskDays';
 import { STATUS_ENUM } from '../src/utils';
 import { Task } from '../src/types/commonTypes';
 
@@ -28,16 +28,18 @@ describe('taskDays', () => {
         expect(isOverdue(task({}), now)).toBe(false);
     });
 
-    it('gives the week of a date, Monday to Sunday', () => {
-        expect(weekDays(new Date(2026, 9, 14))).toEqual(['2026-10-12', '2026-10-18']);
-        expect(weekDays(new Date(2026, 9, 12))).toEqual(['2026-10-12', '2026-10-18']);
-        expect(weekDays(new Date(2026, 9, 18, 23, 59))).toEqual(['2026-10-12', '2026-10-18']);
-        expect(weekDays(new Date(2026, 11, 31))).toEqual(['2026-12-28', '2027-01-03']);
+    it('never takes a note for overdue: its date is when it was written', () => {
+        const now = new Date(2026, 9, 11, 9, 0);
+
+        expect(isOverdue(task({ title: '[note] Chiamato il fornitore', timestamp: '2026-10-10 15:00:00' }), now)).toBe(false);
     });
 
-    it('gives the month of a date', () => {
-        expect(monthDays(new Date(2026, 9, 14))).toEqual(['2026-10-01', '2026-10-31']);
-        expect(monthDays(new Date(2028, 1, 10))).toEqual(['2028-02-01', '2028-02-29']);
+    it('gives the days from a date on, the date included', () => {
+        expect(nextDays(new Date(2026, 9, 21), 7)).toEqual(['2026-10-21', '2026-10-27']);
+        expect(nextDays(new Date(2026, 9, 21, 23, 59), 7)).toEqual(['2026-10-21', '2026-10-27']);
+        expect(nextDays(new Date(2026, 9, 21), 28)).toEqual(['2026-10-21', '2026-11-17']);
+        expect(nextDays(new Date(2026, 11, 28), 7)).toEqual(['2026-12-28', '2027-01-03']);
+        expect(nextDays(new Date(2028, 1, 25), 7)).toEqual(['2028-02-25', '2028-03-02']);
     });
 
     it('is due between two days, both included', () => {
@@ -47,14 +49,39 @@ describe('taskDays', () => {
         expect(isDueBetween(task({}), '2026-10-12', '2026-10-18')).toBe(false);
     });
 
-    it('gives a task added from a tab its due date: 18:00 of the day shown, of Sunday, of the last day of the month', () => {
+    it('gives the last day each level reaches', () => {
         const now = new Date(2026, 9, 21, 20, 0);
 
-        expect(tabDueDate('day', '2026-10-21', now)).toBe(new Date(2026, 9, 21, 18, 0).getTime());
-        expect(tabDueDate('day', '2026-10-23', now)).toBe(new Date(2026, 9, 23, 18, 0).getTime());
-        expect(tabDueDate('week', '2026-10-21', now)).toBe(new Date(2026, 9, 25, 18, 0).getTime());
-        expect(tabDueDate('month', '2026-10-21', now)).toBe(new Date(2026, 9, 31, 18, 0).getTime());
-        expect(tabDueDate('all', '2026-10-21', now)).toBe('');
-        expect(tabDueDate('expired', '2026-10-21', now)).toBe('');
+        expect(levelLastDay('day', now)).toBe('2026-10-21');
+        expect(levelLastDay('week', now)).toBe('2026-10-27');
+        expect(levelLastDay('month', now)).toBe('2026-11-17');
+        expect(levelLastDay('expired', now)).toBeNull();
+        expect(levelLastDay('all', now)).toBeNull();
+    });
+
+    it('puts in a level the tasks due from today to its last day, and every task in "all"', () => {
+        const now = new Date(2026, 9, 21, 20, 0);
+        const dueOn = (day: string) => task({ timestamp: `${day} 18:00:00` });
+
+        expect(inLevel(dueOn('2026-10-21'), 'day', now)).toBe(true);
+        expect(inLevel(dueOn('2026-10-22'), 'day', now)).toBe(false);
+        expect(inLevel(dueOn('2026-10-20'), 'week', now)).toBe(false);
+        expect(inLevel(dueOn('2026-10-27'), 'week', now)).toBe(true);
+        expect(inLevel(dueOn('2026-10-28'), 'week', now)).toBe(false);
+        expect(inLevel(dueOn('2026-11-17'), 'month', now)).toBe(true);
+        expect(inLevel(dueOn('2026-11-18'), 'month', now)).toBe(false);
+        expect(inLevel(dueOn('2026-10-21'), 'expired', now)).toBe(false);
+        expect(inLevel(task({}), 'all', now)).toBe(true);
+        expect(inLevel(task({}), 'month', now)).toBe(false);
+    });
+
+    it('gives a task added from a level its due date: 18:00 of the last day the level reaches', () => {
+        const now = new Date(2026, 9, 21, 20, 0);
+
+        expect(tabDueDate('day', now)).toBe(new Date(2026, 9, 21, 18, 0).getTime());
+        expect(tabDueDate('week', now)).toBe(new Date(2026, 9, 27, 18, 0).getTime());
+        expect(tabDueDate('month', now)).toBe(new Date(2026, 10, 17, 18, 0).getTime());
+        expect(tabDueDate('all', now)).toBe('');
+        expect(tabDueDate('expired', now)).toBe('');
     });
 });
