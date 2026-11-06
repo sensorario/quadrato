@@ -357,8 +357,9 @@ export const TaskDetailPage = ({ taskId }: TaskDetailPageProps) => {
     };
 
     // A timebox of the tracker (Tome) described by the task's title, as when Tome starts one of
-    // its tasks. Started, it's refused while another one is running; queued, it starts when the
-    // tracker is free, at once if it is already (the advance is what Tome itself does then).
+    // its tasks, and tied to it by its id, so the tracker links back here. Started, it's refused
+    // while another one is running; queued, it starts when the tracker is free, at once if it is
+    // already (the advance is what Tome itself does then).
     const sendToTracker = async (mode: 'start' | 'queue') => {
         if (!task) return;
         const token = localStorage.getItem('simonegentili.com-access-token');
@@ -370,7 +371,7 @@ export const TaskDetailPage = ({ taskId }: TaskDetailPageProps) => {
         setTrackerSending(true);
         setTrackerSent(null);
         try {
-            const res = await post(mode === 'start' ? '/timeboxes' : '/queue', { description: task.title });
+            const res = await post(mode === 'start' ? '/timeboxes' : '/queue', { description: task.title, taskId: task.id });
             if (res.status === 401) {
                 localStorage.removeItem('simonegentili.com-access-token');
                 setIsAuthenticated(false);

@@ -48,14 +48,14 @@ describe('TaskDetailPage tracker', () => {
         expect(screen.queryByRole('button', { name: 'Metti in coda' })).toBeNull();
     });
 
-    it('starts a timebox described by the task title', async () => {
+    it('starts a timebox described by the task title, tied to the task', async () => {
         render(<TaskDetailPage taskId="t" />);
 
         fireEvent.click(screen.getByRole('button', { name: 'Avvia' }));
 
         expect(await screen.findByRole('status')).toHaveTextContent('Avviato nel tracker.');
         posted('https://api.simonegentili.com/tome/timeboxes');
-        expect((global.fetch as jest.Mock).mock.calls[0][1].body).toBe(JSON.stringify({ description: '[bug] Crash al login' }));
+        expect((global.fetch as jest.Mock).mock.calls[0][1].body).toBe(JSON.stringify({ description: '[bug] Crash al login', taskId: 't' }));
         expect(screen.getByRole('link', { name: 'Apri il tracker' })).toHaveAttribute('href', 'https://tome.simonegentili.com');
     });
 
@@ -66,7 +66,7 @@ describe('TaskDetailPage tracker', () => {
 
         expect(await screen.findByRole('status')).toHaveTextContent('Messo in coda nel tracker.');
         posted('https://api.simonegentili.com/tome/queue');
-        expect((global.fetch as jest.Mock).mock.calls[0][1].body).toBe(JSON.stringify({ description: '[bug] Crash al login' }));
+        expect((global.fetch as jest.Mock).mock.calls[0][1].body).toBe(JSON.stringify({ description: '[bug] Crash al login', taskId: 't' }));
         posted('https://api.simonegentili.com/tome/queue/advance');
     });
 
