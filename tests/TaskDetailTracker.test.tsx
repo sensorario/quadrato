@@ -70,6 +70,33 @@ describe('TaskDetailPage tracker', () => {
         posted('https://api.simonegentili.com/tome/queue/advance');
     });
 
+    it('schedules it for a day and a time, without asking the tracker to start anything', async () => {
+        render(<TaskDetailPage taskId="t" />);
+
+        expect(screen.getByRole('button', { name: 'Programma' })).toBeDisabled();
+        fireEvent.change(screen.getByLabelText('Giorno e ora'), { target: { value: '2026-11-09T09:00' } });
+        fireEvent.click(screen.getByRole('button', { name: 'Programma' }));
+
+        expect(await screen.findByRole('status')).toHaveTextContent('Programmato nel tracker per');
+        posted('https://api.simonegentili.com/tome/queue');
+        expect((global.fetch as jest.Mock).mock.calls[0][1].body).toBe(JSON.stringify({
+            description: '[bug] Crash al login', taskId: 't', scheduledAt: '2026-11-09T09:00',
+        }));
+        expect(global.fetch).toHaveBeenCalledTimes(1);
+    });
+
+    it('says when it could not be scheduled', async () => {
+        global.fetch = jest.fn().mockResolvedValue({ ok: false, status: 400, json: async () => ({}) });
+        render(<TaskDetailPage taskId="t" />);
+
+        fireEvent.change(screen.getByLabelText('Giorno e ora'), { target: { value: '2020-01-01T09:00' } });
+        fireEvent.click(screen.getByRole('button', { name: 'Programma' }));
+
+        await waitFor(() => expect(window.alert).toHaveBeenCalledWith(
+            "Non è stato possibile programmare il task nel tracker: scegli un giorno e un'ora ancora da venire."
+        ));
+    });
+
     it('says when another timebox is running, starting nothing', async () => {
         global.fetch = jest.fn().mockResolvedValue({ ok: false, status: 400, json: async () => ({ minutesSinceLastTimebox: 7 }) });
         render(<TaskDetailPage taskId="t" />);

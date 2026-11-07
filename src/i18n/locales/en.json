@@ -276,7 +276,11 @@
     "trackerOpen": "Open the tracker",
     "trackerBusy": "A timebox is already running in the tracker, started {{minutes}} minutes ago: queue this task instead.",
     "trackerStartFailed": "The task could not be started in the tracker.",
-    "trackerQueueFailed": "The task could not be queued in the tracker."
+    "trackerQueueFailed": "The task could not be queued in the tracker.",
+    "trackerSchedule": "Schedule",
+    "trackerWhen": "Day and time",
+    "trackerScheduled": "Scheduled in the tracker for {{when}}.",
+    "trackerScheduleFailed": "The task could not be scheduled in the tracker: pick a day and a time yet to come."
   },
   "expiredTasks": {
     "elsewhere": "In other workspaces",

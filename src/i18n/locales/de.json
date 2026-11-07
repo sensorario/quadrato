@@ -276,7 +276,11 @@
     "trackerOpen": "Tracker öffnen",
     "trackerBusy": "Im Tracker läuft bereits eine Timebox, gestartet vor {{minutes}} Minuten: stelle die Aufgabe in die Warteschlange.",
     "trackerStartFailed": "Die Aufgabe konnte im Tracker nicht gestartet werden.",
-    "trackerQueueFailed": "Die Aufgabe konnte nicht in die Warteschlange des Trackers gestellt werden."
+    "trackerQueueFailed": "Die Aufgabe konnte nicht in die Warteschlange des Trackers gestellt werden.",
+    "trackerSchedule": "Planen",
+    "trackerWhen": "Tag und Uhrzeit",
+    "trackerScheduled": "Im Tracker geplant für {{when}}.",
+    "trackerScheduleFailed": "Die Aufgabe konnte im Tracker nicht geplant werden: Wähle einen Tag und eine Uhrzeit in der Zukunft."
   },
   "expiredTasks": {
     "elsewhere": "In anderen Workspaces",

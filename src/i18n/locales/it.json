@@ -276,7 +276,11 @@
     "trackerOpen": "Apri il tracker",
     "trackerBusy": "Nel tracker c'è già un timebox in corso, iniziato {{minutes}} minuti fa: mettilo in coda.",
     "trackerStartFailed": "Non è stato possibile avviare il task nel tracker.",
-    "trackerQueueFailed": "Non è stato possibile mettere il task in coda nel tracker."
+    "trackerQueueFailed": "Non è stato possibile mettere il task in coda nel tracker.",
+    "trackerSchedule": "Programma",
+    "trackerWhen": "Giorno e ora",
+    "trackerScheduled": "Programmato nel tracker per {{when}}.",
+    "trackerScheduleFailed": "Non è stato possibile programmare il task nel tracker: scegli un giorno e un'ora ancora da venire."
   },
   "expiredTasks": {
     "elsewhere": "In altri workspace",

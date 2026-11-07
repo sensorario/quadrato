@@ -270,7 +270,11 @@
     "trackerOpen": "トラッカーを開く",
     "trackerBusy": "トラッカーではすでにタイムボックスが進行中です（{{minutes}}分前に開始）。キューに追加してください。",
     "trackerStartFailed": "トラッカーでタスクを開始できませんでした。",
-    "trackerQueueFailed": "トラッカーのキューにタスクを追加できませんでした。"
+    "trackerQueueFailed": "トラッカーのキューにタスクを追加できませんでした。",
+    "trackerSchedule": "予約",
+    "trackerWhen": "日時",
+    "trackerScheduled": "トラッカーで{{when}}に予約しました。",
+    "trackerScheduleFailed": "トラッカーで予約できませんでした。これから先の日時を選んでください。"
   },
   "expiredTasks": {
     "elsewhere": "他のワークスペース",

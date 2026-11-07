@@ -276,7 +276,11 @@
     "trackerOpen": "Ouvrir le tracker",
     "trackerBusy": "Un timebox est déjà en cours dans le tracker, démarré il y a {{minutes}} minutes : mets la tâche en file.",
     "trackerStartFailed": "La tâche n'a pas pu être démarrée dans le tracker.",
-    "trackerQueueFailed": "La tâche n'a pas pu être mise en file dans le tracker."
+    "trackerQueueFailed": "La tâche n'a pas pu être mise en file dans le tracker.",
+    "trackerSchedule": "Planifier",
+    "trackerWhen": "Jour et heure",
+    "trackerScheduled": "Planifiée dans le tracker pour {{when}}.",
+    "trackerScheduleFailed": "La tâche n'a pas pu être planifiée dans le tracker : choisis un jour et une heure à venir."
   },
   "expiredTasks": {
     "elsewhere": "Dans les autres workspaces",

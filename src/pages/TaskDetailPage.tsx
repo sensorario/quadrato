@@ -152,7 +152,7 @@ type TaskDetailPageProps = {
 };
 
 export const TaskDetailPage = ({ taskId }: TaskDetailPageProps) => {
-    const { t } = useTranslation();
+    const { t, i18n } = useTranslation();
     const statusLabel: Record<number, string> = {
         [STATUS_ENUM.TODO]: t('taskDetailPage.statusTodo'),
         [STATUS_ENUM.IN_PROGRESS]: t('taskDetailPage.statusInProgress'),
@@ -174,7 +174,9 @@ export const TaskDetailPage = ({ taskId }: TaskDetailPageProps) => {
     // Bumped to draw the date fields again from the task, when what was typed isn't kept.
     const [datesRevision, setDatesRevision] = useState(0);
     const [trackerSending, setTrackerSending] = useState(false);
-    const [trackerSent, setTrackerSent] = useState<'start' | 'queue' | null>(null);
+    const [trackerSent, setTrackerSent] = useState<'start' | 'queue' | 'schedule' | null>(null);
+    // A day and a time as the datetime-local field gives them ("YYYY-MM-DDTHH:MM"), for scheduling.
+    const [trackerAt, setTrackerAt] = useState('');
     const { rowRef, isAbove, startFollowing, follow, stopFollowing } = useSlidingRows(taskId);
 
     const matchTask = (t: any) =>
@@ -359,8 +361,9 @@ export const TaskDetailPage = ({ taskId }: TaskDetailPageProps) => {
     // A timebox of the tracker (Tome) described by the task's title, as when Tome starts one of
     // its tasks, and tied to it by its id, so the tracker links back here. Started, it's refused
     // while another one is running; queued, it starts when the tracker is free, at once if it is
-    // already (the advance is what Tome itself does then).
-    const sendToTracker = async (mode: 'start' | 'queue') => {
+    // already (the advance is what Tome itself does then). Scheduled, it's queued not to start
+    // before that day and time: the tracker starts it then, or as soon as it's free after.
+    const sendToTracker = async (mode: 'start' | 'queue' | 'schedule') => {
         if (!task) return;
         const token = localStorage.getItem('simonegentili.com-access-token');
         const post = (path: string, body?: object) => fetch(`${TOME_API}${path}`, {
@@ -371,7 +374,8 @@ export const TaskDetailPage = ({ taskId }: TaskDetailPageProps) => {
         setTrackerSending(true);
         setTrackerSent(null);
         try {
-            const res = await post(mode === 'start' ? '/timeboxes' : '/queue', { description: task.title, taskId: task.id });
+            const body = { description: task.title, taskId: task.id, ...(mode === 'schedule' ? { scheduledAt: trackerAt } : {}) };
+            const res = await post(mode === 'start' ? '/timeboxes' : '/queue', body);
             if (res.status === 401) {
                 localStorage.removeItem('simonegentili.com-access-token');
                 setIsAuthenticated(false);
@@ -387,7 +391,11 @@ export const TaskDetailPage = ({ taskId }: TaskDetailPageProps) => {
             if (mode === 'queue') post('/queue/advance').catch(() => { });
             setTrackerSent(mode);
         } catch {
-            alert(t(mode === 'start' ? 'taskDetailPage.trackerStartFailed' : 'taskDetailPage.trackerQueueFailed'));
+            alert(t({
+                start: 'taskDetailPage.trackerStartFailed',
+                queue: 'taskDetailPage.trackerQueueFailed',
+                schedule: 'taskDetailPage.trackerScheduleFailed',
+            }[mode]));
         } finally {
             setTrackerSending(false);
         }
@@ -695,9 +703,29 @@ export const TaskDetailPage = ({ taskId }: TaskDetailPageProps) => {
                                 <Icon name="list-check" size={16} />
                                 {t('taskDetailPage.trackerQueue')}
                             </button>
+                            <input
+                                type="datetime-local"
+                                value={trackerAt}
+                                aria-label={t('taskDetailPage.trackerWhen')}
+                                onChange={e => setTrackerAt(e.target.value)}
+                            />
+                            <button
+                                type="button"
+                                className="modal-close-btn"
+                                disabled={trackerSending || trackerAt === ''}
+                                onClick={() => sendToTracker('schedule')}
+                            >
+                                {t('taskDetailPage.trackerSchedule')}
+                            </button>
                             {trackerSent && (
                                 <span role="status" style={{ fontSize: '13px', color: '#666' }}>
-                                    {t(trackerSent === 'start' ? 'taskDetailPage.trackerStarted' : 'taskDetailPage.trackerQueued')}{' '}
+                                    {trackerSent === 'schedule'
+                                        ? t('taskDetailPage.trackerScheduled', {
+                                            when: new Date(trackerAt).toLocaleString(i18n.language, {
+                                                weekday: 'short', day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit', hourCycle: 'h23',
+                                            }),
+                                        })
+                                        : t(trackerSent === 'start' ? 'taskDetailPage.trackerStarted' : 'taskDetailPage.trackerQueued')}{' '}
                                     <a href="https://tome.simonegentili.com" style={{ color: '#007bff' }}>{t('taskDetailPage.trackerOpen')}</a>
                                 </span>
                             )}
