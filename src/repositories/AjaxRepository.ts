@@ -1,4 +1,34 @@
+import { getAccessToken, getTokenClaim } from "@sensorario/sg-components";
 import { Repository } from "./Repository";
+
+const TOKEN_KEY = 'simonegentili.com-access-token';
+const USERNAME_KEY = 'simonegentili.com-username';
+
+/**
+ * Whoever the shared .simonegentili.com cookie is for is the user here too: a login in another
+ * app, or an impersonation from Heimdall, changes it, while localStorage is this app's own.
+ * The copy kept there (which the rest of quadrato reads) follows the cookie, and the cached
+ * simplanner-* data of a previous user goes away with it.
+ */
+function followSharedCookie(): void {
+    const token = getAccessToken();
+    const username = getTokenClaim(token);
+    if (localStorage.getItem(USERNAME_KEY) !== username) {
+        Object.keys(localStorage)
+            .filter((key) => key.startsWith('simplanner-'))
+            .forEach((key) => localStorage.removeItem(key));
+    }
+    if (token) {
+        localStorage.setItem(TOKEN_KEY, token);
+    } else {
+        localStorage.removeItem(TOKEN_KEY);
+    }
+    if (username) {
+        localStorage.setItem(USERNAME_KEY, username);
+    } else {
+        localStorage.removeItem(USERNAME_KEY);
+    }
+}
 
 interface QuadratoProject {
     id: string;
@@ -93,11 +123,17 @@ class AjaxRepository implements Repository {
         patchHistory();
 
         this.lastSyncedHash = this.calculateHash();
-        // Recupera il token dal localStorage se presente
-        const savedToken = localStorage.getItem('simonegentili.com-access-token');
+        followSharedCookie();
+        // Back on this tab after the cookie changed elsewhere: start again as whoever it's for now.
+        window.addEventListener('focus', () => {
+            if (getAccessToken() !== localStorage.getItem(TOKEN_KEY)) {
+                window.location.reload();
+            }
+        });
+        const savedToken = localStorage.getItem(TOKEN_KEY);
         if (savedToken) {
             this.accessToken = savedToken;
-            this.username = localStorage.getItem('simonegentili.com-username');
+            this.username = localStorage.getItem(USERNAME_KEY);
             this.fetchData();
             // Notifica che siamo già autenticati
             if (this.onAuthenticatedCallback) {

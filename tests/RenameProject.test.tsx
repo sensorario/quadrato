@@ -3,6 +3,9 @@ import React from 'react';
 import { render, screen, fireEvent, act, waitFor } from '@testing-library/react';
 
 jest.mock('@sensorario/sg-components', () => ({
+    // The login these tests set up is the one in localStorage: the shared cookie agrees with it.
+    getAccessToken: () => globalThis.localStorage.getItem('simonegentili.com-access-token'),
+    getTokenClaim: () => globalThis.localStorage.getItem('simonegentili.com-username'),
     QuadratoHeader: () => <div />,
     SGFooter: () => <div />,
     LanguageSwitcher: () => <div />,

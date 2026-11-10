@@ -86,9 +86,15 @@ describe('AjaxRepository active tab is scoped per TabbedContent id', () => {
 });
 
 describe('AjaxRepository construction', () => {
+    const token = (sub) => `x.${btoa(JSON.stringify({ sub }))}.y`;
+    const setCookie = (value) => {
+        document.cookie = `simonegentili.com-access-token=${value}; path=/`;
+    };
+
     beforeEach(() => {
         jest.resetModules();
         window.localStorage.clear();
+        document.cookie = 'simonegentili.com-access-token=; path=/; max-age=0';
     });
 
     it('does not fetch data on construction when no token is stored', () => {
@@ -97,8 +103,8 @@ describe('AjaxRepository construction', () => {
         expect(global.fetch).not.toHaveBeenCalled();
     });
 
-    it('fetches data automatically when a token is already stored', async () => {
-        window.localStorage.setItem('simonegentili.com-access-token', 'saved-token');
+    it('fetches data automatically with the token of the shared cookie', async () => {
+        setCookie('saved-token');
         global.fetch = jest.fn().mockResolvedValue({ ok: true, json: () => Promise.resolve({}) });
 
         require('../src/repositories/AjaxRepository');
@@ -111,6 +117,45 @@ describe('AjaxRepository construction', () => {
                 headers: expect.objectContaining({ Authorization: 'Bearer saved-token' }),
             })
         );
+    });
+
+    it('is whoever the shared cookie is for, not who logged in here last: an impersonation from Heimdall', async () => {
+        window.localStorage.setItem('simonegentili.com-access-token', token('admin@example.com'));
+        window.localStorage.setItem('simonegentili.com-username', 'admin@example.com');
+        window.localStorage.setItem('simplanner-tasks', '[{"id":"admin-task"}]');
+        setCookie(token('bea@example.com'));
+        global.fetch = jest.fn().mockResolvedValue({ ok: true, json: () => Promise.resolve({}) });
+
+        const repository = require('../src/repositories/AjaxRepository').default;
+        await flush();
+
+        expect(repository.getUsername()).toBe('bea@example.com');
+        expect(window.localStorage.getItem('simonegentili.com-access-token')).toBe(token('bea@example.com'));
+        expect(global.fetch.mock.calls[0][1].headers.Authorization).toBe(`Bearer ${token('bea@example.com')}`);
+        expect(window.localStorage.getItem('simplanner-tasks')).not.toContain('admin-task');
+    });
+
+    it('is logged out when the shared cookie is gone, whatever this app kept', () => {
+        window.localStorage.setItem('simonegentili.com-access-token', token('admin@example.com'));
+        window.localStorage.setItem('simonegentili.com-username', 'admin@example.com');
+        global.fetch = jest.fn();
+
+        const repository = require('../src/repositories/AjaxRepository').default;
+
+        expect(global.fetch).not.toHaveBeenCalled();
+        expect(repository.getUsername()).toBeNull();
+        expect(window.localStorage.getItem('simonegentili.com-access-token')).toBeNull();
+    });
+
+    it('keeps the cached data when the same user logs in again', () => {
+        window.localStorage.setItem('simonegentili.com-username', 'bea@example.com');
+        window.localStorage.setItem('simplanner-zen-mode', 'true');
+        setCookie(token('bea@example.com'));
+        global.fetch = jest.fn().mockResolvedValue({ ok: true, json: () => Promise.resolve({}) });
+
+        require('../src/repositories/AjaxRepository');
+
+        expect(window.localStorage.getItem('simplanner-zen-mode')).toBe('true');
     });
 
     it('requireAuthentication is always true', () => {
