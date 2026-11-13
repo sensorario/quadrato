@@ -375,7 +375,8 @@ function App() {
         longValue,
         projectValue,
         timestampValue,
-        periodicityValue
+        periodicityValue,
+        goalValue
     ) => {
         let putSent = false;
         setTasks((tasks) => {
@@ -401,6 +402,10 @@ function App() {
                                   periodicityValue === undefined
                                       ? task.periodicity
                                       : periodicityValue,
+                              goal:
+                                  goalValue === undefined
+                                      ? task.goal
+                                      : goalValue,
                           }
                         : task;
 

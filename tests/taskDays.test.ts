@@ -34,6 +34,12 @@ describe('taskDays', () => {
         expect(isOverdue(task({ title: '[note] Chiamato il fornitore', timestamp: '2026-10-10 15:00:00' }), now)).toBe(false);
     });
 
+    it('never takes a goal for overdue: it is never done once and for all', () => {
+        const now = new Date(2026, 9, 11, 9, 0);
+
+        expect(isOverdue(task({ title: '[goal] Leggere', timestamp: '2026-10-10 15:00:00' }), now)).toBe(false);
+    });
+
     it('gives the days from a date on, the date included', () => {
         expect(nextDays(new Date(2026, 9, 21), 7)).toEqual(['2026-10-21', '2026-10-27']);
         expect(nextDays(new Date(2026, 9, 21, 23, 59), 7)).toEqual(['2026-10-21', '2026-10-27']);

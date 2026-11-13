@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next";
 import { Icon } from "@sensorario/sg-components";
 import type { IconName } from "@sensorario/sg-components";
 
-export const TASK_TYPES = ["feature", "bug", "pay", "spike", "epic", "chore", "docs", "note", "event"] as const;
+export const TASK_TYPES = ["feature", "bug", "pay", "spike", "epic", "chore", "docs", "note", "event", "goal"] as const;
 
 // @todo define task type
 const taskTypeRegex = new RegExp(`^\\[(${TASK_TYPES.join("|")})\\]\\s*`, "i");
@@ -20,6 +20,7 @@ export const taskTypeIcons: Record<TaskType, { name: IconName; color: string }> 
     docs: { name: "file-text", color: '#2a9d9a' },
     note: { name: "edit", color: '#888888' },
     event: { name: "users", color: '#c2559b' },
+    goal: { name: "target", color: '#0e7490' },
 };
 
 // A task's type is the start of its title: "[bug] Crash" is a bug called "Crash".
@@ -33,6 +34,10 @@ export const splitTaskType = (title: string): { type: TaskType | null; text: str
 // A note is written down at the time it's added, not something to do: it has no status, it's
 // never overdue and it doesn't keep its parent open. The Gantt leaves notes out.
 export const isNote = (task: { title: string }): boolean => splitTaskType(task.title).type === "note";
+
+// A goal is time to spend on something each day, week or month, tracked in Tome: never done once
+// and for all, so it has no status, is never overdue and doesn't keep its parent open.
+export const isGoal = (task: { title: string }): boolean => splitTaskType(task.title).type === "goal";
 
 // The types as icons, the one picked framed in its color: a click on it takes it away.
 export const TaskTypePicker = ({ value, onChange, style }: {

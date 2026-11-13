@@ -8,11 +8,13 @@ import Toggle from "./Toggle";
 import { getConfigRepository } from "../repositories";
 import { handleAddAnotherModal } from "../utils/handleAddAnotherModal";
 import { toPlainText } from "../utils/toPlainText";
-import { Periodicity } from "../types/commonTypes";
+import { Goal, GoalCadence, Periodicity } from "../types/commonTypes";
 
 const UNIT_KEYS: Record<string, string> = { minuti: "minutes", giorni: "days", settimane: "weeks", mesi: "months", anni: "years" };
 const DEFAULT_PERIODICITY: Periodicity = { number: "", unit: "giorni" };
 const QUICK_DAY_OFFSETS = [1, 2, 3, 5, 8, 13, 21];
+const GOAL_CADENCES: GoalCadence[] = ["day", "week", "month"];
+const DEFAULT_GOAL: Goal = { cadence: "day", minutes: 10 };
 
 const formatDateTimeLocal = (value: string | number | "") => {
     if (!value) return "";
@@ -39,6 +41,7 @@ export type TaskModalInitialValues = {
     project?: string;
     timestamp?: string | number;
     periodicity?: Periodicity;
+    goal?: Goal | null;
 };
 
 export type TaskModalSaveValues = {
@@ -47,6 +50,7 @@ export type TaskModalSaveValues = {
     project: string;
     timestamp: string | number | "";
     periodicity: Periodicity | null;
+    goal: Goal | null;
 };
 
 type TaskModalProps = {
@@ -71,11 +75,14 @@ const TaskModal = ({ mode, initialValues, onSave, onClose, projectEditable, date
     const [project, setProject] = useState(seededProject);
     const [timestamp, setTimestamp] = useState<string | number | "">(seededTimestamp);
     const [periodicity, setPeriodicity] = useState<Periodicity>(initialValues?.periodicity ?? DEFAULT_PERIODICITY);
+    const [goal, setGoal] = useState<Goal>(initialValues?.goal ?? DEFAULT_GOAL);
     const [addAnother, setAddAnother] = useState(false);
     // A new note goes on the day and at the time it's written: no due date nor repetition to pick.
     // It's moved afterwards, as any task.
     const newNote = mode === "create" && taskType === "note";
-    const datesShown = dateTimeEnabled && !newNote;
+    // A goal has no due date nor repetition of its own: it comes back each day, week or month.
+    const isGoalType = taskType === "goal";
+    const datesShown = dateTimeEnabled && !newNote && !isGoalType;
 
     const handleSave = () => {
         if (title.trim() === "") return;
@@ -84,8 +91,9 @@ const TaskModal = ({ mode, initialValues, onSave, onClose, projectEditable, date
             title: (taskType ? `[${taskType}] ` : "") + toPlainText(title),
             longDescription: toPlainText(longDescription),
             project,
-            timestamp: newNote ? Date.now() : timestamp,
-            periodicity: !newNote && periodicity.number ? periodicity : null,
+            timestamp: newNote ? Date.now() : isGoalType && mode === "create" ? "" : timestamp,
+            periodicity: !newNote && !isGoalType && periodicity.number ? periodicity : null,
+            goal: isGoalType ? goal : null,
         });
 
         if (mode === "create") {
@@ -100,6 +108,7 @@ const TaskModal = ({ mode, initialValues, onSave, onClose, projectEditable, date
             setProject(seededProject);
             setTimestamp(seededTimestamp);
             setPeriodicity(DEFAULT_PERIODICITY);
+            setGoal(DEFAULT_GOAL);
         } else {
             onClose();
         }
@@ -158,6 +167,34 @@ const TaskModal = ({ mode, initialValues, onSave, onClose, projectEditable, date
                             />
                         </div>
                         {datesShown && deadlineField}
+                        {isGoalType && (
+                            <>
+                                <label className="modal-input-label">{t("taskModal.goalLabel")}</label>
+                                <div className="periodo">
+                                    {t("taskModal.goalAtLeast")}
+                                    <input
+                                        type="number"
+                                        min="1"
+                                        aria-label={t("taskModal.goalMinutes")}
+                                        value={goal.minutes}
+                                        onChange={(e) => setGoal({ ...goal, minutes: Math.max(1, Math.floor(Number(e.target.value)) || 1) })}
+                                        className="modal-input periodo-number"
+                                    />
+                                    {t("taskModal.goalMinutesEach")}
+                                    <select
+                                        aria-label={t("taskModal.goalCadence")}
+                                        value={goal.cadence}
+                                        onChange={(e) => setGoal({ ...goal, cadence: e.target.value as GoalCadence })}
+                                        className="modal-input periodo-unit"
+                                    >
+                                        {GOAL_CADENCES.map((cadence) => (
+                                            <option key={cadence} value={cadence}>{t(`taskModal.cadences.${cadence}`)}</option>
+                                        ))}
+                                    </select>
+                                </div>
+                                <div className="modal-hint">{t("taskModal.goalHint")}</div>
+                            </>
+                        )}
                         <label className="modal-input-label">{t("taskModal.longDescriptionLabel")}</label>
                         <div className="modal-long-description">
                             <textarea

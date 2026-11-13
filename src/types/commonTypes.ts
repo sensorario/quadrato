@@ -2,6 +2,10 @@
 
 export type Periodicity = { number: string; unit: string };
 
+// A "[goal]" task's target: at least `minutes` tracked in Tome each day, week or month.
+export type GoalCadence = "day" | "week" | "month";
+export type Goal = { cadence: GoalCadence; minutes: number };
+
 export type Task = {
     id: number;
     title: string;
@@ -17,6 +21,7 @@ export type Task = {
     createdAt?: number | null;
     // Planned start, Unix seconds (the start of its bar in the Gantt); none when not planned.
     startsAt?: number | null;
+    goal?: Goal | null;
 };
 
 export type HandleAddAnotherModalParams = {

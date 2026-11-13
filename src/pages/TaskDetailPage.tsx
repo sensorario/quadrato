@@ -1,10 +1,10 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Icon, Logo, QuadratoHeader } from '@sensorario/sg-components';
-import { Task } from '../types/commonTypes';
+import { Goal, GoalCadence, Task } from '../types/commonTypes';
 import { getConfigRepository } from '../repositories';
 import { navigate } from '../Router';
-import TaskTitle, { isNote, splitTaskType, TaskType, TaskTypePicker } from '../components/TaskTitle';
+import TaskTitle, { isGoal, isNote, splitTaskType, TaskType, TaskTypePicker } from '../components/TaskTitle';
 import { STATUS_ENUM } from '../utils';
 import { byPosition, descendantIds, flattenTree, hasOpenDescendants, reconcileAncestors, toTime, TreeRow } from '../utils/taskTree';
 import { dayKey } from '../utils/taskDays';
@@ -351,6 +351,32 @@ export const TaskDetailPage = ({ taskId }: TaskDetailPageProps) => {
         }
     };
 
+    // A goal's minutes and cadence, sent alone: the API keeps them on a "[goal]" task only. Shown at
+    // once, put back if the API doesn't take them.
+    const handleGoal = async (goal: Goal) => {
+        if (!task) return;
+        const previous = task.goal ?? null;
+        setTask({ ...task, goal });
+        const token = localStorage.getItem('simonegentili.com-access-token');
+        try {
+            const res = await fetch(`https://api.simonegentili.com/quadrato/task/${task.id}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json', ...(token ? { Authorization: `Bearer ${token}` } : {}) },
+                body: JSON.stringify({ goal }),
+            });
+            if (res.status === 401) {
+                localStorage.removeItem('simonegentili.com-access-token');
+                setIsAuthenticated(false);
+                return;
+            }
+            if (!res.ok) throw new Error(String(res.status));
+            getConfigRepository().fetchData();
+        } catch {
+            setTask(current => current && { ...current, goal: previous });
+            alert(t('taskDetailPage.goalFailed'));
+        }
+    };
+
     // The type is the start of the title ("[bug] "): changing it is renaming the task.
     const handleType = (type: TaskType | null) => {
         if (!task) return;
@@ -641,8 +667,8 @@ export const TaskDetailPage = ({ taskId }: TaskDetailPageProps) => {
                     );
                 })()}
 
-                {/* A note has no status, as in the list. */}
-                {!isNote(task) && (
+                {/* A note or a goal has no status, as in the list. */}
+                {!isNote(task) && !isGoal(task) && (
                     <>
                         <span style={labelStyle}>{t('taskDetailPage.status')}</span>
                         <div role="group" aria-label={t('taskDetailPage.status')} style={{ display: 'flex', flexWrap: 'wrap', gap: '6px', marginTop: '4px' }}>
@@ -774,6 +800,44 @@ export const TaskDetailPage = ({ taskId }: TaskDetailPageProps) => {
                     <>
                         <span style={labelStyle}>{t('taskDetailPage.periodicity')}</span>
                         <span style={valueStyle}>{t('taskDetailPage.every', { number: task.periodicity.number, unit: t(`taskModal.units.${UNIT_KEYS[task.periodicity.unit] ?? task.periodicity.unit}`) })}</span>
+                    </>
+                )}
+
+                {isGoal(task) && (
+                    <>
+                        <span style={labelStyle}>{t('taskDetailPage.goal')}</span>
+                        <div className="periodo" style={{ marginTop: '4px' }}>
+                            {t('taskModal.goalAtLeast')}
+                            {/* Uncontrolled, drawn again (key) when the saved minutes change or are put back. */}
+                            <input
+                                key={`goal-minutes-${task.goal?.minutes ?? ''}`}
+                                type="number"
+                                min="1"
+                                aria-label={t('taskModal.goalMinutes')}
+                                className="modal-input periodo-number"
+                                defaultValue={task.goal?.minutes ?? ''}
+                                onBlur={e => {
+                                    const minutes = Math.floor(Number(e.target.value));
+                                    if (minutes >= 1 && minutes !== task.goal?.minutes) {
+                                        handleGoal({ cadence: task.goal?.cadence ?? 'day', minutes });
+                                    }
+                                }}
+                                onKeyDown={e => { if (e.key === 'Enter') e.currentTarget.blur(); }}
+                            />
+                            {t('taskModal.goalMinutesEach')}
+                            <select
+                                aria-label={t('taskModal.goalCadence')}
+                                className="modal-input periodo-unit"
+                                value={task.goal?.cadence ?? ''}
+                                onChange={e => handleGoal({ cadence: e.target.value as GoalCadence, minutes: task.goal?.minutes ?? 10 })}
+                            >
+                                {!task.goal && <option value="">…</option>}
+                                {(['day', 'week', 'month'] as const).map(cadence => (
+                                    <option key={cadence} value={cadence}>{t(`taskModal.cadences.${cadence}`)}</option>
+                                ))}
+                            </select>
+                        </div>
+                        {!task.goal && <span style={{ ...valueStyle, color: '#b45309' }}>{t('taskDetailPage.goalMissing')}</span>}
                     </>
                 )}
 

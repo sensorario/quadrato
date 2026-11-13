@@ -243,3 +243,32 @@ describe('TaskModal save', () => {
         }));
     });
 });
+
+describe('TaskModal goal', () => {
+    it('asks for minutes and a cadence instead of a due date, and saves them', () => {
+        const onSave = jest.fn();
+        render(<TaskModal {...baseProps} mode="create" onSave={onSave} />);
+        expect(screen.getAllByLabelText('Scadenza').length).toBeGreaterThan(0);
+
+        fireEvent.click(screen.getByRole('button', { name: 'Obiettivo' }));
+
+        expect(screen.queryAllByLabelText('Scadenza')).toHaveLength(0);
+        fireEvent.change(screen.getByPlaceholderText('Titolo del task'), { target: { value: 'Leggere' } });
+        fireEvent.change(screen.getByLabelText('Minuti'), { target: { value: '70' } });
+        fireEvent.change(screen.getByLabelText('Cadenza'), { target: { value: 'week' } });
+        fireEvent.click(screen.getByText('Salva'));
+        expect(onSave).toHaveBeenCalledWith(expect.objectContaining({
+            title: '[goal] Leggere',
+            goal: { cadence: 'week', minutes: 70 },
+            periodicity: null,
+        }));
+    });
+
+    it('sends no goal for any other task', () => {
+        const onSave = jest.fn();
+        render(<TaskModal {...baseProps} mode="create" onSave={onSave} />);
+        fireEvent.change(screen.getByPlaceholderText('Titolo del task'), { target: { value: 'Spesa' } });
+        fireEvent.click(screen.getByText('Salva'));
+        expect(onSave).toHaveBeenCalledWith(expect.objectContaining({ goal: null }));
+    });
+});

@@ -1,7 +1,10 @@
 import { Task } from "../types/commonTypes";
 import { STATUS_ENUM } from "../utils";
 import sortByDate from "./filterTaskByVisibilityRange";
-import { isNote } from "../components/TaskTitle";
+import { isGoal, isNote } from "../components/TaskTitle";
+
+// Notes and goals are never closed: they neither keep a parent open nor push its due date.
+const countsForParent = (task: Task): boolean => !isNote(task) && !isGoal(task);
 
 type Id = Task['id'];
 
@@ -90,7 +93,7 @@ export const ancestorIds = (tasks: Task[], id: Id): Id[] => {
 
 export const hasOpenDescendants = (tasks: Task[], id: Id): boolean => {
     const ids = new Set(descendantIds(tasks, id));
-    return tasks.some(t => ids.has(t.id) && !isClosed(t) && !isNote(t));
+    return tasks.some(t => ids.has(t.id) && !isClosed(t) && countsForParent(t));
 };
 
 // Where the dragged task lands: between `rows[insertIndex - 1]` and `rows[insertIndex]`
@@ -136,7 +139,7 @@ export const reconcileAncestors = (tasks: Task[], ids: Id[]): Task[] => {
         const task = byId.get(id);
         if (!task) continue;
         const current = [...byId.values()];
-        const children = childrenOf(current, id).filter(child => !isNote(child));
+        const children = childrenOf(current, id).filter(countsForParent);
         if (children.length === 0) continue;
 
         let next = task;
@@ -148,7 +151,7 @@ export const reconcileAncestors = (tasks: Task[], ids: Id[]): Task[] => {
         if (own !== null) {
             const latest = Math.max(...descendantIds(current, id)
                 .map(d => byId.get(d))
-                .map(d => (d && !isNote(d) ? toTime(d.timestamp) : null) ?? -Infinity));
+                .map(d => (d && countsForParent(d) ? toTime(d.timestamp) : null) ?? -Infinity));
             if (latest > own) next = { ...next, timestamp: latest };
         }
 

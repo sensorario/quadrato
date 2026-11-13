@@ -55,6 +55,10 @@ describe('descendantIds / hasOpenDescendants', () => {
     it('takes no note for an open subtask', () => {
         expect(hasOpenDescendants([task(1), task(2, { parentId: 1, title: '[note] Appunto' })], 1)).toBe(false);
     });
+
+    it('takes no goal for an open subtask: a goal is never closed', () => {
+        expect(hasOpenDescendants([task(1), task(2, { parentId: 1, title: '[goal] Leggere' })], 1)).toBe(false);
+    });
 });
 
 describe('projectDrop', () => {

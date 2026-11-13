@@ -1,6 +1,6 @@
 import { Task } from "../types/commonTypes";
 import { STATUS_ENUM } from "../utils";
-import { isNote } from "../components/TaskTitle";
+import { isGoal, isNote } from "../components/TaskTitle";
 
 const pad = (n: number) => String(n).padStart(2, "0");
 
@@ -11,10 +11,12 @@ export const dayKey = (date: Date): string =>
 // The day a task has to be done by, null without a due date: one from the 10th to the 13th is the 13th's.
 export const dueDay = (task: Task): string | null => (task.timestamp ? dayKey(new Date(task.timestamp)) : null);
 
-// Due before `now` and still to do or in progress. A note's date is when it was written: never overdue.
+// Due before `now` and still to do or in progress. A note's date is when it was written, a goal is
+// never done: neither is ever overdue.
 export const isOverdue = (task: Task, now: Date): boolean =>
     !task.archived &&
     !isNote(task) &&
+    !isGoal(task) &&
     (task.status === STATUS_ENUM.TODO || task.status === STATUS_ENUM.IN_PROGRESS) &&
     !!task.timestamp &&
     new Date(task.timestamp) < now;

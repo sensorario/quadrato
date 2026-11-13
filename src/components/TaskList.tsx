@@ -3,12 +3,12 @@ import { useTranslation } from "react-i18next";
 import { getStatusIcons, STATUS_ENUM } from "../utils";
 import { Icon } from "@sensorario/sg-components";
 import TaskModal from "./TaskModal";
-import TaskTitle, { isNote } from "./TaskTitle";
+import TaskTitle, { isGoal, isNote } from "./TaskTitle";
 import { toPlainText } from "../utils/toPlainText";
 import { taskAge } from "../utils/taskAge";
 import { Modal } from "./Modal";
 import FormatDate from "./FormatDate";
-import { Task } from "../types/commonTypes";
+import { Goal, Task } from "../types/commonTypes";
 import { getConfigRepository } from "../repositories";
 import { childrenOf, descendantIds, flattenTree, hasOpenDescendants, INDENT_PX, projectDrop, TreeRow } from "../utils/taskTree";
 import { navigate } from "../Router";
@@ -23,7 +23,7 @@ export const TaskList = ({ tasks, pendingStatuses, onTaskClick, updateTaskTitle,
     // Statuses clicked but not applied yet: shown on the icon while the row keeps its place.
     pendingStatuses?: Record<string, number>;
     onTaskClick: (id: number) => void;
-    updateTaskTitle: (id: number, title: string, longDescription?: string, project?: string, timestamp?: string | number, periodicity?: { number: string; unit: string } | null) => void;
+    updateTaskTitle: (id: number, title: string, longDescription?: string, project?: string, timestamp?: string | number, periodicity?: { number: string; unit: string } | null, goal?: Goal | null) => void;
     onReorder?: (taskId: Task['id'], parentId: Task['id'] | null, siblingIds: Task['id'][]) => void;
     onClearDueDates?: (ids: Task['id'][]) => void;
     onArchive?: (ids: Task['id'][]) => void;
@@ -294,16 +294,18 @@ export const TaskList = ({ tasks, pendingStatuses, onTaskClick, updateTaskTitle,
         setEditTask(task);
     };
 
-    const handleEditSave = (values: { title: string; longDescription: string; project: string; timestamp: string | number | ""; periodicity: { number: string; unit: string } | null }) => {
+    const handleEditSave = (values: { title: string; longDescription: string; project: string; timestamp: string | number | ""; periodicity: { number: string; unit: string } | null; goal: Goal | null }) => {
         if (editTask) {
-            updateTaskTitle(editTask.id, values.title, values.longDescription, values.project, values.timestamp, values.periodicity);
+            updateTaskTitle(editTask.id, values.title, values.longDescription, values.project, values.timestamp, values.periodicity, values.goal);
         }
         setEditTask(null);
     };
 
     const handler = (task: Task, depth: number, rows: TreeRow[]) => {
-        const note = isNote(task);
-        const isExpired = !note && dateTimeEnabled && task.timestamp && new Date(task.timestamp) < new Date();
+        // Neither a note nor a goal has a status to click through, nor is ever overdue.
+        const goal = isGoal(task);
+        const statusless = isNote(task) || goal;
+        const isExpired = !statusless && dateTimeEnabled && task.timestamp && new Date(task.timestamp) < new Date();
 
 
         const isMobile = /iPhone/i.test(navigator.userAgent);
@@ -362,10 +364,10 @@ export const TaskList = ({ tasks, pendingStatuses, onTaskClick, updateTaskTitle,
                         gap: '4px'
                     }}>
 
-                    <span onClick={note ? undefined : () => onTaskClick(task.id)} title={blocked && !note ? t('taskList.subtasksOpen') : undefined} style={{ flexShrink: 0, verticalAlign: 'middle', display: 'flex', alignItems: 'center', gap: '4px' }}>
-                        {note ? (
+                    <span onClick={statusless ? undefined : () => onTaskClick(task.id)} title={blocked && !statusless ? t('taskList.subtasksOpen') : undefined} style={{ flexShrink: 0, verticalAlign: 'middle', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                        {statusless ? (
                             // No status to click through: one line, in the project's color, as wide as the squares it replaces.
-                            <svg width={projectEditable ? 40 : 18} height="18" role="img" aria-label={t('app.noteLabel')} style={{ flexShrink: 0, verticalAlign: 'middle' }}>
+                            <svg width={projectEditable ? 40 : 18} height="18" role="img" aria-label={t(goal ? 'app.goalLabel' : 'app.noteLabel')} style={{ flexShrink: 0, verticalAlign: 'middle' }}>
                                 <line x1="2" y1="9" x2={projectEditable ? 38 : 16} y2="9" strokeWidth="2" strokeLinecap="round"
                                     stroke={projectEditable && task.project && projectColors[task.project] ? projectColors[task.project] : '#888'} />
                             </svg>
