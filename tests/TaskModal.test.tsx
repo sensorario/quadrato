@@ -101,7 +101,7 @@ describe('TaskModal save', () => {
         }));
     });
 
-    it('sets the deadline via a quick-date shortcut button', () => {
+    it('sets the day to work on it via a quick-date shortcut button', () => {
         const onSave = jest.fn();
         render(<TaskModal {...baseProps} mode="create" onSave={onSave} />);
         fireEvent.change(screen.getByPlaceholderText('Titolo del task'), { target: { value: 'Task with deadline' } });
@@ -117,12 +117,12 @@ describe('TaskModal save', () => {
         }));
     });
 
-    it('shows the deadline under the title, in the first tab, where it can be changed too', () => {
+    it('shows the day to work on it under the title, in the first tab, where it can be changed too', () => {
         const onSave = jest.fn();
         render(<TaskModal {...baseProps} mode="create" onSave={onSave}
             initialValues={{ timestamp: new Date(2026, 9, 25, 18, 0).getTime() }} />);
 
-        const [field] = screen.getAllByLabelText('Scadenza') as HTMLInputElement[];
+        const [field] = screen.getAllByLabelText('Da fare il') as HTMLInputElement[];
         expect(field.closest('.tab-content')?.classList.contains('active')).toBe(true);
         expect(field.value).toBe('2026-10-25T18:00');
 
@@ -133,20 +133,57 @@ describe('TaskModal save', () => {
         expect(onSave).toHaveBeenCalledWith(expect.objectContaining({ timestamp: new Date(2026, 9, 26, 18, 0).getTime() }));
     });
 
-    it('shows no deadline field when dates are turned off', () => {
+    it('shows no date field when dates are turned off', () => {
         render(<TaskModal {...baseProps} mode="create" dateTimeEnabled={false} />);
 
+        expect(screen.queryAllByLabelText('Da fare il')).toHaveLength(0);
         expect(screen.queryAllByLabelText('Scadenza')).toHaveLength(0);
     });
 
-    it('saves a new note on the day and at the time it is written, with no deadline to pick', () => {
+    it('saves a deadline, a day, and starts the day to work on it there when there is none', () => {
+        const onSave = jest.fn();
+        render(<TaskModal {...baseProps} mode="create" onSave={onSave} />);
+
+        fireEvent.change(screen.getByPlaceholderText('Titolo del task'), { target: { value: 'Bolletta' } });
+        fireEvent.change(screen.getByLabelText('Scadenza'), { target: { value: '2026-12-04' } });
+        fireEvent.click(screen.getByText('Salva'));
+
+        expect(onSave).toHaveBeenCalledWith(expect.objectContaining({
+            deadline: '2026-12-04',
+            timestamp: new Date(2026, 11, 4, 18, 0).getTime(),
+        }));
+    });
+
+    it('keeps the day to work on it when a deadline is picked, and takes the deadline away when emptied', () => {
+        const onSave = jest.fn();
+        render(<TaskModal {...baseProps} mode="edit" onSave={onSave}
+            initialValues={{ title: 'Bolletta', timestamp: new Date(2026, 11, 1, 9, 0).getTime(), deadline: '2026-12-04' }} />);
+
+        const deadline = screen.getByLabelText('Scadenza') as HTMLInputElement;
+        expect(deadline.value).toBe('2026-12-04');
+        fireEvent.change(deadline, { target: { value: '2026-12-10' } });
+        fireEvent.click(screen.getByText('Salva'));
+        expect(onSave).toHaveBeenLastCalledWith(expect.objectContaining({ deadline: '2026-12-10', timestamp: new Date(2026, 11, 1, 9, 0).getTime() }));
+    });
+
+    it('has no deadline for an event, whose own day is its deadline', () => {
+        const onSave = jest.fn();
+        render(<TaskModal {...baseProps} mode="edit" onSave={onSave}
+            initialValues={{ title: '[event] Dentista', timestamp: new Date(2026, 11, 1, 9, 0).getTime(), deadline: '2026-12-04' }} />);
+
+        expect(screen.queryAllByLabelText('Scadenza')).toHaveLength(0);
+        fireEvent.click(screen.getByText('Salva'));
+        expect(onSave).toHaveBeenCalledWith(expect.objectContaining({ deadline: null }));
+    });
+
+    it('saves a new note on the day and at the time it is written, with no date to pick', () => {
         jest.useFakeTimers().setSystemTime(new Date(2026, 9, 28, 14, 32));
         const onSave = jest.fn();
         render(<TaskModal {...baseProps} mode="create" onSave={onSave}
             initialValues={{ timestamp: new Date(2026, 9, 28, 18, 0).getTime() }} />);
 
         fireEvent.click(screen.getByRole('button', { name: 'Nota' }));
-        expect(screen.queryAllByLabelText('Scadenza')).toHaveLength(0);
+        expect(screen.queryAllByLabelText('Da fare il')).toHaveLength(0);
         fireEvent.change(screen.getByPlaceholderText('Titolo del task'), { target: { value: 'Chiamato il fornitore' } });
         fireEvent.click(screen.getByText('Salva'));
 
@@ -163,7 +200,7 @@ describe('TaskModal save', () => {
         render(<TaskModal {...baseProps} mode="edit" onSave={onSave}
             initialValues={{ title: '[note] Appunto', timestamp: new Date(2026, 9, 28, 14, 32).getTime() }} />);
 
-        const [field] = screen.getAllByLabelText('Scadenza') as HTMLInputElement[];
+        const [field] = screen.getAllByLabelText('Da fare il') as HTMLInputElement[];
         fireEvent.change(field, { target: { value: '2026-10-30T09:00' } });
         fireEvent.click(screen.getByText('Salva'));
 
@@ -248,11 +285,11 @@ describe('TaskModal goal', () => {
     it('asks for minutes and a cadence instead of a due date, and saves them', () => {
         const onSave = jest.fn();
         render(<TaskModal {...baseProps} mode="create" onSave={onSave} />);
-        expect(screen.getAllByLabelText('Scadenza').length).toBeGreaterThan(0);
+        expect(screen.getAllByLabelText('Da fare il').length).toBeGreaterThan(0);
 
         fireEvent.click(screen.getByRole('button', { name: 'Obiettivo' }));
 
-        expect(screen.queryAllByLabelText('Scadenza')).toHaveLength(0);
+        expect(screen.queryAllByLabelText('Da fare il')).toHaveLength(0);
         fireEvent.change(screen.getByPlaceholderText('Titolo del task'), { target: { value: 'Leggere' } });
         fireEvent.change(screen.getByLabelText('Minuti'), { target: { value: '70' } });
         fireEvent.change(screen.getByLabelText('Cadenza'), { target: { value: 'week' } });

@@ -92,8 +92,10 @@
       "months": "meses",
       "years": "años"
     },
-    "noDeadlineHint": "Dejar vacío para no tener vencimiento",
+    "noDeadlineHint": "Dejar vacío para no tener fecha",
+    "workDayLabel": "Para hacer el",
     "deadlineLabel": "Vencimiento",
+    "deadlineHint": "El último día posible, como el de una factura. Nunca se mueve solo. La fecha de arriba, en cambio, pasa a hoy mientras la tarea siga abierta.",
     "inDays": "+{{count}}d",
     "tomorrow": "mañana",
     "nextWeek": "la próxima semana",
@@ -171,7 +173,11 @@
       "months_other": "{{count}} meses",
       "years_one": "{{count}} año",
       "years_other": "{{count}} años"
-    }
+    },
+    "deadline": "vence el {{date}}",
+    "deadlinePassed": "venció el {{date}}",
+    "rolledOver_one": "Movida a hoy {{count}} vez",
+    "rolledOver_other": "Movida a hoy {{count}} veces"
   },
   "footer": {
     "addAria": "Añadir nueva tarea",

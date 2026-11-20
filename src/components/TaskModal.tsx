@@ -42,6 +42,7 @@ export type TaskModalInitialValues = {
     timestamp?: string | number;
     periodicity?: Periodicity;
     goal?: Goal | null;
+    deadline?: string | null;
 };
 
 export type TaskModalSaveValues = {
@@ -51,6 +52,7 @@ export type TaskModalSaveValues = {
     timestamp: string | number | "";
     periodicity: Periodicity | null;
     goal: Goal | null;
+    deadline: string | null;
 };
 
 type TaskModalProps = {
@@ -76,6 +78,7 @@ const TaskModal = ({ mode, initialValues, onSave, onClose, projectEditable, date
     const [timestamp, setTimestamp] = useState<string | number | "">(seededTimestamp);
     const [periodicity, setPeriodicity] = useState<Periodicity>(initialValues?.periodicity ?? DEFAULT_PERIODICITY);
     const [goal, setGoal] = useState<Goal>(initialValues?.goal ?? DEFAULT_GOAL);
+    const [deadline, setDeadline] = useState(initialValues?.deadline ?? "");
     const [addAnother, setAddAnother] = useState(false);
     // A new note goes on the day and at the time it's written: no due date nor repetition to pick.
     // It's moved afterwards, as any task.
@@ -83,6 +86,8 @@ const TaskModal = ({ mode, initialValues, onSave, onClose, projectEditable, date
     // A goal has no due date nor repetition of its own: it comes back each day, week or month.
     const isGoalType = taskType === "goal";
     const datesShown = dateTimeEnabled && !newNote && !isGoalType;
+    // An event's own day is its deadline, a note is never late.
+    const deadlineShown = datesShown && taskType !== "event" && taskType !== "note";
 
     const handleSave = () => {
         if (title.trim() === "") return;
@@ -94,6 +99,7 @@ const TaskModal = ({ mode, initialValues, onSave, onClose, projectEditable, date
             timestamp: newNote ? Date.now() : isGoalType && mode === "create" ? "" : timestamp,
             periodicity: !newNote && !isGoalType && periodicity.number ? periodicity : null,
             goal: isGoalType ? goal : null,
+            deadline: deadlineShown && deadline ? deadline : null,
         });
 
         if (mode === "create") {
@@ -109,6 +115,7 @@ const TaskModal = ({ mode, initialValues, onSave, onClose, projectEditable, date
             setTimestamp(seededTimestamp);
             setPeriodicity(DEFAULT_PERIODICITY);
             setGoal(DEFAULT_GOAL);
+            setDeadline("");
         } else {
             onClose();
         }
@@ -118,20 +125,40 @@ const TaskModal = ({ mode, initialValues, onSave, onClose, projectEditable, date
         setTimestamp(atUtcMidday(getDate()));
     };
 
-    // Also under the title, so the due date (the one a list tab gives a new task, too) is in
-    // sight while the task is typed; the same field in both tabs.
-    const deadlineField = (
+    // Also under the title, so the day to work on it (the one a list tab gives a new task, too) is
+    // in sight while the task is typed; the same field in both tabs.
+    const workDayField = (
         <>
-            <label className="modal-input-label">{t("taskModal.deadlineLabel")}</label>
+            <label className="modal-input-label">{t("taskModal.workDayLabel")}</label>
             <div className="modal-input-wrapper">
                 <input
                     type="datetime-local"
-                    aria-label={t("taskModal.deadlineLabel")}
+                    aria-label={t("taskModal.workDayLabel")}
                     value={formatDateTimeLocal(timestamp)}
                     onChange={(e) => setTimestamp(parseLocalDateTimeToUTC(e.target.value))}
                     className="modal-input"
                 />
             </div>
+        </>
+    );
+
+    // A day, never moved by itself. Without a day to work on it yet, that starts from the deadline.
+    const deadlineField = (
+        <>
+            <label className="modal-input-label">{t("taskModal.deadlineLabel")}</label>
+            <div className="modal-input-wrapper">
+                <input
+                    type="date"
+                    aria-label={t("taskModal.deadlineLabel")}
+                    value={deadline}
+                    onChange={(e) => {
+                        setDeadline(e.target.value);
+                        if (e.target.value && !timestamp) setTimestamp(new Date(`${e.target.value}T18:00`).getTime());
+                    }}
+                    className="modal-input"
+                />
+            </div>
+            <div className="modal-hint">{t("taskModal.deadlineHint")}</div>
         </>
     );
 
@@ -166,7 +193,7 @@ const TaskModal = ({ mode, initialValues, onSave, onClose, projectEditable, date
                                 }}
                             />
                         </div>
-                        {datesShown && deadlineField}
+                        {datesShown && workDayField}
                         {isGoalType && (
                             <>
                                 <label className="modal-input-label">{t("taskModal.goalLabel")}</label>
@@ -231,7 +258,7 @@ const TaskModal = ({ mode, initialValues, onSave, onClose, projectEditable, date
                             </div>
                             <div className="modal-hint">{t("taskModal.noDeadlineHint")}</div>
                             <hr />
-                            {deadlineField}
+                            {workDayField}
                             <div className="date-shortcut-row">
                                 {QUICK_DAY_OFFSETS.map((days) => (
                                     <button
@@ -293,6 +320,7 @@ const TaskModal = ({ mode, initialValues, onSave, onClose, projectEditable, date
                                     }}
                                 >{t("taskModal.nextMonth")}</button>
                             </div>
+                            {deadlineShown && <><hr />{deadlineField}</>}
                         </>
                     )
                 },

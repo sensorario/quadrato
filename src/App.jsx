@@ -22,7 +22,7 @@ import { getConfigRepository } from "./repositories";
 import { navigate } from "./Router";
 import { Icon, LanguageSwitcher, QuadratoHeader, SGFooter, StepRange } from "@sensorario/sg-components";
 import ExpiredTasks from "./components/ExpiredTasks";
-import { LEVELS, inLevel, isOverdue, levelLastDay, tabDueDate } from "./utils/taskDays";
+import { LEVELS, dayKey, inLevel, isOverdue, levelLastDay, tabDueDate, workDay } from "./utils/taskDays";
 import LogoutConfirmModal from "./components/LogoutConfirmModal";
 
 // Header di autorizzazione da allegare alle richieste autenticate verso l'API
@@ -376,7 +376,8 @@ function App() {
         projectValue,
         timestampValue,
         periodicityValue,
-        goalValue
+        goalValue,
+        deadlineValue
     ) => {
         let putSent = false;
         setTasks((tasks) => {
@@ -406,6 +407,10 @@ function App() {
                                   goalValue === undefined
                                       ? task.goal
                                       : goalValue,
+                              deadline:
+                                  deadlineValue === undefined
+                                      ? task.deadline
+                                      : deadlineValue,
                           }
                         : task;
 
@@ -963,17 +968,13 @@ function App() {
                   : projectFilter
                     ? unarchivedTasks.filter((t) => t.project === projectFilter)
                     : unarchivedTasks;
-        // Filtra per range di giorni
+        // Undated tasks, those from today on (an open one left behind counts as today's, as the
+        // cron makes it), and the late ones only when asked.
         const now = new Date();
         return filtered.filter((t) => {
-            if (!t.timestamp) return true; // task senza scadenza
-            // Gestisce sia timestamp numerici che stringhe
-            const dt =
-                typeof t.timestamp === "number"
-                    ? new Date(t.timestamp)
-                    : new Date(t.timestamp);
-            if (showExpired && dt < now) return true; // mostra scaduti se abilitato
-            return dt >= now; // mostra tutti i task futuri
+            if (!t.timestamp) return true;
+            if (isOverdue(t, now)) return showExpired;
+            return workDay(t, now) >= dayKey(now);
         });
     })();
 

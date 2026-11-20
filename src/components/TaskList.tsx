@@ -4,6 +4,7 @@ import { getStatusIcons, STATUS_ENUM } from "../utils";
 import { Icon } from "@sensorario/sg-components";
 import TaskModal from "./TaskModal";
 import TaskTitle, { isGoal, isNote } from "./TaskTitle";
+import { isOverdue } from "../utils/taskDays";
 import { toPlainText } from "../utils/toPlainText";
 import { taskAge } from "../utils/taskAge";
 import { Modal } from "./Modal";
@@ -23,7 +24,7 @@ export const TaskList = ({ tasks, pendingStatuses, onTaskClick, updateTaskTitle,
     // Statuses clicked but not applied yet: shown on the icon while the row keeps its place.
     pendingStatuses?: Record<string, number>;
     onTaskClick: (id: number) => void;
-    updateTaskTitle: (id: number, title: string, longDescription?: string, project?: string, timestamp?: string | number, periodicity?: { number: string; unit: string } | null, goal?: Goal | null) => void;
+    updateTaskTitle: (id: number, title: string, longDescription?: string, project?: string, timestamp?: string | number, periodicity?: { number: string; unit: string } | null, goal?: Goal | null, deadline?: string | null) => void;
     onReorder?: (taskId: Task['id'], parentId: Task['id'] | null, siblingIds: Task['id'][]) => void;
     onClearDueDates?: (ids: Task['id'][]) => void;
     onArchive?: (ids: Task['id'][]) => void;
@@ -42,7 +43,10 @@ export const TaskList = ({ tasks, pendingStatuses, onTaskClick, updateTaskTitle,
     iconTheme: 'default' | 'checked' | 'panda';
     projectFilter?: string | null;
 }) => {
-    const { t } = useTranslation();
+    const { t, i18n } = useTranslation();
+    // A deadline is a day, "YYYY-MM-DD": shown as "4 dic".
+    const deadlineLabel = (day: string) =>
+        new Intl.DateTimeFormat(i18n.language, { day: 'numeric', month: 'short' }).format(new Date(`${day}T00:00`));
     // Aggiorno la tipizzazione per timestamp
     // tasks: Array<{ id: number; title: string; status: number; longDescription?: string; project?: string; timestamp?: number | string; archived?: boolean; }>
     const STATUS = getStatusIcons(iconTheme);
@@ -294,9 +298,9 @@ export const TaskList = ({ tasks, pendingStatuses, onTaskClick, updateTaskTitle,
         setEditTask(task);
     };
 
-    const handleEditSave = (values: { title: string; longDescription: string; project: string; timestamp: string | number | ""; periodicity: { number: string; unit: string } | null; goal: Goal | null }) => {
+    const handleEditSave = (values: { title: string; longDescription: string; project: string; timestamp: string | number | ""; periodicity: { number: string; unit: string } | null; goal: Goal | null; deadline: string | null }) => {
         if (editTask) {
-            updateTaskTitle(editTask.id, values.title, values.longDescription, values.project, values.timestamp, values.periodicity, values.goal);
+            updateTaskTitle(editTask.id, values.title, values.longDescription, values.project, values.timestamp, values.periodicity, values.goal, values.deadline);
         }
         setEditTask(null);
     };
@@ -305,7 +309,8 @@ export const TaskList = ({ tasks, pendingStatuses, onTaskClick, updateTaskTitle,
         // Neither a note nor a goal has a status to click through, nor is ever overdue.
         const goal = isGoal(task);
         const statusless = isNote(task) || goal;
-        const isExpired = !statusless && dateTimeEnabled && task.timestamp && new Date(task.timestamp) < new Date();
+        // Late once its deadline is over: the day to work on it keeps coming back to today.
+        const isExpired = dateTimeEnabled && isOverdue(task, new Date());
 
 
         const isMobile = /iPhone/i.test(navigator.userAgent);
@@ -384,6 +389,16 @@ export const TaskList = ({ tasks, pendingStatuses, onTaskClick, updateTaskTitle,
                         {dateTimeEnabled && task.timestamp && (
                             <span style={{ margin: '0', color: '#666' }}>
                                 <FormatDate date={typeof task.timestamp === 'number' ? task.timestamp : (task.timestamp || '')} />
+                            </span>
+                        )}
+                        {dateTimeEnabled && task.deadline && (
+                            <span style={{ margin: '0', color: isExpired ? 'red' : '#666', fontWeight: isExpired ? 600 : undefined }}>
+                                {t(isExpired ? 'taskList.deadlinePassed' : 'taskList.deadline', { date: deadlineLabel(task.deadline) })}
+                            </span>
+                        )}
+                        {dateTimeEnabled && (task.rolledOver ?? 0) > 0 && (
+                            <span style={{ margin: '0', color: '#999', whiteSpace: 'nowrap' }} title={t('taskList.rolledOver', { count: task.rolledOver })}>
+                                ↻{task.rolledOver}
                             </span>
                         )}
                         {projectEditable && task.project && task.project !== projectFilter && (

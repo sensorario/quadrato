@@ -92,8 +92,10 @@
       "months": "Monate",
       "years": "Jahre"
     },
-    "noDeadlineHint": "Leer lassen für keine Frist",
+    "noDeadlineHint": "Leer lassen für kein Datum",
+    "workDayLabel": "Zu erledigen am",
     "deadlineLabel": "Fälligkeitsdatum",
+    "deadlineHint": "Der letzte mögliche Tag, wie bei einer Rechnung. Er verschiebt sich nie von selbst. Das Datum oben wandert dagegen auf heute, solange die Aufgabe offen ist.",
     "inDays": "+{{count}}T",
     "tomorrow": "morgen",
     "nextWeek": "nächste Woche",
@@ -171,7 +173,11 @@
       "months_other": "{{count}} Monate",
       "years_one": "{{count}} Jahr",
       "years_other": "{{count}} Jahre"
-    }
+    },
+    "deadline": "fällig am {{date}}",
+    "deadlinePassed": "überfällig seit {{date}}",
+    "rolledOver_one": "{{count}}-mal auf heute verschoben",
+    "rolledOver_other": "{{count}}-mal auf heute verschoben"
   },
   "footer": {
     "addAria": "Neue Aufgabe hinzufügen",

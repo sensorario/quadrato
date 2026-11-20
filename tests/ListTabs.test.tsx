@@ -44,7 +44,7 @@ const renderApp = async (tasks: any[] = [
     { id: 1, title: 'Due today', status: 0, timestamp: due(0, 23) },
     { id: 2, title: 'Due tomorrow', status: 0, timestamp: due(1, 9) },
     { id: 3, title: 'No due date', status: 0 },
-    { id: 4, title: 'Late since yesterday', status: 1, timestamp: due(-1, 10) },
+    { id: 4, title: 'Late since yesterday', status: 1, timestamp: due(-1, 10), deadline: inDays(-1) },
     { id: 5, title: 'Done yesterday', status: 2, timestamp: due(-1, 11) },
 ], projectFilter: string | null = 'ALL') => {
     localStorage.setItem('simonegentili.com-access-token', 'tok');
@@ -142,7 +142,7 @@ describe('list levels', () => {
 
     it('keeps the overdue tasks of every project, and the others only of the project picked', async () => {
         await renderApp([
-            { id: 1, title: 'Late at work', project: 'lavoro', status: 0, timestamp: due(-1, 10) },
+            { id: 1, title: 'Late at work', project: 'lavoro', status: 0, timestamp: due(-1, 10), deadline: inDays(-1) },
             { id: 2, title: 'Today at home', project: 'casa', status: 0, timestamp: due(0, 23) },
             { id: 3, title: 'Today at work', project: 'lavoro', status: 0, timestamp: due(0, 23) },
             { id: 4, title: 'Someday at work', project: 'lavoro', status: 0 },
@@ -158,6 +158,20 @@ describe('list levels', () => {
 
         expect(['expired', 'day', 'week', 'month', 'all'].map((level) => screen.getByTestId(`level-${level}`).dataset.count))
             .toEqual(['2', '3', '4', '4', '6']);
+    });
+
+    it('puts an open task left behind in "Oggi", and only one whose deadline is over among the late ones', async () => {
+        await renderApp([
+            { id: 1, title: 'Behind', status: 0, timestamp: due(-2, 9) },
+            { id: 2, title: 'Bill', status: 0, timestamp: due(-1, 9), deadline: inDays(-1) },
+            { id: 3, title: 'Bill due today', status: 0, timestamp: due(0, 9), deadline: inDays(0) },
+        ]);
+
+        expect(shown('Behind', 'Bill', 'Bill due today')).toEqual(['Behind', 'Bill', 'Bill due today']);
+        expect(screen.getAllByText(/^scaduto il /)).toHaveLength(1);
+        expect(screen.getAllByText(/^scade il /)).toHaveLength(1);
+        pick('expired');
+        expect(shown('Behind', 'Bill', 'Bill due today')).toEqual(['Bill']);
     });
 
     it('says when a level has no task', async () => {
@@ -206,7 +220,7 @@ describe('a task added from a level', () => {
         pick('week');
         fireEvent.click(screen.getByLabelText('Aggiungi nuovo task'));
 
-        const [field] = screen.getAllByLabelText('Scadenza') as HTMLInputElement[];
+        const [field] = screen.getAllByLabelText('Da fare il') as HTMLInputElement[];
         expect(field.closest('.tab-content')?.classList.contains('active')).toBe(true);
         expect(field.value).toBe(`${inDays(6)}T18:00`);
     });

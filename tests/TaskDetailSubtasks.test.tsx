@@ -414,7 +414,7 @@ describe('TaskDetailPage dates', () => {
     it('shows the start day and the due date, and saves a new start when the field is left', async () => {
         render(<TaskDetailPage taskId="c" />);
         expect(field('Inizio').value).toBe('2026-10-20');
-        expect(field('Scadenza').value).toBe('2026-10-24T18:00');
+        expect(field('Da fare il').value).toBe('2026-10-24T18:00');
 
         leave('Inizio', '2026-10-22');
 
@@ -425,7 +425,7 @@ describe('TaskDetailPage dates', () => {
     it('saves a new due date, and postpones the parent to it', async () => {
         render(<TaskDetailPage taskId="c" />);
 
-        leave('Scadenza', '2026-10-27T18:00');
+        leave('Da fare il', '2026-10-27T18:00');
 
         await waitFor(() => expect(mockFetchData).toHaveBeenCalled());
         const due = new Date('2026-10-27T18:00').getTime();
@@ -435,10 +435,22 @@ describe('TaskDetailPage dates', () => {
     it('takes the due date away when the field is emptied', async () => {
         render(<TaskDetailPage taskId="c" />);
 
-        leave('Scadenza', '');
+        leave('Da fare il', '');
 
         await waitFor(() => expect(mockFetchData).toHaveBeenCalled());
         expect(putBodies()).toEqual({ c: { timestamp: null } });
+    });
+
+    it('saves a deadline alone, without moving the parent, and takes it away when emptied', async () => {
+        render(<TaskDetailPage taskId="c" />);
+
+        leave('Scadenza', '2026-10-30');
+        await waitFor(() => expect(mockFetchData).toHaveBeenCalledTimes(1));
+        expect(putBodies()).toEqual({ c: { deadline: '2026-10-30' } });
+
+        leave('Scadenza', '');
+        await waitFor(() => expect(mockFetchData).toHaveBeenCalledTimes(2));
+        expect((global.fetch as jest.Mock).mock.calls.map(([, o]) => JSON.parse(o.body))).toEqual([{ deadline: '2026-10-30' }, { deadline: null }]);
     });
 
     it('does not take a start after the due date', () => {

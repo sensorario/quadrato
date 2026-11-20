@@ -92,8 +92,10 @@
       "months": "months",
       "years": "years"
     },
-    "noDeadlineHint": "Leave empty for no deadline",
+    "noDeadlineHint": "Leave empty for no date",
+    "workDayLabel": "To do on",
     "deadlineLabel": "Deadline",
+    "deadlineHint": "The last day it can be done, like a bill's. It never moves by itself, while the date above moves to today as long as the task is open.",
     "inDays": "+{{count}}d",
     "tomorrow": "tomorrow",
     "nextWeek": "next week",
@@ -171,7 +173,11 @@
       "months_other": "{{count}} months",
       "years_one": "{{count}} year",
       "years_other": "{{count}} years"
-    }
+    },
+    "deadline": "due {{date}}",
+    "deadlinePassed": "was due {{date}}",
+    "rolledOver_one": "Moved to today {{count}} time",
+    "rolledOver_other": "Moved to today {{count}} times"
   },
   "footer": {
     "addAria": "Add new task",

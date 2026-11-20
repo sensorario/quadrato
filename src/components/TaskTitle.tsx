@@ -39,6 +39,9 @@ export const isNote = (task: { title: string }): boolean => splitTaskType(task.t
 // and for all, so it has no status, is never overdue and doesn't keep its parent open.
 export const isGoal = (task: { title: string }): boolean => splitTaskType(task.title).type === "goal";
 
+// An event happens on its own day: it's never moved, so that day is also the last one to do it.
+export const isEvent = (task: { title: string }): boolean => splitTaskType(task.title).type === "event";
+
 // The types as icons, the one picked framed in its color: a click on it takes it away.
 export const TaskTypePicker = ({ value, onChange, style }: {
     value: TaskType | null;

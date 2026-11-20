@@ -1,4 +1,4 @@
-import { describe, it, expect } from "@jest/globals";
+import { describe, it, expect, jest } from "@jest/globals";
 import { archiveCompletedAndSkippedTasks } from "../src/functions/archiveCompletedAndSkippedTasks";
 import { STATUS_ENUM } from "../src/utils";
 
@@ -41,6 +41,35 @@ describe("archiveCompletedAndSkippedTasks", () => {
         expect(result[1].status).toBe(STATUS_ENUM.TODO);
         expect(result[1].archived).toBe(false);
         expect(result[1].timestamp).not.toBe(now);
+    });
+
+    it("moves a renewed task's deadline one period and never has it to be done after it, like the API", () => {
+        jest.useFakeTimers().setSystemTime(new Date(2026, 8, 26, 10, 0));
+        try {
+            const bill = (deadline: string) => [{
+                id: 1,
+                title: "Bolletta",
+                status: STATUS_ENUM.DONE,
+                timestamp: new Date(2026, 8, 3, 9, 0).getTime(),
+                periodicity: { number: "1", unit: "mesi" },
+                deadline,
+                rolledOver: 2,
+            }];
+
+            // Paid on the 26th: due again on 26 October, but the bill is due on 4 October.
+            const [archived, late] = archiveCompletedAndSkippedTasks({ tasks: bill("2026-09-04") });
+            expect(late.deadline).toBe("2026-10-04");
+            expect(late.timestamp).toBe(new Date(2026, 9, 4, 10, 0).getTime());
+            expect(late.rolledOver).toBe(0);
+            expect(archived.deadline).toBe("2026-09-04");
+            expect(archived.rolledOver).toBe(2);
+
+            const [, early] = archiveCompletedAndSkippedTasks({ tasks: bill("2026-09-30") });
+            expect(early.deadline).toBe("2026-10-30");
+            expect(early.timestamp).toBe(new Date(2026, 9, 26, 10, 0).getTime());
+        } finally {
+            jest.useRealTimers();
+        }
     });
 
     it("does not archive TODO tasks", () => {

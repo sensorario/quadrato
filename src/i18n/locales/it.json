@@ -92,8 +92,10 @@
       "months": "mesi",
       "years": "anni"
     },
-    "noDeadlineHint": "Lascia vuoto per nessuna scadenza",
+    "noDeadlineHint": "Lascia vuoto per nessuna data",
+    "workDayLabel": "Da fare il",
     "deadlineLabel": "Scadenza",
+    "deadlineHint": "L'ultimo giorno utile, come quello di una bolletta. Non si sposta mai da solo. La data qui sopra invece passa a oggi finché il task è aperto.",
     "inDays": "+{{count}}g",
     "tomorrow": "domani",
     "nextWeek": "settimana prossima",
@@ -171,7 +173,11 @@
       "months_other": "{{count}} mesi",
       "years_one": "{{count}} anno",
       "years_other": "{{count}} anni"
-    }
+    },
+    "deadline": "scade il {{date}}",
+    "deadlinePassed": "scaduto il {{date}}",
+    "rolledOver_one": "Spostato a oggi {{count}} volta",
+    "rolledOver_other": "Spostato a oggi {{count}} volte"
   },
   "footer": {
     "addAria": "Aggiungi nuovo task",

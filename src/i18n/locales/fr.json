@@ -92,8 +92,10 @@
       "months": "mois",
       "years": "ans"
     },
-    "noDeadlineHint": "Laisser vide pour aucune échéance",
+    "noDeadlineHint": "Laisser vide pour aucune date",
+    "workDayLabel": "À faire le",
     "deadlineLabel": "Échéance",
+    "deadlineHint": "Le dernier jour possible, comme pour une facture. Elle ne bouge jamais d'elle-même. La date au-dessus, elle, passe à aujourd'hui tant que la tâche est ouverte.",
     "inDays": "+{{count}}j",
     "tomorrow": "demain",
     "nextWeek": "semaine prochaine",
@@ -171,7 +173,11 @@
       "months_other": "{{count}} mois",
       "years_one": "{{count}} an",
       "years_other": "{{count}} ans"
-    }
+    },
+    "deadline": "échéance le {{date}}",
+    "deadlinePassed": "échue le {{date}}",
+    "rolledOver_one": "Reportée à aujourd'hui {{count}} fois",
+    "rolledOver_other": "Reportée à aujourd'hui {{count}} fois"
   },
   "footer": {
     "addAria": "Ajouter une nouvelle tâche",

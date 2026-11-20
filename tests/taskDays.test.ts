@@ -1,4 +1,4 @@
-import { dayKey, dueDay, inLevel, isDueBetween, isOverdue, levelLastDay, nextDays, tabDueDate } from '../src/utils/taskDays';
+import { dayKey, dueDay, inLevel, isDueBetween, isOverdue, lastDay, levelLastDay, nextDays, tabDueDate, workDay } from '../src/utils/taskDays';
 import { STATUS_ENUM } from '../src/utils';
 import { Task } from '../src/types/commonTypes';
 
@@ -15,29 +15,56 @@ describe('taskDays', () => {
         expect(dayKey(new Date(2026, 9, 1, 0, 5))).toBe('2026-10-01');
     });
 
-    it('is overdue only when due before now and still to do or in progress', () => {
+    it('is overdue once its deadline is over and it is still to do or in progress', () => {
         const now = new Date(2026, 9, 11, 9, 0);
-        const due = '2026-10-11 08:00:00';
+        const deadline = '2026-10-10';
 
-        expect(isOverdue(task({ timestamp: due }), now)).toBe(true);
-        expect(isOverdue(task({ timestamp: due, status: STATUS_ENUM.IN_PROGRESS }), now)).toBe(true);
-        expect(isOverdue(task({ timestamp: due, status: STATUS_ENUM.DONE }), now)).toBe(false);
-        expect(isOverdue(task({ timestamp: due, status: STATUS_ENUM.SKIPPED }), now)).toBe(false);
-        expect(isOverdue(task({ timestamp: due, archived: true }), now)).toBe(false);
-        expect(isOverdue(task({ timestamp: '2026-10-11 10:00:00' }), now)).toBe(false);
+        expect(isOverdue(task({ deadline }), now)).toBe(true);
+        expect(isOverdue(task({ deadline, status: STATUS_ENUM.IN_PROGRESS }), now)).toBe(true);
+        expect(isOverdue(task({ deadline, status: STATUS_ENUM.DONE }), now)).toBe(false);
+        expect(isOverdue(task({ deadline, status: STATUS_ENUM.SKIPPED }), now)).toBe(false);
+        expect(isOverdue(task({ deadline, archived: true }), now)).toBe(false);
+        // Not late during its last day.
+        expect(isOverdue(task({ deadline: '2026-10-11' }), now)).toBe(false);
         expect(isOverdue(task({}), now)).toBe(false);
+    });
+
+    it('is never overdue for a day to work on it that is over: the cron brings it to today', () => {
+        const now = new Date(2026, 9, 11, 9, 0);
+
+        expect(isOverdue(task({ timestamp: '2026-10-10 08:00:00' }), now)).toBe(false);
+        expect(isOverdue(task({ timestamp: '2026-10-10 08:00:00', deadline: '2026-10-20' }), now)).toBe(false);
+    });
+
+    it('takes an event for overdue after its own day: it is never moved', () => {
+        const now = new Date(2026, 9, 11, 9, 0);
+
+        expect(lastDay(task({ title: '[event] Dentista', timestamp: '2026-10-10 15:00:00' }))).toBe('2026-10-10');
+        expect(isOverdue(task({ title: '[event] Dentista', timestamp: '2026-10-10 15:00:00' }), now)).toBe(true);
+        expect(isOverdue(task({ title: '[event] Dentista', timestamp: '2026-10-11 07:00:00' }), now)).toBe(false);
     });
 
     it('never takes a note for overdue: its date is when it was written', () => {
         const now = new Date(2026, 9, 11, 9, 0);
 
-        expect(isOverdue(task({ title: '[note] Chiamato il fornitore', timestamp: '2026-10-10 15:00:00' }), now)).toBe(false);
+        expect(isOverdue(task({ title: '[note] Chiamato il fornitore', timestamp: '2026-10-10 15:00:00', deadline: '2026-10-10' }), now)).toBe(false);
     });
 
     it('never takes a goal for overdue: it is never done once and for all', () => {
         const now = new Date(2026, 9, 11, 9, 0);
 
-        expect(isOverdue(task({ title: '[goal] Leggere', timestamp: '2026-10-10 15:00:00' }), now)).toBe(false);
+        expect(isOverdue(task({ title: '[goal] Leggere', timestamp: '2026-10-10 15:00:00', deadline: '2026-10-10' }), now)).toBe(false);
+    });
+
+    it('works on an open task left behind today, as the cron will move it, and on any other on its own day', () => {
+        const now = new Date(2026, 9, 21, 0, 10);
+
+        expect(workDay(task({ timestamp: '2026-10-20 18:00:00' }), now)).toBe('2026-10-21');
+        expect(workDay(task({ timestamp: '2026-10-20 18:00:00', status: STATUS_ENUM.DONE }), now)).toBe('2026-10-20');
+        expect(workDay(task({ title: '[event] Dentista', timestamp: '2026-10-20 18:00:00' }), now)).toBe('2026-10-20');
+        expect(workDay(task({ title: '[note] Scritto ieri', timestamp: '2026-10-20 18:00:00' }), now)).toBe('2026-10-20');
+        expect(workDay(task({ timestamp: '2026-10-23 18:00:00' }), now)).toBe('2026-10-23');
+        expect(workDay(task({}), now)).toBeNull();
     });
 
     it('gives the days from a date on, the date included', () => {
@@ -71,7 +98,9 @@ describe('taskDays', () => {
 
         expect(inLevel(dueOn('2026-10-21'), 'day', now)).toBe(true);
         expect(inLevel(dueOn('2026-10-22'), 'day', now)).toBe(false);
-        expect(inLevel(dueOn('2026-10-20'), 'week', now)).toBe(false);
+        // Left behind and still open: today's, until the cron moves it.
+        expect(inLevel(dueOn('2026-10-20'), 'day', now)).toBe(true);
+        expect(inLevel(task({ timestamp: '2026-10-20 18:00:00', status: STATUS_ENUM.DONE }), 'week', now)).toBe(false);
         expect(inLevel(dueOn('2026-10-27'), 'week', now)).toBe(true);
         expect(inLevel(dueOn('2026-10-28'), 'week', now)).toBe(false);
         expect(inLevel(dueOn('2026-11-17'), 'month', now)).toBe(true);

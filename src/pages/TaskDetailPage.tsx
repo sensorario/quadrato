@@ -4,10 +4,10 @@ import { Icon, Logo, QuadratoHeader } from '@sensorario/sg-components';
 import { Goal, GoalCadence, Task } from '../types/commonTypes';
 import { getConfigRepository } from '../repositories';
 import { navigate } from '../Router';
-import TaskTitle, { isGoal, isNote, splitTaskType, TaskType, TaskTypePicker } from '../components/TaskTitle';
+import TaskTitle, { isEvent, isGoal, isNote, splitTaskType, TaskType, TaskTypePicker } from '../components/TaskTitle';
 import { STATUS_ENUM } from '../utils';
 import { byPosition, descendantIds, flattenTree, hasOpenDescendants, reconcileAncestors, toTime, TreeRow } from '../utils/taskTree';
-import { dayKey } from '../utils/taskDays';
+import { dayKey, isOverdue } from '../utils/taskDays';
 import { toPlainText } from '../utils/toPlainText';
 import { useSlidingRows } from '../functions/useSlidingRows';
 
@@ -439,7 +439,7 @@ export const TaskDetailPage = ({ taskId }: TaskDetailPageProps) => {
         const puts = after.flatMap(t => {
             const old = previous.get(t.id);
             if (!old || old === t) return [];
-            const body = Object.fromEntries((['status', 'timestamp', 'startsAt'] as const)
+            const body = Object.fromEntries((['status', 'timestamp', 'startsAt', 'deadline'] as const)
                 .filter(field => (old[field] ?? null) !== (t[field] ?? null))
                 .map(field => [field, t[field] ?? null]));
             return Object.keys(body).length > 0 ? [{ id: t.id, body }] : [];
@@ -499,6 +499,12 @@ export const TaskDetailPage = ({ taskId }: TaskDetailPageProps) => {
         if (timestamp === dueTime) return;
         if (timestamp !== null && startDay !== '' && dayKey(new Date(timestamp)) < startDay) return rejectDates();
         saveChanges({ timestamp }, [task.id], t('taskDetailPage.datesFailed'));
+    };
+
+    // A day that never moves by itself, nor by its subtasks' dates.
+    const handleDeadline = (day: string) => {
+        if (!task || (day || null) === (task.deadline ?? null)) return;
+        saveChanges({ deadline: day || null }, [], t('taskDetailPage.datesFailed'));
     };
 
     // Shown at once, put back if the API doesn't take it.
@@ -782,7 +788,7 @@ export const TaskDetailPage = ({ taskId }: TaskDetailPageProps) => {
                         />
                     </label>
                     <label>
-                        <span style={labelStyle}>{t('taskDetailPage.deadline')}</span>
+                        <span style={labelStyle}>{t('taskModal.workDayLabel')}</span>
                         <input
                             key={`due-${dueTime}-${datesRevision}`}
                             type="datetime-local"
@@ -794,7 +800,25 @@ export const TaskDetailPage = ({ taskId }: TaskDetailPageProps) => {
                             onKeyDown={e => { if (e.key === 'Enter') e.currentTarget.blur(); }}
                         />
                     </label>
+                    {/* An event's own day is its deadline; notes and goals are never late. */}
+                    {!isNote(task) && !isGoal(task) && !isEvent(task) && (
+                        <label>
+                            <span style={{ ...labelStyle, ...(isOverdue(task, new Date()) && { color: 'red' }) }}>{t('taskDetailPage.deadline')}</span>
+                            <input
+                                key={`deadline-${task.deadline ?? ''}-${datesRevision}`}
+                                type="date"
+                                className="modal-input"
+                                style={{ marginBottom: 0, marginTop: '4px' }}
+                                defaultValue={task.deadline ?? ''}
+                                onBlur={e => handleDeadline(e.target.value)}
+                                onKeyDown={e => { if (e.key === 'Enter') e.currentTarget.blur(); }}
+                            />
+                        </label>
+                    )}
                 </div>
+                {(task.rolledOver ?? 0) > 0 && (
+                    <span style={{ ...valueStyle, color: '#999' }}>↻ {t('taskList.rolledOver', { count: task.rolledOver })}</span>
+                )}
 
                 {task.periodicity && (task.periodicity.number || task.periodicity.unit) && (
                     <>

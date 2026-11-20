@@ -22,6 +22,11 @@ export type Task = {
     // Planned start, Unix seconds (the start of its bar in the Gantt); none when not planned.
     startsAt?: number | null;
     goal?: Goal | null;
+    // The last day it can be done, "YYYY-MM-DD", never moved by itself; the timestamp is the day to
+    // work on it, which the API's cron brings to today while the task is open.
+    deadline?: string | null;
+    // How many times that cron moved the timestamp; only the API changes it.
+    rolledOver?: number;
 };
 
 export type HandleAddAnotherModalParams = {

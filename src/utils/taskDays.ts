@@ -1,6 +1,6 @@
 import { Task } from "../types/commonTypes";
 import { STATUS_ENUM } from "../utils";
-import { isGoal, isNote } from "../components/TaskTitle";
+import { isEvent, isGoal, isNote } from "../components/TaskTitle";
 
 const pad = (n: number) => String(n).padStart(2, "0");
 
@@ -8,18 +8,33 @@ const pad = (n: number) => String(n).padStart(2, "0");
 export const dayKey = (date: Date): string =>
     `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`;
 
-// The day a task has to be done by, null without a due date: one from the 10th to the 13th is the 13th's.
+// The day to work on a task, as it's saved, null without one: one from the 10th to the 13th is the 13th's.
 export const dueDay = (task: Task): string | null => (task.timestamp ? dayKey(new Date(task.timestamp)) : null);
 
-// Due before `now` and still to do or in progress. A note's date is when it was written, a goal is
-// never done: neither is ever overdue.
-export const isOverdue = (task: Task, now: Date): boolean =>
+// Still to do or in progress, and something to do: a note's date is when it was written, a goal is never done.
+export const isOpen = (task: Task): boolean =>
     !task.archived &&
     !isNote(task) &&
     !isGoal(task) &&
-    (task.status === STATUS_ENUM.TODO || task.status === STATUS_ENUM.IN_PROGRESS) &&
-    !!task.timestamp &&
-    new Date(task.timestamp) < now;
+    (task.status === STATUS_ENUM.TODO || task.status === STATUS_ENUM.IN_PROGRESS);
+
+// The last day a task can be done, "YYYY-MM-DD": its deadline, else an event's own day. Null when
+// nothing fixes one. Twin of the API's Task::lastDay.
+export const lastDay = (task: Task): string | null => task.deadline ?? (isEvent(task) ? dueDay(task) : null);
+
+// Open, and its last day is over: late on the day after, not during it. The day to work on it never
+// makes it late, since the API's cron (Cron\Quadrato\RollOverTasks) keeps bringing it to today.
+export const isOverdue = (task: Task, now: Date): boolean => {
+    const last = lastDay(task);
+    return isOpen(task) && last !== null && last < dayKey(now);
+};
+
+// The day to work on a task: its own, or today for an open one whose day is over, as the cron
+// makes it at its first run after midnight (an event stays on its day). Twin of Task::rollsOver.
+export const workDay = (task: Task, now: Date): string | null => {
+    const day = dueDay(task);
+    return day !== null && day < dayKey(now) && isOpen(task) && !isEvent(task) ? dayKey(now) : day;
+};
 
 // The list's levels, left to right: each one holds the tasks of those before it too.
 export const LEVELS = ["expired", "day", "week", "month", "all"] as const;
@@ -50,7 +65,8 @@ export const levelLastDay = (level: Level, now: Date): string | null => {
 export const inLevel = (task: Task, level: Level, now: Date): boolean => {
     if (level === "all") return true;
     const last = levelLastDay(level, now);
-    return last !== null && isDueBetween(task, dayKey(now), last);
+    const day = workDay(task, now);
+    return last !== null && day !== null && day >= dayKey(now) && day <= last;
 };
 
 // The due date (Unix ms) of a task added from a level, so it shows up there: 18:00 of the last
